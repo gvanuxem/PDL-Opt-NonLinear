@@ -1,0 +1,11 @@
+Source: pdl-opt-nonlinear
+Section: perl
+Priority: optional
+Maintainer: Gregory Vanuxem <g.vanuxem@wanadoo.fr>
+Standards-Version: 3.6.0
+Build-Depends: debhelper (>= 4.0.19), perl (>= 5.8), pdl (>= 2.4.)
+
+Package: pdl-opt-nonlinear
+Architecture: any
+Depends: ${perl:Depends}, ${shlibs:Depends}
+Description: Optimization routines for PDL

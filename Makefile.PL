@@ -20,7 +20,9 @@ $hash{LDLOADLIBS} .= 'oldnames.lib kernel32.lib user32.lib gdi32.lib winspool.li
 
 
 WriteMakefile(%hash,
-	VERSION => 0.01,
+	VERSION => 0.02,
+	'PREREQ_PM'		=> { PDL
+					},
 );
 
 # Add genpp rule

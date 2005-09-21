@@ -1,5 +1,11 @@
+pdl-opt-nonlinear (0.02-1) unstable; urgency=low
+
+  * new upustram release.
+
+ -- Gregory Vanuxem <vanuxemg@yahoo.fr>  Wed, 21 Sep 2005 16:16:34 -0700
+
 pdl-opt-nonlinear (0.01-1) unstable; urgency=low
 
   * Initial release.
 
- -- Gregory Vanuxem <g.vanuxem@wanadoo.fr>  Sat, 17 Sep 2005 17:44:34 -0700
+ -- Gregory Vanuxem <vanuxemg@yahoo.fr>  Sat, 17 Sep 2005 17:44:34 -0700

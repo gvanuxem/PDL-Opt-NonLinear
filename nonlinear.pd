@@ -33,10 +33,10 @@
 
 do('Config');
 
-our $VERSION = 0.01;
+our $VERSION = 0.02;
 use PDL::Exporter;
 
-pp_setversion(0.01);
+pp_setversion(0.02);
 
 pp_addhdr('
 #include<asa.h>

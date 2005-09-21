@@ -1,5 +1,9 @@
 Revision history for Perl extension PDL::Opt::NonLinear
 
+0.02  Wed Sep 21 16:16:15 2005
+
+  * add PDL.pm in prerequities (Makefile.PL)
+
 0.01  Sat Sep 17 17:13:24 2005
 
   * Initial release

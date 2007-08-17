@@ -5,11 +5,6 @@ This module provide some optimization routines for PDL.
 
 INSTALLATION
 
-Go to opti_lib directory and edit Makefile to reflect your C and Fortran compiler.
-Type make and copy libopti.so to u/usr/local/lib.
-
-After change to root directory and type the following:
-
    perl Makefile.PL
    make
    make test
@@ -17,11 +12,17 @@ After change to root directory and type the following:
 
 DEPENDENCIES
 
-This module requires PDL.
+This module requires the following Perl modules:
+  
+  PDL
+  PDL::LinearAlgebra
+  ExtUtils::F77
+
+and C and Fortran compilers.
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2005 Grégory Vanuxem
+Copyright (C) 2005-2007 Grégory Vanuxem
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

@@ -1,5 +1,10 @@
 Revision history for Perl extension PDL::Opt::NonLinear
 
+0.03  Fri Aug 18 00:00:00 2007
+
+  * ASA fixes (64bit arch)
+  * new Makefile.PL (opti library automatically built and linked)
+
 0.02  Wed Sep 21 16:16:15 2005
 
   * add PDL.pm in prerequities (Makefile.PL)

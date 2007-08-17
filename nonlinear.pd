@@ -31,12 +31,12 @@
 # Redo rmn example
 # optimize without function parameter => pb
 
-do('Config');
+do('Config.pl');
 
-our $VERSION = 0.02;
+our $VERSION = 0.03;
 use PDL::Exporter;
 
-pp_setversion(0.02);
+pp_setversion(0.03);
 
 pp_addhdr('
 #include<asa.h>

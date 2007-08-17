@@ -1,33 +1,80 @@
 
-# Use this as a template for the Makefile.PL for
-# any external PDL module.
 
 use ExtUtils::MakeMaker;
-
 use PDL::Core::Dev;
-@pack = (["nonlinear.pd",NonLinear,PDL::Opt::NonLinear]);
+PDL::Core::Dev->import();
+$abort = 0;
+BEGIN {
 
-%hash = pdlpp_stdargs(@::pack);
-# $hash{'OPTIMIZE'}  = '-g'; # If you want to debug, uncomment this.
-$hash{INC} .= " -Iopti_lib";  # uncomment as required
-#$hash{LIBS}[0] .= " -L/usr/local/lib -lport -lopti -lg2c"; # uncomment as required
+   eval "use ExtUtils::F77";
+   if ($@ ne "") {
+     warn "\n\tExtUtils::F77 module not found. Will not build PDL::Opt::NonLinear\n\n" ;
+     exit(1);
+   }
+   else {
+     $f77 = 'ExtUtils::F77';
+   }
 
-#$hash{LDLOADLIBS} .= 'oldnames.lib kernel32.lib user32.lib gdi32.lib winspool.lib  comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib  netapi32.lib uuid.lib wsock32.lib mpr.lib winmm.lib  version.lib odbc32.lib odbccp32.lib msvcrt.lib  opti_lib/libport3.lib opti_lib/liboptim.lib' if $^O =~ /MSWin/;
+   $compiler_available = $f77->testcompiler;
 
-$hash{LIBS}[0] .= " -L/usr/local/lib -lopti -lg2c"; # uncomment as required
-
-$hash{LDLOADLIBS} .= 'oldnames.lib kernel32.lib user32.lib gdi32.lib winspool.lib  comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib  netapi32.lib uuid.lib wsock32.lib mpr.lib winmm.lib  version.lib odbc32.lib odbccp32.lib msvcrt.lib  opti_lib/liboptim.lib' if $^O =~ /MSWin/;
-
-
-WriteMakefile(%hash,
-	VERSION => 0.02,
-	'PREREQ_PM'		=> { PDL
-					},
-);
-
-# Add genpp rule
-# add other makefile additions as required (see also ExtUtils::MakeMaker)
-sub MY::postamble {
-	pdlpp_postamble(@::pack);
+   if (!$compiler_available) {
+     warn "\n\n\tNo fortran compiler found. Will not build PDL::Opt::NonLinear on this system\n\n";
+     exit(1);
+   } 
 }
 
+return if $abort;
+
+@pack = (["nonlinear.pd",NonLinear,PDL::Opt::NonLinear]);
+@opti_libfiles = map {s/^opti_lib\///; s/\.f$//; $_} glob("opti_lib/*.f");
+
+%hash = pdlpp_stdargs(@::pack);
+$hash{INC} .= " -Iopti_lib";  # uncomment as required
+$hash{OBJECT} .= " opti_lib/hooke.o opti_lib/asa.o opti_lib/asa_usr.o opti_lib/dhc.o opti_lib/de36.o ";
+$fobj = join '', map {" opti_lib/$_.o "} @opti_libfiles;
+$hash{OBJECT} .= $fobj; 
+$hash{LDFROM} .= " hooke.o asa.o asa_usr.o dhc.o de36.o ".$fobj."NonLinear.o";
+$hash{LIBS}[0] .= $f77->runtime ;
+$hash{LIBS}[0] .= ' -L/usr/local/lib -lport -lblas' ;
+$hash{clean}{FILES} .= " f77_underscore" .
+  join '', map {" opti_lib/$_.o "} @opti_libfiles;
+$hash{clean}{FILES} .= " hooke.o ";
+
+# Handle multiple compilers
+
+$f2cbased = ($f77->runtime =~ /-lf2c/);
+$g2cbased = ($f77->runtime =~ /-lg2c/) unless $f2cbased;
+$trail = $f77->trail_;
+
+# Create flag file according to whether or not to use
+# underscores (pretty hacky)
+
+unlink("f77_underscore") if -e "f77_underscore";
+if ($trail) {
+   open OUT, ">f77_underscore" or die "unable to write scratch file";
+   close OUT;
+}
+
+WriteMakefile(
+ %hash,
+ VERSION_FROM => "",   # This is overridden by VERSION_FROM in %hash 
+ VERSION => "0.03",
+ 'PREREQ_PM'		=> {
+          PDL,
+          PDL::LinearAlgebra
+          }
+
+);
+
+sub MY::postamble {
+        $mycompiler     = $f77->compiler();
+        $mycflags       = $f77->cflags();#." -ff2c ";
+	my $orig = pdlpp_postamble(@::pack);
+	$orig =~ s/:\s*nonlinear\.pd/: nonlinear.pd/;
+	$orig .join "\n",map {
+("
+opti_lib/$_\$(OBJ_EXT): opti_lib/$_.f 
+	$mycompiler -c -o opti_lib/$_\$(OBJ_EXT) $mycflags -O3 -fPIC opti_lib/$_.f
+" )} @opti_libfiles;
+ 
+}

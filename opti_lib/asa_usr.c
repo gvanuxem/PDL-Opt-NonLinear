@@ -1,5 +1,4 @@
 #include "asa_usr_asa.h"
-
 /*
 
 typedef struct {
@@ -57,7 +56,7 @@ double cost_function (double *cost_parameters,
                              double *parameter_upper_bound,
                              double *cost_tangents,
                              double *cost_curvature,
-                             long int * parameter_dimension,
+                             int * parameter_dimension,
                              int *parameter_int_real,
                              int *cost_flag,
                              int *exit_code, USER_DEFINES * USER_OPTIONS);
@@ -67,32 +66,32 @@ int initialize_parameters (double *cost_parameters,
                              double *parameter_upper_bound,
                              double *cost_tangents,
                              double *cost_curvature,
-                             long int * parameter_dimension,
+                             int * parameter_dimension,
                              int *parameter_int_real,
                              USER_DEFINES * USER_OPTIONS);
 
 
 
-long int asa_seed (long int seed);
+int asa_seed (int seed);
 
 
 
-double myrand (long int * rand_seed);
-double randflt (long int * rand_seed);
-double resettable_randflt (long int * rand_seed, int reset);
+double myrand (int * rand_seed);
+double randflt (int * rand_seed);
+double resettable_randflt (int * rand_seed, int reset);
 
 void Exit_USER (char *statement);
-static long int *asa_rand_seed;
+static int *asa_rand_seed;
 char user_exit_msg[160];
 
 
-long int
-asa_main (long int n, double *x, double *fx, double *lower, double *upper, int *parameter_type,
-		long int rand_seed, long int *limit, double *cost_param, double *temperature,
-		long int *generic, double *resolution,double *coarse_res, double *tangent, 
-		double *curvature, double *Quench_Cost,  double *Quench_Param, long int print,
+int
+asa_main (int n, double *x, double *fx, double *lower, double *upper, int *parameter_type,
+		int rand_seed, int *limit, double *cost_param, double *temperature,
+		int *generic, double *resolution,double *coarse_res, double *tangent, 
+		double *curvature, double *Quench_Cost,  double *Quench_Param, int print,
 	  	double (*user_cost_function)
-		(double *, double *, double *, double *, double *, long int *,
+		(double *, double *, double *, double *, double *, int *,
 		int *, int *, int *, USER_DEFINES *))
 {
   int exit_code, cost_flag, i;
@@ -149,6 +148,7 @@ asa_main (long int n, double *x, double *fx, double *lower, double *upper, int *
   USER_OPTIONS->Curvature_0 = 0;
 */
 
+  
   USER_OPTIONS->Include_Integer_Parameters = generic[0];
   USER_OPTIONS->User_Initial_Parameters = generic[1];
   USER_OPTIONS->Sequential_Parameters = generic[2];
@@ -205,10 +205,10 @@ asa_main (long int n, double *x, double *fx, double *lower, double *upper, int *
 }
 
 
-long int
-asa_seed (long int seed)
+int
+asa_seed (int seed)
 {
-  static long int rand_seed;
+  static int rand_seed;
 
   if (fabs (seed) > 0) {
     asa_rand_seed = &rand_seed;
@@ -219,9 +219,9 @@ asa_seed (long int seed)
 }
 
 double
-myrand (long int * rand_seed)
+myrand (int * rand_seed)
 {
-  *rand_seed = (long int) ((((long int) 25173) * (*rand_seed) + ((long int) 13849)) % ((long int) 65536));
+  *rand_seed = (int) ((((int) 25173) * (*rand_seed) + ((int) 13849)) % ((int) 65536));
   return ((double) (*rand_seed) / ((double) 65536.0));
 
 }
@@ -232,7 +232,7 @@ myrand (long int * rand_seed)
 
 
 double
-randflt (long int * rand_seed)
+randflt (int * rand_seed)
 {
   return (resettable_randflt (rand_seed, 0));
 }
@@ -243,14 +243,14 @@ randflt (long int * rand_seed)
 
 
 double
-resettable_randflt (long int * rand_seed, int reset)
+resettable_randflt (int * rand_seed, int reset)
 {
 
   double rranf;
   unsigned kranf;
   int n;
   static int initial_flag = 0;
-  long int initial_seed;
+  int initial_seed;
 
 
 

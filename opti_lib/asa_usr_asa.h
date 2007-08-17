@@ -20,7 +20,6 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>             /* misc defs on most machines */
 #include <string.h>
-
 /* required if use machine-defined {DBL_EPSILON DBL_MIN DBL_MAX} */
 /* #include <float.h> */
 

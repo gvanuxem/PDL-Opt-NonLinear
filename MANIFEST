@@ -1,15 +1,14 @@
 Artistic
 Changes
-Config
-Copying
+Config.pl
 debian/changelog
 debian/control
 debian/copyright
 debian/rules
 Makefile.PL
-Makefile.PL.pkg
 MANIFEST			This list of files
 nonlinear.pd
+opti_lib/ASA-LICENSE
 opti_lib/asa.c
 opti_lib/asa.h
 opti_lib/asa_usr.c

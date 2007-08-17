@@ -136,6 +136,7 @@
 	18 October 2003	Vanuxem grégory 	   */
 
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <float.h>

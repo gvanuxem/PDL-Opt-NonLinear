@@ -8,10 +8,10 @@ my $f77 = 'ExtUtils::F77';
 die "No fortran compiler found. Will not build PDL::Opt::NonLinear on this system\n" if !$f77->testcompiler;
 
 my @pack = (qw(nonlinear.pd NonLinear PDL::Opt::NonLinear), undef, 1);
-my @opti_libfiles = map {s/^opti_lib\///; s/\.f$//; $_} glob("opti_lib/*.f");
-my $fobj = join ' ', map {"opti_lib/$_\$(OBJ_EXT)"} @opti_libfiles;
-my @opti_cfiles = qw(hooke asa asa_usr dhc de36);
-my $cobj = join ' ', map "$_\$(OBJ_EXT)", @opti_cfiles;
+my @ffiles = map {s/\.f$//; $_} glob("*.f");
+my $fobj = join ' ', map {"$_\$(OBJ_EXT)"} @ffiles;
+my @cfiles = qw(hooke asa asa_usr dhc de36);
+my $cobj = join ' ', map "$_\$(OBJ_EXT)", @cfiles;
 
 my %hash = pdlpp_stdargs(\@pack);
 $hash{INC} .= " -I.";  # uncomment as required
@@ -52,7 +52,7 @@ sub MY::postamble {
 	$orig =~ s/:\s*nonlinear\.pd/: nonlinear.pd/;
 	$orig .join "\n",map {
 ("
-opti_lib/$_\$(OBJ_EXT): opti_lib/$_.f
-	$mycompiler -c -o opti_lib/$_\$(OBJ_EXT) $mycflags -O3 -fPIC opti_lib/$_.f
-" )} @opti_libfiles;
+$_\$(OBJ_EXT): $_.f
+	$mycompiler -c -o $_\$(OBJ_EXT) $mycflags -O3 -fPIC $_.f
+" )} @ffiles;
 }

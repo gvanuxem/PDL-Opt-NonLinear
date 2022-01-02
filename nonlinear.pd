@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-# TODO 
+# TODO
 # check sample / return value from func
 # Check (for lbfgs[b]) ref count
 # Min/Majuscules
@@ -109,14 +109,14 @@ PDL::Opt::NonLinear -- Non Linear optimization routines
 
 This module provides routine that solves optimization problem:
 
-   	minimize     f(x)
+	minimize     f(x)
 	   x
 
 Some routines can handle bounds, so:
 
-   	minimize     f(x)
+	minimize     f(x)
 	   x
-   	subject to   low <= x <= up
+	subject to   low <= x <= up
 
 =cut
 
@@ -156,13 +156,13 @@ double oned_wrapper(double *f)
 }
 static SV*   pdl4_function;
 void dpdl4_wrapper(
-		PDL_Indx m, double *a, 
-		PDL_Indx n, double *b, 
+		PDL_Indx m, double *a,
+		PDL_Indx n, double *b,
 		PDL_Indx o, PDL_Indx *c,
 		PDL_Indx p, double *d)
 {
 
-   dSP ;   
+   dSP ;
 
    int ret ;
 
@@ -172,7 +172,7 @@ void dpdl4_wrapper(
    PDL_Indx bdims[] = {n};
    PDL_Indx cdims[] = {o};
    PDL_Indx ddims[] = {p};
-   
+
    PDL->setdims (pdl1, adims, 1);
    PDL->setdims (pdl2, bdims, 1);
    PDL->setdims (pdl3, cdims, 1);
@@ -184,7 +184,7 @@ void dpdl4_wrapper(
 
    pdl2->datatype = PDL_D;
    pdl2->data = b;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED; 
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
    pdl3->datatype = PDL_L;
    pdl3->data = c;
@@ -232,13 +232,13 @@ void dpdl4_wrapper(
 }
 
 void fpdl4_wrapper(
-		PDL_Indx m, float *a, 
-		PDL_Indx n, float *b, 
+		PDL_Indx m, float *a,
+		PDL_Indx n, float *b,
 		PDL_Indx o, PDL_Indx *c,
 		PDL_Indx p, float *d)
 {
 
-   dSP ;   
+   dSP ;
 
    int ret ;
 
@@ -248,7 +248,7 @@ void fpdl4_wrapper(
    PDL_Indx bdims[] = {n};
    PDL_Indx cdims[] = {o};
    PDL_Indx ddims[] = {p};
-   
+
    PDL->setdims (pdl1, adims, 1);
    PDL->setdims (pdl2, bdims, 1);
    PDL->setdims (pdl3, cdims, 1);
@@ -260,7 +260,7 @@ void fpdl4_wrapper(
 
    pdl2->datatype = PDL_F;
    pdl2->data = b;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED; 
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
    pdl3->datatype = PDL_L;
    pdl3->data = c;
@@ -321,7 +321,7 @@ double np_wrapper(integer *n, double *p)
    pdl1->datatype = PDL_D;
    pdl1->data = p;
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
-   
+
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
    XPUSHs(sv_pdl1);
    PUTBACK ;
@@ -364,7 +364,7 @@ pp_def("fmin",
 
 Finds an approximation x to the point in
 the interval (a,b) at which f attains its minimum,
-and returns the value of f in x. Uses algorithm from Brent (1973).  
+and returns the value of f in x. Uses algorithm from Brent (1973).
 
 	a,b:       Interval bounds.
 	tol:       Tolerance (computer smallest floating-point constant if < 0).
@@ -415,18 +415,18 @@ pp_def("smnsx",
 Nelder-Mead simplex method (pattern search) for unconstrained minimization.
 Simple to use version of mnsx.
 
-	x:    Parameter vector, 
+	x:    Parameter vector,
 	      on entry initial guess,
 	      on exit best parameter found.
 
 	step: Initial and final size of the step used in computing
 	      initial simplex. (See library documentation for more details)
-	      On exit the maximum width in any coordinate direction 
+	      On exit the maximum width in any coordinate direction
 	      of the final simplex.
 
 	tol:  Initial and final stopping tolerance.
 	      (standard deviation of the function values at the simplex)
-	   
+	
 	simplex_func:
 	      Function to be minimized.
 	      PDL in entry, scalar on exit.
@@ -466,9 +466,9 @@ pp_def("mnsx",
 		doubler_function    = $COMP(simplex_func);
 		new = 1;
 		entsrc_(&old, &new);
-		$y() = dmnsx_(np_wrapper, 
+		$y() = dmnsx_(np_wrapper,
 				$P(maxit),
-				&$SIZE(n), 
+				&$SIZE(n),
 				&$SIZE(n),
 				$P(vertices),
 				$P(tol),
@@ -497,7 +497,7 @@ Nelder-Mead simplex method (pattern search) for unconstrained minimization with 
 	
 	tol:   Initial and final stopping tolerance.
 	       (standard deviation of the function values at the simplex)
-	   
+	
 	simplex_func:
 	       Function to be minimized.
 	       PDL in entry, scalar on exit.
@@ -596,16 +596,16 @@ pp_def("rmnf",
 		do{
 			$TFD(,d)rmnf_(
 				$P(scale),
-				$P(fx), 
-				$P(iv), 
+				$P(fx),
+				$P(iv),
 				&$SIZE(n),
 				&$SIZE(p),
 				&$SIZE(m),
-				$P(v), 
+				$P(v),
 				$P(x));
-			$TFD(f,d)pdl4_wrapper(1, $P(fx), 
-				  	$SIZE(m), $P(x),
-					$SIZE(n), $P(iv), 
+			$TFD(f,d)pdl4_wrapper(1, $P(fx),
+					$SIZE(m), $P(x),
+					$SIZE(n), $P(iv),
 					$SIZE(p), $P(v));
 		}while($iv(n=>0) <= 2 );
 
@@ -638,7 +638,7 @@ f(x).
 		my ($fx, $x) = @_;
 		$fx .= rosen($x);
 	}
- 	rmnf($fx, $x, $scale, $iv, $v, \&min_func);
+	rmnf($fx, $x, $scale, $iv, $v, \&min_func);
 
 ');
 
@@ -655,28 +655,28 @@ pp_def("rmng",
 				$P(scale),
 				$P(fx),
 				$P(gx),
-				$P(iv), 
+				$P(iv),
 				&$SIZE(n),
 				&$SIZE(p),
 				&$SIZE(m),
-				$P(v), 
+				$P(v),
 				$P(x));
 			if($iv(n=>0) == 1 )
 			{
 				pdl4_function    = $COMP(min_func);
-				$TFD(f,d)pdl4_wrapper(1, $P(fx), 
+				$TFD(f,d)pdl4_wrapper(1, $P(fx),
 					$SIZE(m), $P(x),
-					$SIZE(n), $P(iv), 
+					$SIZE(n), $P(iv),
 					$SIZE(p), $P(v));
 			}
 			else if($iv(n=>0) == 2 )
 			{
 				pdl4_function    = $COMP(grad_func);
-				$TFD(f,d)pdl4_wrapper($SIZE(m), $P(gx), 
+				$TFD(f,d)pdl4_wrapper($SIZE(m), $P(gx),
 					$SIZE(m), $P(x),
 					$SIZE(n), $P(iv),
 					$SIZE(p), $P(v));
-			} 
+			}
 		}while($iv(n=>0) <= 2 );
 
 
@@ -689,7 +689,7 @@ Given a function f of p variables, the optimization routines attempt to find a p
 f(x) with user computed gradient.
 
 	fx:	Objective function value f(x).
-	gx: 	Gradient vector g(x).
+	gx:	Gradient vector g(x).
 	x:      Parameter vector.
 	scale:	Scale vector such that |$scale(i) * $x(i)| are all in comparable unit.
 	iv:	Working and parameter array.
@@ -718,7 +718,7 @@ f(x) with user computed gradient.
 		my ($gx, $x) = @_;
 		$gx .= rosen_grad($x);
 	}
- 	rmng($fx, $gx, $x, $scale, $iv, $v, \&min_func, \&grad_func);
+	rmng($fx, $gx, $x, $scale, $iv, $v, \&min_func, \&grad_func);
 
 ');
 
@@ -736,12 +736,12 @@ pp_def("rmnh",
 				$P(fx),
 				$P(gx),
 				$P(hx),
-				$P(iv), 
+				$P(iv),
 				&$SIZE(n),
 				&$SIZE(p),
 				&$SIZE(q),
 				&$SIZE(m),
-				$P(v), 
+				$P(v),
 				$P(x));
 			if($iv(p=>0) == 1 )
 			{
@@ -767,7 +767,7 @@ pp_def("rmnh",
 					$SIZE(m), $P(x),
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));
-			} 
+			}
 		}while($iv(p=>0) <= 2 );
 
 
@@ -780,7 +780,7 @@ Given a function f of p variables, attempt to find a p-vector x* that minimizes
 f(x) with user computed hessian and gradient.
 
 	fx:	Objective function value f(x).
-	gx: 	Gradient vector g(x).
+	gx:	Gradient vector g(x).
 	hx:	Vector that contains lower triangle of the Hessian matrix H(x), stored rowwise.
 	x:      Parameter vector.
 	scale:	Scale vector such that |$scale(i) * $x(i)| are all in comparable unit.
@@ -814,7 +814,7 @@ f(x) with user computed hessian and gradient.
 		my ($hx, $x) = @_;
 		rosen_hess($x,1)->squaretotri($hx);
 	}	
- 	rmnh($fx, $gx, $hx, $x, $scale, $iv, $v, \&min_func, \&grad_func, \&hess_func);
+	rmnh($fx, $gx, $hx, $x, $scale, $iv, $v, \&min_func, \&grad_func, \&hess_func);
 
 ');
 
@@ -831,12 +831,12 @@ pp_def("rmnfb",
 			$TFD(,d)rmnfb_(
 				$P(bound),
 				$P(scale),
-				$P(fx), 
-				$P(iv), 
+				$P(fx),
+				$P(iv),
 				&$SIZE(n),
 				&$SIZE(p),
 				&$SIZE(m),
-				$P(v), 
+				$P(v),
 				$P(x));
 			$TFD(f,d)pdl4_wrapper(1, $P(fx),
 				$SIZE(m), $P(x),
@@ -877,7 +877,7 @@ f(x) with simple bounds.
 		my ($fx, $x) = @_;
 		$fx .= rosen($x);
 	}
- 	rmnfb($fx, $x, $bounds, $scale, $iv, $v, \&min_func);
+	rmnfb($fx, $x, $bounds, $scale, $iv, $v, \&min_func);
 
 ');
 
@@ -895,11 +895,11 @@ pp_def("rmngb",
 				$P(scale),
 				$P(fx),
 				$P(gx),
-				$P(iv), 
+				$P(iv),
 				&$SIZE(n),
 				&$SIZE(p),
 				&$SIZE(m),
-				$P(v), 
+				$P(v),
 				$P(x));
 			if($iv(n=>0) == 1 )
 			{
@@ -916,7 +916,7 @@ pp_def("rmngb",
 					$SIZE(m), $P(x),
 					$SIZE(n), $P(iv),
 					$SIZE(p), $P(v));			
-			} 
+			}
 		}while($iv(n=>0) <= 2 );
 
 
@@ -929,7 +929,7 @@ Given a function f of p variables, the optimization routines attempt to find a p
 f(x) with user computed gradient.
 
 	fx:	Objective function value f(x).
-	gx: 	Gradient vector g(x).
+	gx:	Gradient vector g(x).
 	x:      Parameter vector.
 	bound:	Lower and upper bound stored columnwise.
 	scale:	Scale vector such that |$scale(i) * $x(i)| are all in comparable unit.
@@ -959,7 +959,7 @@ f(x) with user computed gradient.
 		my ($gx, $x) = @_;
 		$gx .= rosen_grad($x);
 	}
- 	rmngb($fx, $gx, $x, $bounds, $scale, $iv, $v, \&min_func, \&grad_func);
+	rmngb($fx, $gx, $x, $bounds, $scale, $iv, $v, \&min_func, \&grad_func);
 
 ');
 
@@ -978,12 +978,12 @@ pp_def("rmnhb",
 				$P(fx),
 				$P(gx),
 				$P(hx),
-				$P(iv), 
+				$P(iv),
 				&$SIZE(n),
 				&$SIZE(p),
 				&$SIZE(q),
 				&$SIZE(m),
-				$P(v), 
+				$P(v),
 				$P(x));
 			if($iv(p=>0) == 1 )
 			{
@@ -1005,7 +1005,7 @@ pp_def("rmnhb",
 					$SIZE(m), $P(x),
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));
-			} 
+			}
 		}while($iv(p=>0) <= 2 );
 
 
@@ -1018,7 +1018,7 @@ Given a function f of p variables, attempt to find a p-vector x* that minimizes
 f(x) with user computed hessian and gradient.
 
 	fx:	Objective function value f(x).
-	gx: 	Gradient vector g(x).
+	gx:	Gradient vector g(x).
 	hx:	Vector that contains lower triangle of the Hessian matrix H(x), stored rowwise.
 	x:      Parameter vector.
 	bound:	Lower and upper bound stored columnwise.
@@ -1057,7 +1057,7 @@ f(x) with user computed hessian and gradient.
 		my ($hx, $x) = @_;
 		rosen_hess($x,1)->squaretotri($hx);
 	}	
- 	rmnhb($fx, $gx, $hx, $x, $bounds, $scale, $iv, $v, \&min_func, \&grad_func, \&hess_func);
+	rmnhb($fx, $gx, $hx, $x, $bounds, $scale, $iv, $v, \&min_func, \&grad_func, \&hess_func);
 ');
 }
 
@@ -1074,7 +1074,7 @@ void tensor_f_wrapper(integer *n, double *x, double *f)
    PDL_Indx mdims[] = {*n};
 
    dims[0] = 1;
-   
+
 
    PDL->setdims (pdl1, dims, 1);
    PDL->setdims (pdl2, mdims, 1);
@@ -1083,7 +1083,7 @@ void tensor_f_wrapper(integer *n, double *x, double *f)
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
    pdl2->datatype = PDL_D;
    pdl2->data = x;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;   
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
 
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
@@ -1127,7 +1127,7 @@ void tensor_grad_wrapper(integer *n, double *x, double *g)
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
    pdl2->datatype = PDL_D;
    pdl2->data = x;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;   
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
 
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
@@ -1164,7 +1164,7 @@ void tensor_hess_wrapper(integer *nr, integer *n, double *x, double *hx)
    PDL_Indx odims[1];
    PDL_Indx hessdims[] = {*n,*nr};
    PDL_Indx mdims[] = {*n};
-   
+
 
    PDL->setdims (pdl1, hessdims, 2);
    PDL->setdims (pdl2, mdims, 1);
@@ -1173,7 +1173,7 @@ void tensor_hess_wrapper(integer *nr, integer *n, double *x, double *hx)
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
    pdl2->datatype = PDL_D;
    pdl2->data = x;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;   
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
 
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
@@ -1214,11 +1214,11 @@ pp_def("tensoropt",
 		integer it, *iwork,i;
 		$GENERIC() *work, *xtmp;
 		extern int tensor_(integer *nr, integer *n, $GENERIC() *x, paramv fcn,
-		paramv grd, paramv hsn, $GENERIC() *typx, $GENERIC() *fscale, $GENERIC() 
-		*gradtl, $GENERIC() *steptl, integer *itnlim, $GENERIC() *stepmx, 
-		integer *ipr, integer *method, integer *grdflg, integer *hesflg, 
-		integer *ndigit, integer *msg, $GENERIC() *xpls, $GENERIC() *fpls, 
-		$GENERIC() *gpls, $GENERIC() *h__, integer *itnno, $GENERIC() *wrk, 
+		paramv grd, paramv hsn, $GENERIC() *typx, $GENERIC() *fscale, $GENERIC()
+		*gradtl, $GENERIC() *steptl, integer *itnlim, $GENERIC() *stepmx,
+		integer *ipr, integer *method, integer *grdflg, integer *hesflg,
+		integer *ndigit, integer *msg, $GENERIC() *xpls, $GENERIC() *fpls,
+		$GENERIC() *gpls, $GENERIC() *h__, integer *itnno, $GENERIC() *wrk,
 		integer *iwrk);
 
 		tensor_f_function = $COMP(f_func);
@@ -1241,7 +1241,7 @@ pp_def("tensoropt",
 		$P(gtol),
 		$P(xtol),
 		$P(maxit),
-		$P(stepmx), 
+		$P(stepmx),
 		$P(ipr),
 		$P(method),
 		$P(gtype),
@@ -1253,7 +1253,7 @@ pp_def("tensoropt",
 		$P(gx),
 		$P(hx),
 		&it,
-		work, 
+		work,
 		iwork);
 
 		for (i = 0; i < $SIZE(n); i++)
@@ -1287,7 +1287,7 @@ parameters:
 	hx(n,n) --> hessian
 	x(n)    --> initial guess (input) and final point
 	method  --> if value is 0 then use only newton step at
- 		    each iteration, if value is 1 then try both
+		    each iteration, if value is 1 then try both
 		    tensor and newton steps at each iteration
 	maxit   <-- iteration limit and final number of iterations
 	digits  --> number of good digits in optimization function fcn
@@ -1336,7 +1336,7 @@ parameters:
 		my ($hx, $x) = @_;
 		$hx .= rosen_hess($x);
 	}
-	tensoropt($fx, $gx, $hx, $x, 
+	tensoropt($fx, $gx, $hx, $x,
 		1,$maxit,15,1,2,1,
 		ones(5),0.5,$xtol,$gtol,2,6,
 		\&min_func, \&grad_func, \&hess_func);
@@ -1351,7 +1351,7 @@ pp_addhdr('
 int lbfgs_wrapper(PDL_Indx n, double *a, double *b, double *c, SV *lbfgs_func)
 {
 
-   dSP ;   
+   dSP ;
 
    int pret, ret;
 
@@ -1360,7 +1360,7 @@ int lbfgs_wrapper(PDL_Indx n, double *a, double *b, double *c, SV *lbfgs_func)
    PDL_Indx adims[] = {1};
    PDL_Indx bdims[] = {n};
    PDL_Indx cdims[] = {n};
-   
+
    PDL->setdims (pdl1, adims, 1);
    PDL->setdims (pdl2, bdims, 1);
    PDL->setdims (pdl3, cdims, 1);
@@ -1371,7 +1371,7 @@ int lbfgs_wrapper(PDL_Indx n, double *a, double *b, double *c, SV *lbfgs_func)
 
    pdl2->datatype = PDL_D;
    pdl2->data = b;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED; 
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
    pdl3->datatype = PDL_D;
    pdl3->data = c;
@@ -1414,13 +1414,13 @@ int lbfgs_wrapper(PDL_Indx n, double *a, double *b, double *c, SV *lbfgs_func)
 int lbfgs_diag_wrapper(PDL_Indx n, double *a, double *b, SV *lbfgs_diag_func)
 {
 
-   dSP ;   
+   dSP ;
 
    int pret,ret ;
    PDL_Indx odims[1];
    PDL_Indx adims[] = {n};
    PDL_Indx bdims[] = {n};
-   
+
    PDL->setdims (pdl1, adims, 1);
    PDL->setdims (pdl2, bdims, 1);
 
@@ -1430,7 +1430,7 @@ int lbfgs_diag_wrapper(PDL_Indx n, double *a, double *b, SV *lbfgs_diag_func)
 
    pdl2->datatype = PDL_D;
    pdl2->data = b;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED; 
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
 
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
@@ -1471,7 +1471,7 @@ pp_def("lbfgs",
 
 	$GENERIC() *w;
 	integer i,stop;
-	extern int lbfgs_(integer *n, integer *m, $GENERIC() *x, $GENERIC() 
+	extern int lbfgs_(integer *n, integer *m, $GENERIC() *x, $GENERIC()
 	*f, $GENERIC() *g, logical *diagco, $GENERIC() *diag, integer *maxit,integer *iprint,
 	 $GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag);
 	w = ($GENERIC() * ) malloc ( ($SIZE(n) * (2*$m() +1)+ 2*$m())* sizeof($GENERIC()));
@@ -1499,17 +1499,17 @@ pp_def("lbfgs",
 			{
 		
 				 case 1:	stop = lbfgs_wrapper($SIZE(n),$P(fx), $P(gx),$P(x), $COMP(fg_func));
-				 		if (stop != 0)
-				 		{
+						if (stop != 0)
+						{
 							$info() = -3;
 							goto end;
 						}
 						i++;
 						break;
-			        
+			
 				 case 2:        stop = lbfgs_diag_wrapper($SIZE(n),$P(diag), $P(x), $COMP(diag_func));
-				 		if (stop != 0)
-				 		{
+						if (stop != 0)
+						{
 							$info() = -3;
 							goto end;
 						}
@@ -1527,7 +1527,7 @@ end:
 =for ref
 
 This subroutine solves the unconstrained minimization problem
- 
+
 		min f(x),    x= (x1,x2,...,xn),
 
 using the limited memory bfgs method. The routine is especially
@@ -1544,51 +1544,51 @@ mathematical programming b 45 (1989) 503-528.
 
 The steplength is determined at each iteration by means of the
 line search routine mcvsrch, which is a slight modification of
-the routine csrch written by Moré and Thuente.
- 
- 
+the routine csrch written by MorÃ© and Thuente.
+
+
       where
- 
+
      m       The number of corrections used in the bfgs update. it
              is not altered by the routine. values of m less than 3 are
              not recommended; large values of m will result in excessive
              computing time. 3<= m <=7 is recommended. restriction: m > 0.
- 
+
      x       On initial entry, it must be set by the user to the values
-             of the initial estimate of the solution vector. 
-	     On exit with info=0, it contains the values of the variables 
+             of the initial estimate of the solution vector.
+	     On exit with info=0, it contains the values of the variables
 	     at the best point found (usually a solution).
- 
+
      f       is a double precision variable. before initial entry and on
              a re-entry with info=1, it must be set by the user to
              contain the value of the function f at the point x.
- 
+
      g       is a double precision array of length n. before initial
              entry and on a re-entry with info=1, it must be set by
              the user to contain the components of the gradient g at
              the point x.
- 
+
      diagco  is a logical variable that must be set to 1 if the
              user  wishes to provide the diagonal matrix hk0 at each
              iteration. Otherwise it should be set to 0, in which
              case  lbfgs will use a default value described below.
- 
+
      diag    is a double precision array of length n. if diagco=.true.,
              then on initial entry or on re-entry with info=2, diag
-             it must be set by the user to contain the values of the 
+             it must be set by the user to contain the values of the
              diagonal matrix hk0.  Restriction: all elements of diag
              must be positive.
 
      print   is an integer array of length two which must be set by the
              user.
- 
+
              print(1) specifies the frequency of the output:
                 print(1) < 0 : no output is generated,
                 print(1) = 0 : output only at first and last iteration,
                 print(1) > 0 : output every print(1) iterations.
- 
+
              print(2) specifies the type of output generated:
-                print(2) = 0 : iteration count, number of function 
+                print(2) = 0 : iteration count, number of function
                                 evaluations, function value, norm of the
                                 gradient, and steplength,
                 print(2) = 1 : same as print(2)=0, plus vector of
@@ -1597,13 +1597,13 @@ the routine csrch written by Moré and Thuente.
                 print(2) = 2 : same as print(2)=1, plus vector of
                                 variables,
                 print(2) = 3 : same as print(2)=2, plus gradient vector.
- 
+
      maxit   On entry maximum number of iteration.
 	     On exit, the number of iteration.
 
      maxfc   On entry maximum number of function evaluation.
 	     On exit, the number of function evaluation.
- 
+
      eps     is a positive double precision variable that must be set by
              the user, and determines the accuracy with which the solution
              is to be found. the subroutine terminates when
@@ -1611,31 +1611,31 @@ the routine csrch written by Moré and Thuente.
                          ||g|| < eps max(1,||x||),
 
              where ||.|| denotes the euclidean norm.
- 
+
      xtol    is a  positive double precision variable that must be set by
              the user to an estimate of the machine precision (e.g.
              10**(-16) on a sun station 3/60). The line search routine will
              terminate if the relative width of the interval of uncertainty
              is less than xtol.
 
-     gtol    is a double precision variable which controls the accuracy of 
-     	     the line search routine mcsrch. If the function and gradient 
-             evaluations are inexpensive with respect to the cost of the 
-	     iteration (which is sometimes the case when solving very large 
-	     problems) it may be advantageous to set gtol to a small value. 
-	     A typical small value is 0.1. It\'s set to 0.9 if gtol < 1.d-04.  
+     gtol    is a double precision variable which controls the accuracy of
+	     the line search routine mcsrch. If the function and gradient
+             evaluations are inexpensive with respect to the cost of the
+	     iteration (which is sometimes the case when solving very large
+	     problems) it may be advantageous to set gtol to a small value.
+	     A typical small value is 0.1. It\'s set to 0.9 if gtol < 1.d-04.
 	     restriction: gtol should be greater than 1.d-04.
- 
+
      info    is an integer variable that must be set to 0 on initial entry
-             to the subroutine. A return with info < 0 or info > 2 indicates 
-	     an error.  
+             to the subroutine. A return with info < 0 or info > 2 indicates
+	     an error.
              The following values of info, detecting an error,
              are possible:
- 
+
               info=-1  the i-th diagonal element of the diagonal inverse
                         hessian approximation, given in diag, is not
                         positive.
-           
+
               info=-2  improper input parameters for lbfgs (n or m are
                         not positive).
 
@@ -1650,7 +1650,7 @@ the routine csrch written by Moré and Thuente.
 
                        info = 5  the step is too large.
 
-                       info = 6  rounding errors prevent further progress. 
+                       info = 6  rounding errors prevent further progress.
                                  there may not be a step which satisfies
                                  the sufficient decrease and curvature
                                  conditions. tolerances may be too small.
@@ -1659,7 +1659,7 @@ the routine csrch written by Moré and Thuente.
                                  uncertainty is at most xtol.
 
                        info = 8  improper input parameters.
- 
+
 	fg_func:
 		stop = fg_func PDL(fx), PDL(gx), PDL(x)
 
@@ -1696,7 +1696,7 @@ pp_addhdr('
 int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, PDL_Indx *d, double *e, SV *lbfgsb_func)
 {
 
-   dSP ;   
+   dSP ;
 
    int ret ;
    PDL_Indx odims[1];
@@ -1706,7 +1706,7 @@ int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, PDL_Indx *d, do
    PDL_Indx cdims[] = {n};
    PDL_Indx ddims[] = {44};
    PDL_Indx edims[] = {29};
-   
+
    PDL->setdims (pdl1, adims, 1);
    PDL->setdims (pdl2, bdims, 1);
    PDL->setdims (pdl3, cdims, 1);
@@ -1719,7 +1719,7 @@ int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, PDL_Indx *d, do
 
    pdl2->datatype = PDL_D;
    pdl2->data = b;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED; 
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
    pdl3->datatype = PDL_D;
    pdl3->data = c;
@@ -1789,7 +1789,7 @@ pp_def("lbfgsb",
 	int stop;
 	char csave[60];
 	char task[60];
-	integer lsave[4]; 
+	integer lsave[4];
 	$GENERIC() *wa;
 	integer *iwa;
 	integer i;
@@ -1805,7 +1805,7 @@ pp_def("lbfgsb",
 	memset(task+5, \' \', sizeof(task)-5);
 	iwa = (integer * ) malloc ( 3 * $SIZE(n)   * sizeof(integer));
 	wa = ($GENERIC() * ) malloc ((2*$m()*$SIZE(n)+4*$SIZE(n)+12*$m()*$m()+12*$m())* sizeof($GENERIC()));
- 	i = 0;
+	i = 0;
 
 	while(1)
 	{
@@ -1841,7 +1841,7 @@ pp_def("lbfgsb",
 						if (stop == -1)
 							strcpy(task, "STOP  CPU, REQUESTED BY USER.");
 						break;
-			        
+			
 				 case \'N\':	/*NEW_X*/
 						if (stop == 1)
 							strcpy(task, "STOP REQUESTED BY USER");
@@ -1857,7 +1857,7 @@ pp_def("lbfgsb",
 						$info() = -1;
 						goto end;
 				 default:       /*ERROR*/
-				 		$info() = -2;
+						$info() = -2;
 						goto end;
 			}
 	}		
@@ -1879,7 +1879,7 @@ This routine solves the optimization problem
 It uses the limited memory BFGS method.
 (The direct method will be used in the subspace minimization.)
 
-     x 
+     x
 	is a double precision array of dimension n.
 	On entry x is an approximation to the solution.
 	On exit x is the current approximation.
@@ -1897,11 +1897,11 @@ It uses the limited memory BFGS method.
      tbound(n)
 	On entry nbd represents the type of bounds imposed on the
 	variables, and must be specified as follows:
- 	nbd(i)=0 if x(i) is unbounded,
+	nbd(i)=0 if x(i) is unbounded,
                 1 if x(i) has only a lower bound,
                 2 if x(i) has both lower and upper bounds, and
                 3 if x(i) has only an upper bound.
- 	On exit nbd is unchanged.
+	On exit nbd is unchanged.
 
      fx
 	On first entry f is unspecified.
@@ -1912,8 +1912,8 @@ It uses the limited memory BFGS method.
 	On final exit g is the value of the gradient at x.
 
      maxit
-     	On entry maximum number of iteration.
-     	On exit, the number of iteration
+	On entry maximum number of iteration.
+	On exit, the number of iteration
 
      factr
 	On entry factr >= 0 is specified by the user.  The iteration
@@ -1932,15 +1932,15 @@ It uses the limited memory BFGS method.
 
 	max{|proj g_i | i = 1, ..., n} <= pgtol
 
-	where pg_i is the ith component of the projected gradient.   
+	where pg_i is the ith component of the projected gradient.
 
      gtol
 	Controls the accuracy of the line search routine mcsrch.
-	If the function and gradient evaluations are inexpensive with 
-	respect to the cost of the iteration (which is sometimes the case 
-	when solving very large problems) it may be advantageous to set 
-	gtol to a small value. A typical small value is 0.1. 
-	It\'s set to 0.9 if gtol < 1.d-04. 
+	If the function and gradient evaluations are inexpensive with
+	respect to the cost of the iteration (which is sometimes the case
+	when solving very large problems) it may be advantageous to set
+	gtol to a small value. A typical small value is 0.1.
+	It\'s set to 0.9 if gtol < 1.d-04.
 	Restriction: gtol should be greater than 1.d-04.
 
      print
@@ -1954,8 +1954,8 @@ It uses the limited memory BFGS method.
          When print[1] > 0, the file iterate.dat will be created to
                         summarize the iteration.
      info
-     	On entry 0,
-     	On exit, contain error code:
+	On entry 0,
+	On exit, contain error code:
 	  0 : no error
 	  -1: the routine has terminated abnormally
               without being able to satisfy the termination conditions,
@@ -1966,16 +1966,16 @@ It uses the limited memory BFGS method.
      iv(44)
 	On exit, at end of an iteration, the following information is
 	available:
-         iv(21) = the total number of intervals explored in the 
+         iv(21) = the total number of intervals explored in the
                          search of Cauchy points;
-         iv(25) = the total number of skipped BFGS updates before 
+         iv(25) = the total number of skipped BFGS updates before
                          the current iteration;
          iv(29) = the number of current iteration;
          iv(30) = the total number of BFGS updates prior the current
                          iteration;
          iv(32) = the number of intervals explored in the search of
                          Cauchy point in the current iteration;
-         iv(33) = the total number of function and gradient 
+         iv(33) = the total number of function and gradient
                          evaluations;
          iv(35) = the number of function value or gradient
                                   evaluations in the current iteration;
@@ -2012,7 +2012,7 @@ It uses the limited memory BFGS method.
          v(6) = the accumulated time spent on searching for Cauchy points;
          v(7) = the accumulated time spent on subspace minimization;
          v(8) = the accumulated time spent on line search;
-         v(10) = the slope of the line search function at 
+         v(10) = the slope of the line search function at
 		 the current point of line search;
          v(11) = the maximum relative step length imposed in line search;
          v(12) = the infinity norm of the projected gradient;
@@ -2035,7 +2035,7 @@ It uses the limited memory BFGS method.
 
 	# Global Optimization
 	# Try to solve (with threading)
-	# The SIAM 100-Digit Challenge problem 4 
+	# The SIAM 100-Digit Challenge problem 4
 	# see http://www-m8.ma.tum.de/m3/bornemann/challengebook/
 	# result: -3.30686864747523728007611377089851565716648236
 	use PDL::Opt::NonLinear;
@@ -2044,13 +2044,13 @@ It uses the limited memory BFGS method.
 	$x = (random(2,500)-0.5)*2;
 	$gx = zeroes(2,500);
 	$fx = zeroes(500);
-        
+
 	$bounds =  zeroes(2,2);
 	$bounds(,0).= -1;
 	$bounds(,1).= 1;
 
 	$tbounds = zeroes(2);
-	$tbounds .= 2;  
+	$tbounds .= 2;
 
 	$gtol = pdl(0.9);
 	$pgtol = pdl(1e-4);
@@ -2070,17 +2070,17 @@ It uses the limited memory BFGS method.
 	sub fg_func{
 		my ($f, $g, $x) = @_;
 	
-		$f.= exp(sin(50*$x(0)))+sin(60*exp($x(1)))+ 
+		$f.= exp(sin(50*$x(0)))+sin(60*exp($x(1)))+
 			sin(70*sin($x(0)))+sin(sin(80*$x(1)))-
-                	sin(10*($x(0)+$x(1)))+($x(0)**2+$x(1)**2)/4;
+	sin(10*($x(0)+$x(1)))+($x(0)**2+$x(1)**2)/4;
 
 		$g(0) .= 50*cos(50*$x(0))* exp(sin(50*$x(0)))+
-        	        70*cos(70*sin($x(0)))*cos($x(0))-
-                	10*cos(10*$x(0)+10*$x(1))+1/2*$x(0);
-            
-		$g(1) .= 60*cos(60*exp($x(1)))* exp($x(1))+ 
-        	        80*cos(sin(80*$x(1)))* cos(80*$x(1))-
-                	10*cos(10*$x(0)+10*$x(1))+1/2*$x(1);
+	        70*cos(70*sin($x(0)))*cos($x(0))-
+	10*cos(10*$x(0)+10*$x(1))+1/2*$x(0);
+
+		$g(1) .= 60*cos(60*exp($x(1)))* exp($x(1))+
+	        80*cos(sin(80*$x(1)))* cos(80*$x(1))-
+	10*cos(10*$x(0)+10*$x(1))+1/2*$x(1);
 
 		return 0;
 	}
@@ -2135,7 +2135,7 @@ void npg_f_wrapper(integer *n, double *x, double *f, integer *inform)
    PDL_Indx mdims[] = {*n};
 
    dims[0] = 1;
-   
+
    PDL->setdims (pdl1, dims, 1);
    PDL->setdims (pdl2, mdims, 1);
    pdl1->datatype = PDL_D;
@@ -2143,7 +2143,7 @@ void npg_f_wrapper(integer *n, double *x, double *f, integer *inform)
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
    pdl2->datatype = PDL_D;
    pdl2->data = x;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;   
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
 
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
@@ -2228,7 +2228,7 @@ void npg_grad_wrapper(integer *n, double *x, double *g, integer *inform)
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
    pdl2->datatype = PDL_D;
    pdl2->data = x;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;   
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
 
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
@@ -2269,7 +2269,7 @@ pp_def("spg",
 	Code =>'
 		extern void spg_(integer *n, $GENERIC() *x, integer *m, $GENERIC() *eps, $GENERIC() *eps2,
 			integer *maxit, integer *maxfc, integer *output, $GENERIC()  *f, $GENERIC() *pginfn, $GENERIC() *pgtwon,
-                    	integer *iter, integer *fcnt, integer *gcnt, integer *flag, paramv *evalf, paramv *evalg, paramv *proj);
+	integer *iter, integer *fcnt, integer *gcnt, integer *flag, paramv *evalf, paramv *evalg, paramv *proj);
 		integer iter;
 
 		npg_f_function    = $COMP(min_func);
@@ -2288,8 +2288,8 @@ pp_def("spg",
 				$P(fx),
 				$P(pginf),
 				$P(pgtwon),
-				&iter, 
-				$P(fcnt), 
+				&iter,
+				$P(fcnt),
 				$P(gcnt),
 				$P(info),
 				npg_f_wrapper,				
@@ -2311,17 +2311,17 @@ This routine solves the optimization problem
 
 where x is a vector of n real variables. The method used
 is a  Spectral Projected Gradient
-(Version 2: "continuous projected gradient direction") 
+(Version 2: "continuous projected gradient direction")
 to find the local minimizers of a given function with convex
 constraints, described in E. G. Birgin, J. M. Martinez, and M. Raydan,
-"Nonmonotone spectral projected gradient methods on convex sets", SIAM 
-Journal on Optimization 10, pp. 1196-1211, 2000. and  
-E. G. Birgin, J. M. Martinez, and M. Raydan, "SPG: software 
-for convex-constrained optimization", ACM Transactions on 
+"Nonmonotone spectral projected gradient methods on convex sets", SIAM
+Journal on Optimization 10, pp. 1196-1211, 2000. and
+E. G. Birgin, J. M. Martinez, and M. Raydan, "SPG: software
+for convex-constrained optimization", ACM Transactions on
 Mathematical Software, 2001 (to appear).
 
-The user must supply the external subroutines evalf, evalg 
-and proj to evaluate the objective function and its gradient 
+The user must supply the external subroutines evalf, evalg
+and proj to evaluate the objective function and its gradient
 and to project an arbitrary point onto the feasible region.
 
 This version 17 JAN 2000 by E.G.Birgin, J.M.Martinez and M.Raydan.
@@ -2332,7 +2332,7 @@ Final revision 03 JUL 2001 by E.G.Birgin, J.M.Martinez and M.Raydan.
 
      x(n)  initial guess,
 
-     m     number of previous function values to be considered 
+     m     number of previous function values to be considered
            in the nonmonotone line search,
 
      eps1  stopping criterion: ||projected grad||_inf < eps,
@@ -2437,7 +2437,7 @@ void lm_wrapper(integer *n, double *x, double *f, double *g)
    PDL_Indx odims[1];
    PDL_Indx mdims[] = {*n};
    odims[0] = 1;
-   
+
    PDL->setdims (pdl3, odims, 1);
    PDL->setdims (pdl1, mdims, 1);
    PDL->setdims (pdl2, mdims, 1);
@@ -2446,10 +2446,10 @@ void lm_wrapper(integer *n, double *x, double *f, double *g)
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
    pdl2->datatype = PDL_D;
    pdl2->data = x;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;   
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
    pdl3->datatype = PDL_D;
    pdl3->data = f;
-   pdl3->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED; 
+   pdl3->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
 
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
@@ -2493,9 +2493,9 @@ pp_def("lmqn",
 	Code =>'
 		integer lw;
 		$GENERIC() *w;
-		extern void lmqn_(integer *ifail, integer *n, $GENERIC() *x, 
-		$GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun, 
-		integer *msglvl, integer *maxit, integer *maxfun, integer *mxitgc, $GENERIC() *eta, 
+		extern void lmqn_(integer *ifail, integer *n, $GENERIC() *x,
+		$GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun,
+		integer *msglvl, integer *maxit, integer *maxfun, integer *mxitgc, $GENERIC() *eta,
 		$GENERIC() *stepmx, $GENERIC() *accrcy, $GENERIC() *xtol);
 
 
@@ -2545,12 +2545,12 @@ especially useful when the number of variables (n) is large.
 	subroutine parameters:
 
 	fx      On input, a rough estimate of the value of the
-         	objective function at the solution; on output, the value
-	        of the objective function at the solution        
+	objective function at the solution; on output, the value
+	        of the objective function at the solution
 
 	gx(n)   on output, the final value of the gradient
 
-	x(n)    on input, an initial estimate of the solution; 
+	x(n)    on input, an initial estimate of the solution;
 		on output, the computed solution.
 
 	maxit   maximum number of inner iterations
@@ -2576,7 +2576,7 @@ especially useful when the number of variables (n) is large.
 	info     ( 0 => normal return)
 	         ( 1 => more than maxit iterations)
 	         ( 2 => more than maxfun evaluations)
-        	 ( 3 => line search failed to find
+	 ( 3 => line search failed to find
 	         (          lower point (may not be serious)
 	         (-1 => error in input parameters)
 
@@ -2620,10 +2620,10 @@ pp_def("lmqnbc",
 	Code =>'
 		integer lw, *ipivot;
 		$GENERIC() *w;
-		extern void lmqnbc_(integer *ifail, integer *n, $GENERIC() *x, 
-		$GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun, 
+		extern void lmqnbc_(integer *ifail, integer *n, $GENERIC() *x,
+		$GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun,
 		$GENERIC() *low,$GENERIC() *up, integer *ipivot,
-		integer *msglvl, integer *maxit, integer *maxfun, integer *cgmaxit,$GENERIC() *eta, 
+		integer *msglvl, integer *maxit, integer *maxfun, integer *cgmaxit,$GENERIC() *eta,
 		$GENERIC() *stepmx, $GENERIC() *accrcy, $GENERIC() *xtol);
 
 
@@ -2680,18 +2680,18 @@ especially useful when the number of variables (n) is large.
 	subroutine parameters:
 
 	fx      On input, a rough estimate of the value of the
-         	objective function at the solution; on output, the value
-	        of the objective function at the solution        
+	objective function at the solution; on output, the value
+	        of the objective function at the solution
 
 	gx(n)   on output, the final value of the gradient
 
-	x(n)    on input, an initial estimate of the solution; 
+	x(n)    on input, an initial estimate of the solution;
 		on output, the computed solution.
 
 	bound(n,2)
 		The lower and upper bounds on the variables.  if
-           	there are no bounds on a particular variable, set
-           	the bounds to -1.d38 and 1.d38, respectively.
+	there are no bounds on a particular variable, set
+	the bounds to -1.d38 and 1.d38, respectively.
 
 	maxit   maximum number of inner iterations
 
@@ -2714,7 +2714,7 @@ especially useful when the number of variables (n) is large.
 	info     ( 0 => normal return)
 	         ( 1 => more than maxit iterations)
 	         ( 2 => more than maxfun evaluations)
-        	 ( 3 => line search failed to find
+	 ( 3 => line search failed to find
 	         (          lower point (may not be serious)
 	         (-1 => error in input parameters)
 
@@ -2763,9 +2763,9 @@ pp_def("cgfam",
 	$GENERIC() *w, *gold, *d;
 	int stop;
 	integer i, irest, finish;	
-	int cgfam_(integer *n, $GENERIC() *x, $GENERIC() *f, 
-	$GENERIC() *g, $GENERIC() *d__, $GENERIC() *gold, integer *iprint, 
-	$GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag, integer *irest, 
+	int cgfam_(integer *n, $GENERIC() *x, $GENERIC() *f,
+	$GENERIC() *g, $GENERIC() *d__, $GENERIC() *gold, integer *iprint,
+	$GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag, integer *irest,
 	integer *method, logical *finish);
 
 	w = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
@@ -2801,12 +2801,12 @@ pp_def("cgfam",
 						goto end;
 			
 				 case 1:	
-			 			stop = lbfgs_wrapper($SIZE(n),$P(fx), $P(gx),$P(x), $COMP(fg_func));
+						stop = lbfgs_wrapper($SIZE(n),$P(fx), $P(gx),$P(x), $COMP(fg_func));
 						break;
-			        
+			
 				 case 2:	
-				 		if ( i == $maxit() || stop == 1)
-				 			finish = 1;
+						if ( i == $maxit() || stop == 1)
+							finish = 1;
 						else
 							i++;
 						break;
@@ -2830,32 +2830,32 @@ end:
 =for ref
 
 This subroutine solves the unconstrained minimization problem
- 
+
 		min f(x),    x= (x1,x2,...,xn),
 
 using conjugate gradient methods, as described in the paper:
-gilbert, j.c. and nocedal, j. (1992). "global convergence properties 
+gilbert, j.c. and nocedal, j. (1992). "global convergence properties
 of conjugate gradient methods", siam journal on optimization, vol. 2,
-pp. 21-42. 
- 
- 
+pp. 21-42.
+
+
       where
- 
+
      fx      is a double precision variable. before initial entry and on
              a re-entry with info=1, it must be set by the user to
              contain the value of the function f at the point x.
- 
+
      gx      is a double precision array of length n. before initial
              entry and on a re-entry with info=1, it must be set by
              the user to contain the components of the gradient g at
              the point x.
      x       on initial entry, it must be set by the user to the values
-             of the initial estimate of the solution vector. 
-	     on exit with info=0, it contains the values of the variables 
+             of the initial estimate of the solution vector.
+	     on exit with info=0, it contains the values of the variables
 	     at the best point found (usually a solution).
- 
+
      maxit   maximum number of iterations.
-     
+
      eps     is a positive double precision variable that must be set by
              the user, and determines the accuracy with which the solution
              is to be found. the subroutine terminates when
@@ -2863,19 +2863,19 @@ pp. 21-42.
                          ||g|| < eps max(1,||x||),
 
              where ||.|| denotes the euclidean norm.
- 
+
      xtol    is a  positive double precision variable that must be set by
              the user to an estimate of the machine precision (e.g.
              10**(-16) on a sun station 3/60). the line search routine will
              terminate if the relative width of the interval of uncertainty
              is less than xtol.
 
-     gtol    is a double precision variable which controls the accuracy of 
-     	     the line search routine mcsrch. if the function and gradient 
-             evaluations are inexpensive with respect to the cost of the 
-	     iteration (which is sometimes the case when solving very large 
-	     problems) it may be advantageous to set gtol to a small value. 
-	     A typical small value is 0.1. It\'s set to 0.9 if gtol < 1.d-04.  
+     gtol    is a double precision variable which controls the accuracy of
+	     the line search routine mcsrch. if the function and gradient
+             evaluations are inexpensive with respect to the cost of the
+	     iteration (which is sometimes the case when solving very large
+	     problems) it may be advantageous to set gtol to a small value.
+	     A typical small value is 0.1. It\'s set to 0.9 if gtol < 1.d-04.
 	     restriction: gtol should be greater than 1.d-04.
 
      print   frequency and type of printing
@@ -2888,22 +2888,22 @@ pp. 21-42.
               iprint(2) = 0 : no additional information printed
 		iprint(2) = 1 : initial x and gradient vectors printed
 		iprint(2) = 2 : x vector printed every iteration
-		iprint(2) = 3 : x vector and gradient vector printed 
-				every iteration 
+		iprint(2) = 3 : x vector and gradient vector printed
+				every iteration
     info     controls termination of code, and return to main
                program to evaluate function and gradient
                info = -3 : improper input parameters
                info = -2 : descent was not obtained
                info = -1 : line search failure
-               info =  0 : initial entry or 
-                            successful termination without error   
+               info =  0 : initial entry or
+                            successful termination without error
                info = 1 : user canceled optimization (maximum iteration)
                info = 2 : user canceled optimization
 
-     method =  1 : fletcher-reeves 
+     method =  1 : fletcher-reeves
                2 : polak-ribiere
                3 : positive polak-ribiere ( beta=max{beta,0} )
- 
+
      scalar fg_func: computes the value(fx) and gradient(gx)  of the function at x.
 		param fx, gx, x
 		return value
@@ -2948,7 +2948,7 @@ double hooke_wrapper(int n, double *p)
    pdl1->datatype = PDL_D;
    pdl1->data = p;
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
-   
+
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
    XPUSHs(sv_pdl1);
    PUTBACK ;
@@ -2978,7 +2978,7 @@ pp_def("hooke",
 	OtherPars => "SV* hooke_func" ,
 	GenericTypes => ['D'],
 	Code =>'
-		extern int hooke(int nvars, paramd func, $GENERIC() *startpt, 
+		extern int hooke(int nvars, paramd func, $GENERIC() *startpt,
 			$GENERIC() *endpt, $GENERIC() rho, $GENERIC() tol, int maxit);
 
 		hooke_function    = $COMP(hooke_func);
@@ -2990,10 +2990,10 @@ pp_def("hooke",
 =for ref
 
 Find a point X where the nonlinear function f(X) has a local
-minimum.  X is an n-vector and f(X) is a scalar.  In mathematical 
-notation  
+minimum.  X is an n-vector and f(X) is a scalar.  In mathematical
+notation
 
-	f: R^n -> R^1.  
+	f: R^n -> R^1.
 
 The objective function f()
 is not required to be continuous.  Nor does f() need to be
@@ -3009,71 +3009,71 @@ Jeeves.
 
 rho controls convergence :
 
-The algorithm works by taking "steps" from one estimate of 
-a minimum, to another (hopefully better) estimate.  Taking   
-big steps gets to the minimum more quickly, at the risk of   
-"stepping right over" an excellent point.  The stepsize is   
-controlled by a user supplied parameter called rho.  At each 
-iteration, the stepsize is multiplied by rho  (0 < rho < 1), 
-so the stepsize is successively reduced.			   
-Small values of rho correspond to big stepsize changes,    
-which make the algorithm run more quickly.  However, there   
-is a chance (especially with highly nonlinear functions)	   
-that these big changes will accidentally overlook a	   
-promising search vector, leading to nonconvergence.	   
-Large values of rho correspond to small stepsize changes,  
-which force the algorithm to carefully examine nearby points 
-instead of optimistically forging ahead.	This improves the  
-probability of convergence.				   
-The stepsize is reduced until it is equal to (or smaller   
-than) tol.  So the number of iterations performed by	   
-Hooke-Jeeves is determined by rho and tol:		   
+The algorithm works by taking "steps" from one estimate of
+a minimum, to another (hopefully better) estimate.  Taking
+big steps gets to the minimum more quickly, at the risk of
+"stepping right over" an excellent point.  The stepsize is
+controlled by a user supplied parameter called rho.  At each
+iteration, the stepsize is multiplied by rho  (0 < rho < 1),
+so the stepsize is successively reduced.			
+Small values of rho correspond to big stepsize changes,
+which make the algorithm run more quickly.  However, there
+is a chance (especially with highly nonlinear functions)	
+that these big changes will accidentally overlook a	
+promising search vector, leading to nonconvergence.	
+Large values of rho correspond to small stepsize changes,
+which force the algorithm to carefully examine nearby points
+instead of optimistically forging ahead.	This improves the
+probability of convergence.				
+The stepsize is reduced until it is equal to (or smaller
+than) tol.  So the number of iterations performed by	
+Hooke-Jeeves is determined by rho and tol:		
 
-    rho**(number_of_iterations) = tol		   
+    rho**(number_of_iterations) = tol		
 
-In general it is a good idea to set rho to an aggressively 
-small value like 0.5 (hoping for fast convergence).  Then,   
-if the user suspects that the reported minimum is incorrect  
-(or perhaps not accurate enough), the program can be run	   
-again with a larger value of rho such as 0.85, using the	   
-result of the first minimization as the starting guess to    
-begin the second minimization.				   
+In general it is a good idea to set rho to an aggressively
+small value like 0.5 (hoping for fast convergence).  Then,
+if the user suspects that the reported minimum is incorrect
+(or perhaps not accurate enough), the program can be run	
+again with a larger value of rho such as 0.85, using the	
+result of the first minimization as the starting guess to
+begin the second minimization.				
 
 
 
 
      x:		   On entry this is the user-supplied guess at the minimum.
-     		   On exit this is the location of  the local minimum,
-     		   calculated by the program    
+		   On exit this is the location of  the local minimum,
+		   calculated by the program
 
-     maxit	   On entry, a rarely used, halting    
-		   criterion.  If the algorithm uses >= maxit    
+     maxit	   On entry, a rarely used, halting
+		   criterion.  If the algorithm uses >= maxit
 		   iterations, halt.
 		   On exit number of iteration.
 
-     rho	   This is a user-supplied convergence 
-		   parameter (more detail above), which should be  
-		   set to a value between 0.0 and 1.0.	Larger	   
-		   values of rho give greater probability of	   
-		   convergence on highly nonlinear functions, at a 
-		   cost of more function evaluations.  Smaller	   
-		   values of rho reduces the number of evaluations 
-		   (and the program running time), but increases   
-		   the risk of nonconvergence.	See below.	   
+     rho	   This is a user-supplied convergence
+		   parameter (more detail above), which should be
+		   set to a value between 0.0 and 1.0.	Larger	
+		   values of rho give greater probability of	
+		   convergence on highly nonlinear functions, at a
+		   cost of more function evaluations.  Smaller	
+		   values of rho reduces the number of evaluations
+		   (and the program running time), but increases
+		   the risk of nonconvergence.	See below.	
 
-     tol	   This is the criterion for halting   
-		   the search for a minimum.  When the algorithm   
-		   begins to make less and less progress on each   
-		   iteration, it checks the halting criterion: if  
-		   the stepsize is below tol, terminate the    
-		   iteration and return the current best estimate  
-		   of the minimum.  Larger values of tol (such 
-		   as 1.0e-4) give quicker running time, but a	   
-		   less accurate estimate of the minimum.  Smaller 
-		   values of tol (such as 1.0e-7) give longer  
-		   running time, but a more accurate estimate of   
-		   the minimum. 				   
-   
+     tol	   This is the criterion for halting
+		   the search for a minimum.  When the algorithm
+		   begins to make less and less progress on each
+		   iteration, it checks the halting criterion: if
+		   the stepsize is below tol, terminate the
+		   iteration and return the current best estimate
+		   of the minimum.  Larger values of tol (such
+		   as 1.0e-4) give quicker running time, but a	
+		   less accurate estimate of the minimum.  Smaller
+		   values of tol (such as 1.0e-7) give longer
+		   running time, but a more accurate estimate of
+		   the minimum.				
+
      func	   objective function to be minimized.
 		   scalar double fun ($x(n))
 
@@ -3102,7 +3102,7 @@ void gencanf_wrapper(integer *n, double *x, double *f, integer *inform)
    PDL_Indx odims[1];
    PDL_Indx mdims[] = {*n};
    odims[0] = 1;
-   
+
    PDL->setdims (pdl2, odims, 1);
    PDL->setdims (pdl1, mdims, 1);
    pdl1->datatype = PDL_D;
@@ -3110,7 +3110,7 @@ void gencanf_wrapper(integer *n, double *x, double *f, integer *inform)
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
    pdl2->datatype = PDL_D;
    pdl2->data = f;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED; 
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
 
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
@@ -3149,7 +3149,7 @@ void gencang_wrapper(integer *n, double *x, double *g, integer *inform)
    PDL_Indx odims[1];
    PDL_Indx mdims[] = {*n};
    odims[0] = 1;
-   
+
 
    PDL->setdims (pdl2, mdims, 1);
    PDL->setdims (pdl1, mdims, 1);
@@ -3158,7 +3158,7 @@ void gencang_wrapper(integer *n, double *x, double *g, integer *inform)
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
    pdl2->datatype = PDL_D;
    pdl2->data = g;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED; 
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
 
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
@@ -3198,7 +3198,7 @@ void gencanh_wrapper(integer *nind, integer *ind, integer *n, double *x, double 
    PDL_Indx mdims[] = {*n};
    PDL_Indx ddims[] = {1,*n};
    PDL_Indx inddims[] = {*nind};
-   
+
    PDL->setdims (pdl1, mdims, 1);
    PDL->setdims (pdl2, ddims, 2);
    PDL->setdims (pdl3, ddims, 2);
@@ -3210,7 +3210,7 @@ void gencanh_wrapper(integer *nind, integer *ind, integer *n, double *x, double 
 
    pdl2->datatype = PDL_D;
    pdl2->data = d;
-   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED; 
+   pdl2->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
 
    pdl3->datatype = PDL_D;
    pdl3->data = hd;
@@ -3260,25 +3260,25 @@ void gencanh_wrapper(integer *nind, integer *ind, integer *n, double *x, double 
 ');
 
 pp_addhdr('
-extern void gencan_(integer *n, double *x, double *l, 
+extern void gencan_(integer *n, double *x, double *l,
   double *u, double *epsgpen, double *epsgpsn, double *
-  ftol, integer *fmaxit, integer *gmaxit, double *fmin, 
+  ftol, integer *fmaxit, integer *gmaxit, double *fmin,
   integer *maxit, integer *maxfc, double *udelta0, integer *
-  cgmaxit, integer *cgstop, double *cggtol, double *cgitol, 
+  cgmaxit, integer *cgstop, double *cggtol, double *cgitol,
   double *cgftol, double *qmptol, integer *qmpmaxit, logical *
   nearlyq, integer *gtype, integer *htvtype, integer *trtype, integer *
   iprint, integer *iprint2, double *f, double *g, double *
   gpeucn2, double *gpsupn, integer *iter, integer *fcnt, integer *
   gcnt, integer *cgcnt, integer *spgiter, integer *spgfcnt, integer *
-  tniter, integer *tnfcnt, integer *tnstpcnt, integer *tnintcnt, 
+  tniter, integer *tnfcnt, integer *tnstpcnt, integer *tnintcnt,
   integer *tnexgcnt, integer *tnexbcnt, integer *tnintfe, integer *
-  tnexgfe, integer *tnexbfe, integer *flag__, double *s, double 
-  *y, double *d__, integer *ind, double *w, double *eta, 
-  double *delmin, double *lammax, double *lammin, 
+  tnexgfe, integer *tnexbfe, integer *flag__, double *s, double
+  *y, double *d__, integer *ind, double *w, double *eta,
+  double *delmin, double *lammax, double *lammin,
   double *theta, double *gamma, double *beta, double *
-  sigma1, double *sigma2, double *nint, double *next, 
+  sigma1, double *sigma2, double *nint, double *next,
   integer *interpmaxit, integer *ncomp, double *sterel, double *
-  steabs, double *epsrel, double *epsabs, double *infty, 
+  steabs, double *epsrel, double *epsabs, double *infty,
   paramv evalf, paramv evalg, paramv evalhd);
 ');
 
@@ -3315,16 +3315,16 @@ pp_def("gencan",
 
 
 		gencan_(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
-		$P(epsgpen), $P(epsgpsn), $P(ftol), $P(fmaxit), $P(gmaxit), $P(fmin), 
-		$P(maxit), $P(maxfc), $P(delta), $P(cgmaxit), $P(cgstop), $P(cggtol), $P(cgitol), 
+		$P(epsgpen), $P(epsgpsn), $P(ftol), $P(fmaxit), $P(gmaxit), $P(fmin),
+		$P(maxit), $P(maxfc), $P(delta), $P(cgmaxit), $P(cgstop), $P(cggtol), $P(cgitol),
 		$P(cgftol), $P(qmptol), $P(qmpmaxit), $P(nearlyq), $P(gtype), $P(htvtype), $P(trtype),
 		&$print(p=>0), &$print(p=>1), $P(fx), $P(gx),
 		$P(gpeucn2), $P(gpsupn), $P(iter), $P(fcnt), $P(gcnt), $P(cgcnt), $P(spgiter), $P(spgfcnt),
 		$P(tniter), $P(tnfcnt), $P(tnstpcnt), $P(tnintcnt), $P(tnexgcnt), $P(tnexbcnt),
-		$P(tnintfe), $P(tnexgfe), $P(tnexbfe), $P(info), s, y, d__, ind, w, $P(eta), 
+		$P(tnintfe), $P(tnexgfe), $P(tnexbfe), $P(info), s, y, d__, ind, w, $P(eta),
 		$P(delmin), $P(lammax), $P(lammin), $P(theta), $P(gamma), $P(beta),
-		$P(sigma1), $P(sigma2),$P(nint), $P(next), 
-		$P(interpmaxit), $P(ncomp), $P(sterel), $P(steabs), $P(epsrel), $P(epsabs), $P(infty), 
+		$P(sigma1), $P(sigma2),$P(nint), $P(next),
+		$P(interpmaxit), $P(ncomp), $P(sterel), $P(steabs), $P(epsrel), $P(epsabs), $P(infty),
 		gencanf_wrapper, gencang_wrapper, gencanh_wrapper);
 
 	free(s);
@@ -3832,11 +3832,11 @@ evalhd could be:
 	}
 	gencan($fx, $gx, $x, $bounds, -1e308, 200, 1000,
 	1, 0, 0, 0, 5, 10, 5, 1, -1, 5,
-	0, 1e-10, 1e-10, 1e-8, 0.1, 1e-8, 1e-8, 
+	0, 1e-10, 1e-10, 1e-8, 0.1, 1e-8, 1e-8,
 	-1, 0.9, 0.1,
 	1e+40, 1e-40, 1e-6, 0.0001, 0.5, 0.1,0.9,
 	2, 2, 1e-10, 1e-99, 1e-30, 1e-99, 1e+308,
-	($gpeucn2=null), ($gpsupn=null), ($iter=null), ($fcnt=null), 
+	($gpeucn2=null), ($gpsupn=null), ($iter=null), ($fcnt=null),
 	($gcnt=null), ($cgcnt=null), ($spgiter=null), ($spgfcnt=null),
 	($tniter=null), ($tnfcnt=null), ($tnstpcnt=null), ($tnintcnt=null), ($tnexgcnt=null), ($tnexbcnt=null),
 	($tnintfe=null), ($tnexgfe=null), ($tnexbfe=null),	
@@ -3883,7 +3883,7 @@ pp_def("sgencan",
 
 
 		lammax = 1e+40;
-		lammin = 1e-40; 
+		lammin = 1e-40;
 		theta = 1e-6;
 		gamma = 0.0001;
 		beta = 0.5;
@@ -3898,16 +3898,16 @@ pp_def("sgencan",
 		infty= 1e+308;
 
 		gencan_(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
-		$P(epsgpen), $P(epsgpsn), $P(ftol), $P(fmaxit), $P(gmaxit), &fmin, 
-		$P(maxit), $P(maxfc), $P(delta), $P(cgmaxit), $P(cgstop), $P(cggtol), $P(cgitol), 
+		$P(epsgpen), $P(epsgpsn), $P(ftol), $P(fmaxit), $P(gmaxit), &fmin,
+		$P(maxit), $P(maxfc), $P(delta), $P(cgmaxit), $P(cgstop), $P(cggtol), $P(cgitol),
 		$P(cgftol), $P(qmptol), $P(qmpmaxit), $P(nearlyq), $P(gtype), $P(htvtype), $P(trtype),
 		&$print(p=>0), &$print(p=>1), $P(fx), $P(gx),
 		&gpeucn2, &gpsupn, &iter, &fcnt, &gcnt, &cgcnt, &spgiter, &spgfcnt,
 		&tniter, &tnfcnt, &tnstpcnt, &tnintcnt, &tnexgcnt, &tnexbcnt,
-		&tnintfe, &tnexgfe, &tnexbfe, $P(info), s, y, d__, ind, w, $P(eta), 
+		&tnintfe, &tnexgfe, &tnexbfe, $P(info), s, y, d__, ind, w, $P(eta),
 		$P(delmin), &lammax, &lammin, &theta, &gamma, &beta,
-		&sigma1, &sigma2, &nint, &next, 
-		$P(interpmaxit), &ncomp, &sterel, &steabs, &epsrel, &epsabs, &infty, 
+		&sigma1, &sigma2, &nint, &next,
+		$P(interpmaxit), &ncomp, &sterel, &steabs, &epsrel, &epsabs, &infty,
 		gencanf_wrapper, gencang_wrapper, gencanh_wrapper);
 
 	free(s);
@@ -4313,7 +4313,7 @@ evalhd could be:
 	}
 	sgencan($fx, $gx, $x, $bounds, $maxit, $maxfc,
 	1, 0, 0, 0, 5, 10, 5, 1, -1, 5,
-	0, 1e-8, 1e-10, 1e-5, 0.1, 1e-5, 1e-5, 
+	0, 1e-8, 1e-10, 1e-5, 0.1, 1e-5, 1e-5,
 	-1, 0.9, 0.1,
 	$print,$info,\&f_func,\&g_func, \&h_func);
 
@@ -4340,10 +4340,10 @@ pp_def("dhc",
 		
 		for(i = 0; i < $SIZE(m); i++)
 		{
-			fx = dhc($SIZE(n), 
+			fx = dhc($SIZE(n),
 				&$xrandom(n=>0,m=>i),
 				$step(),
-				$xtol(), 
+				$xtol(),
 				u,
 				v,
 				xv,
@@ -4379,8 +4379,8 @@ pp_def("dhc",
 =for ref
 
 Find a point X where the function dhc_func(X) has a global
-minimum.  X is an n-vector and f(X) is a scalar.  In mathematical 
-notation  
+minimum.  X is an n-vector and f(X) is a scalar.  In mathematical
+notation
 
 	f: R^n -> R^1.
 
@@ -4391,11 +4391,11 @@ A.I. Technical Report No. 1569 (1994).
 
 
       where
- 
-     fx:           On exit it contains the value of the function f at 
+
+     fx:           On exit it contains the value of the function f at
 		   the point x.
      x:		   On exit this is the location of the global minimum,
-     		   calculated by the program.
+		   calculated by the program.
      xrandom:	   This is a user-supplied initial starting locations.
 		   On exit there are locations of the minimums
 		   calculated by the program.
@@ -4404,8 +4404,8 @@ A.I. Technical Report No. 1569 (1994).
      print:	   if true print some information at each iteration
 		   (each minimum).
      dhc_func:	   Objective function to be minimized.
-		   If you need boundary conditions, put them in the 
-		   objective function such that the optimizer gets 
+		   If you need boundary conditions, put them in the
+		   objective function such that the optimizer gets
 		   bad values for points out of bounds.
 		   scalar double dhc_func($x())
 
@@ -4423,13 +4423,13 @@ A.I. Technical Report No. 1569 (1994).
 	print "Minimum found ($fx) at $ret";
 
 	# Try to solve
-	# The SIAM 100-Digit Challenge problem 4 
+	# The SIAM 100-Digit Challenge problem 4
 	# see http://www-m8.ma.tum.de/m3/bornemann/challengebook/
 	# result: -3.30686864747523728007611377089851565716648236
 	$randomx = (random(2,100)-0.5)*2;
 	sub test{
 		my $x = shift;
-		my $f = exp(sin(50*$x(0)))+sin(60*exp($x(1)))+ 
+		my $f = exp(sin(50*$x(0)))+sin(60*exp($x(1)))+
 		sin(70*sin($x(0)))+sin(sin(80*$x(1)))-
                 sin(10*($x(0)+$x(1)))+($x(0)**2+$x(1)**2)/4;
 		$f->sclr;
@@ -4448,15 +4448,15 @@ pp_def("de_opt",
 	GenericTypes => ['D'],
 	Code =>'
 		extern double de_optimize(int D, double *best, int genmax, int seed, int  NP,
-   		int  strategy, double F, double CR, double *cvar, 
+		int  strategy, double F, double CR, double *cvar,
 		double inibound_h, double inibound_l, int   refresh, double (*evaluate)());
 
 		hooke_function    = $COMP(de_func);
 		
-		$fx() = de_optimize($SIZE(n), 
+		$fx() = de_optimize($SIZE(n),
 				$P(x),
 				$genmax(),
-				$seed(), 
+				$seed(),
 				$np(),
 				$strategy(),
 				$f(),
@@ -4473,8 +4473,8 @@ pp_def("de_opt",
 =for ref
 
 Find a point X where the function de_func(X) has a global
-minimum.  X is an n-vector and f(X) is a scalar. In mathematical 
-notation  
+minimum.  X is an n-vector and f(X) is a scalar. In mathematical
+notation
 
 	f: R^n -> R^1.
 
@@ -4514,11 +4514,11 @@ Strategy:
 
 
       where
- 
-     fx:           On exit it contains the value of the function f at 
+
+     fx:           On exit it contains the value of the function f at
 		   the point x.
      x:		   On exit this is the location of the global minimum,
-     		   calculated by the program.
+		   calculated by the program.
      cvar:	   On exit it contains the value variance of the function f.
      strategy:	   Choice of strategy.
      seed:	   Random seed.
@@ -4531,18 +4531,18 @@ Strategy:
      print:	   if > 1 print some information at each \'print\' generation
 		   (minimum = 1).
      de_func:	   Objective function to be minimized.
-		   If you need boundary conditions, put them in the 
-		   objective function such that the optimizer gets 
+		   If you need boundary conditions, put them in the
+		   objective function such that the optimizer gets
 		   bad values for points out of bounds.
 		   scalar double de_func($x())
 
 =for example
 
 	# Try to solve
-	# The SIAM 100-Digit Challenge problem 4 
+	# The SIAM 100-Digit Challenge problem 4
 	# see http://www-m8.ma.tum.de/m3/bornemann/challengebook/
 	# result: -3.30686864747523728007611377089851565716648236
-	use PDL::Opt::NonLinear;   
+	use PDL::Opt::NonLinear;
 
 	$x = zeroes(2);
 	$strategy = pdl(long,7);
@@ -4560,13 +4560,13 @@ Strategy:
                 my ($x0, $y1);
 		$x0 = PDL::Core::sclr_c($x(0));
 		$y1 = PDL::Core::sclr_c($x(1));
-		my $f = exp(sin(50*$x0))+sin(60*exp($y1))+ 
+		my $f = exp(sin(50*$x0))+sin(60*exp($y1))+
                 sin(70*sin($x0))+sin(sin(80*$y1))-
                 sin(10*($x0+$y1))+($x0**2+$y1**2)/4;
                 $f;
 	}
-	($fx,$cvar)=de_opt($x, $genmax, $seed, $strategy, $np, 
-		$f, $cr, $inibound_l, $inibound_h, 
+	($fx,$cvar)=de_opt($x, $genmax, $seed, $strategy, $np,
+		$f, $cr, $inibound_l, $inibound_h,
 		$print, \&test);
 
 	print "Minimum found ($fx) at $x with variance $cvar\n";
@@ -4597,7 +4597,7 @@ asa_wrapper (double *x,
    pdl1->datatype = PDL_D;
    pdl1->data = x;
    pdl1->state |= PDL_DONTTOUCHDATA | PDL_ALLOCATED;
-   
+
    ENTER ;   SAVETMPS ;   PUSHMARK(sp) ;
    XPUSHs(sv_pdl1);
    PUTBACK ;
@@ -4632,12 +4632,12 @@ pp_def("asa_opt",
 	OtherPars => "SV* asa_func" ,
 	GenericTypes => ['D'],
 	Code =>'
- 
-	extern int asa_main (long int n, double *x,double *fx, double *upper, double *lower, 
+
+	extern int asa_main (long int n, double *x,double *fx, double *upper, double *lower,
 			int *parameter_type, long int seed, long int *limit, double *cost_param, double *temp,
-			long int *generic,double *res, double *coarse, double *tangent, double *curvature, 
+			long int *generic,double *res, double *coarse, double *tangent, double *curvature,
 			double *quench_cost, double *quench_scale, long int print, double (*func)());
-  	asa_function  = $COMP(asa_func);
+	asa_function  = $COMP(asa_func);
 	$info() = asa_main($SIZE(n), $P(x), $P(fx), $P(inibound_l),
 			$P(inibound_u), $P(parameter_type),$seed(),
 			$P(limit), $P(cost_param), $P(temperature), $P(generic),
@@ -4663,7 +4663,7 @@ It uses the Adaptive Simulated Annealing (ASA) method.
 
      where
 
-     x 
+     x
 	is a double precision array of dimension n.
 	On entry x is an approximation to the solution.
 	On exit x is the current approximation.
@@ -4738,11 +4738,11 @@ It uses the Adaptive Simulated Annealing (ASA) method.
 	On exit, it is the value of the tangents (gradient) at x.
 
      curvature
-     	On exit, it is the value of the curvature (hessian) at x.
+	On exit, it is the value of the curvature (hessian) at x.
 
      info
-     	On entry 0,
-     	On exit, contain error code:
+	On entry 0,
+	On exit, contain error code:
 		NORMAL_EXIT		    => 0
 		P_TEMP_TOO_SMALL	    => 1
 		C_TEMP_TOO_SMALL	    => 2
@@ -4759,7 +4759,7 @@ It uses the Adaptive Simulated Annealing (ASA) method.
 =for example
 
 	# Try to solve
-	# The SIAM 100-Digit Challenge problem 4 
+	# The SIAM 100-Digit Challenge problem 4
 	# see http://www-m8.ma.tum.de/m3/bornemann/challengebook/
 	# result: -3.30686864747523728007611377089851565716648236
 	use PDL::Opt::NonLinear;
@@ -4768,7 +4768,7 @@ It uses the Adaptive Simulated Annealing (ASA) method.
                 my ($x0, $y1);
                 $x0 = PDL::Core::sclr_c($x(0));
                 $y1 = PDL::Core::sclr_c($x(1));
-                my $f = exp(sin(50*$x0))+sin(60*exp($y1))+ 
+                my $f = exp(sin(50*$x0))+sin(60*exp($y1))+
                 sin(70*sin($x0))+sin(sin(80*$y1))-
                 sin(10*($x0+$y1))+($x0**2+$y1**2)/4;
                 $f;
@@ -4826,10 +4826,10 @@ sub optimize{
 
 	#TODO error, print
 
-	if (substr($function,0,5) eq 'lbfgs' || 
+	if (substr($function,0,5) eq 'lbfgs' ||
 		substr($function,0,4) eq 'lmqn' ||
 		 $function eq 'cgfam'){
-		barf "optimize: no evaluation function\n" 
+		barf "optimize: no evaluation function\n"
 			if ( (!defined $opt{fg_func}) && (!defined $opt{f_func}) && (!defined $opt{g_func}));
 		if (!defined $opt{fg_func}){
 			barf "optimize: no gradient evaluation function\n" unless defined $opt{g_func};
@@ -4937,7 +4937,7 @@ sub optimize{
 			$opt{cgmaxit} = pdl(long, 50) unless defined $opt{cgmaxit};
 			$opt{fg_func}($ret{fx}, $ret{gx}, $x);
 			$opt{fg_func}($ret{fx}, $ret{gx}, $x);
-			defined $opt{bound} ? 
+			defined $opt{bound} ?
 			lmqnbc($ret{fx}, $ret{gx}, $x, $opt{bound}, $ret{iter}, $ret{fcnt}, $opt{cgmaxit}, $opt{eps}, $opt{accrcy}, $opt{eta}, $opt{stepmx}, $opt{'print'}, $ret{info}, $opt{fg_func}):
 			lmqn($ret{fx}, $ret{gx}, $x, $ret{iter}, $ret{fcnt}, $opt{cgmaxit}, $opt{eps}, $opt{accrcy}, $opt{eta}, $opt{stepmx}, $opt{'print'}, $ret{info}, $opt{fg_func});
 			if ($opt{'print'}){
@@ -5030,7 +5030,7 @@ sub optimize{
 		$opt{fscale} =  pdl(1) unless defined $opt{fscale};
 		$opt{typx} =  ones($x->dim(0)) unless defined $opt{typx};
 
-		tensoropt($ret{fx}, $ret{gx}, $hx, $x, 
+		tensoropt($ret{fx}, $ret{gx}, $hx, $x,
 			$opt{'method'},$ret{iter},$opt{digits},$opt{gtype},$opt{htype},$opt{fscale},
 			$opt{typx},$opt{stempx},$opt{xtol},$opt{gtol},$opt{'print'},$opt{ipr},
 			$opt{f_func}, $opt{g_func}, $opt{h_func});
@@ -5118,7 +5118,7 @@ sub optimize{
 		$ret{gnorm1} = null;$ret{gnorm2} = null;
 		$ret{iter} = null; $ret{fcnt}= null;$ret{spgfcnt}=null;
 		$ret{gcnt} = null; $ret{cgcnt} = null; $ret{spgiter} = null;
-		$ret{tniter} = null; $ret{tnfcnt} = null; $ret{tnstpcnt} = null; 
+		$ret{tniter} = null; $ret{tnfcnt} = null; $ret{tnstpcnt} = null;
 		$ret{tnintcnt}= null; $ret{tnexgcnt} = null; $ret{tnexbcnt} = null;
 		$ret{tnintfe}= null; $ret{tnexgfe}= null; $ret{tnexbfe}=null;
 
@@ -5131,11 +5131,11 @@ sub optimize{
 
 		gencan($ret{fx}, $ret{gx}, $x, $opt{bound}, $opt{fmin}, $opt{maxit}, $opt{maxfc},
 		$opt{nearlyq}, $opt{gtype}, $opt{htvtype}, $opt{trtype}, $opt{fmaxit}, $opt{gmaxit}, $opt{interpmaxit}, $opt{cgstop}, $opt{cgmaxit}, $opt{qmpmaxit},
-		$opt{ftol}, $opt{gtol2}, $opt{gtol1}, $opt{cggtol}, $opt{cgintol}, $opt{cgfitol}, $opt{qmptol}, 
+		$opt{ftol}, $opt{gtol2}, $opt{gtol1}, $opt{cggtol}, $opt{cgintol}, $opt{cgfitol}, $opt{qmptol},
 		$opt{delta}, $opt{eta}, $opt{delmin},
 		$opt{lammax}, $opt{lammin}, $opt{theta}, $opt{gamma}, $opt{beta}, $opt{sigma1},$opt{sigma2},
 		$opt{nint}, $opt{'next'}, $opt{sterel}, $opt{steabs}, $opt{epsrel}, $opt{epsabs}, $opt{infty},
-		$ret{gnorm2}, $ret{gnorm1}, $ret{iter}, $ret{fcnt}, 
+		$ret{gnorm2}, $ret{gnorm1}, $ret{iter}, $ret{fcnt},
 		$ret{gcnt}, $ret{cgcnt}, $ret{spgiter}, $ret{spgfcnt},
 		$ret{tniter}, $ret{tnfcnt}, $ret{tnstpcnt}, $ret{tnintcnt}, $ret{tnexgcnt}, $ret{tnexbcnt},
 		$ret{tnintfe}, $ret{tnexgfe}, $ret{tnexbfe},
@@ -5411,8 +5411,8 @@ sub rosen_grad{
 	$grad = $a->zeroes;
 	$grad(1:-2) .= 200 *( $am - $am_m1->power(2,0)) - 400*($am_p1 - $am->power(2,0))*$am - 2*(1-$am);
 	$grad(0) .= -400 * $a(0) * ($a(1) - $a(0)->power(2,0)) - 2*(1-$a(0));
-    	$grad(-1) .= 200 * ( $a(-1) - $a(-2)->power(2,0) );
-    	return $grad;
+	$grad(-1) .= 200 * ( $a(-1) - $a(-2)->power(2,0) );
+	return $grad;
 }
 
 sub rosen_hess{
@@ -5427,12 +5427,11 @@ sub rosen_hess{
         $diag(1:-2) .= 202 + 1200 * $a(1:-2)->power(2,0) - 400 * $a(2:);
         $hess->diagonal(0,1) += $diag;
 	$squared  ? return $hess->tritosym : return  $hess;
-        
 }
 
 =head1 COPYRIGHT
 
-Copyright (C) Grégory Vanuxem 2005-2018.
+Copyright (C) GrÃ©gory Vanuxem 2005-2018.
 All rights reserved. This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
 
@@ -5459,4 +5458,3 @@ pp_add_boot(<<EOB);
 EOB
 
 pp_done();  # you will need this to finish pp processing
-

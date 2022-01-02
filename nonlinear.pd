@@ -14,7 +14,7 @@ do('./Config.pl');
 our $VERSION = 0.05;
 use PDL::Exporter;
 
-pp_setversion(0.05);
+pp_setversion($VERSION);
 
 pp_addhdr('
 #include<asa_usr_asa.h>
@@ -41,10 +41,18 @@ if ($^O =~ /MSWin/) {
 pp_addhdr('
 #define finite _finite
 #include <float.h>
-/* avoid annoying warnings */
 typedef long int logical;
-typedef long int integer;
-typedef long int ftnlen;
+');
+}
+else{
+pp_addhdr('
+typedef int logical;
+')
+}
+pp_addhdr('
+/* avoid annoying warnings */
+typedef logical integer;
+typedef logical ftnlen;
 #ifdef __cplusplus
 typedef float (*paramf)(...);
 typedef double (*paramd)(...);
@@ -55,24 +63,6 @@ typedef double (*paramd)();
 typedef void (*paramv)();
 #endif
 ');
-}
-else{
-pp_addhdr('
-/* avoid annoying warnings */
-typedef int logical;
-typedef int integer;
-typedef int ftnlen;
-#ifdef __cplusplus
-typedef float (*paramf)(...);
-typedef double (*paramd)(...);
-typedef void (*paramv)(...);
-#else
-typedef float (*paramf)();
-typedef double (*paramd)();
-typedef void (*paramv)();
-#endif
-')
-}
 
 # patch from Albert Chin
 if ($^O =~ /hpux/) {
@@ -83,14 +73,12 @@ pp_addhdr('
 ');
 }
 
-
 pp_addpm({At=>'Top'},<<'EOD');
 use strict;
 use PDL::Ufunc;
 use PDL::Ops;
 use PDL::NiceSlice;
 use PDL::LinearAlgebra qw/diag tritosym/;
-
 
 =head1 NAME
 
@@ -367,10 +355,10 @@ pp_def("fmin",
 	GenericTypes => ['F','D'],
 	Code =>'
              types(F) %{
-		extern float fmin_(paramf f, float *X, float *A, float *B, float *T);
+		extern $GENERIC() fmin_(paramf f, $GENERIC() *X, $GENERIC() *A, $GENERIC() *B, $GENERIC() *T);
 		%}
              types(D) %{
-		extern double dfmin_(paramd f, double *X, double *A,double *B, double *T);
+		extern $GENERIC() dfmin_(paramd f, $GENERIC() *X, $GENERIC() *A,$GENERIC() *B, $GENERIC() *T);
 		%}
 		oned_function    = $COMP(min_func);
 		$y() = $TFD(fmin_,dfmin_)(oned_wrapper, $P(x), $P(a),$P(b),$P(tol));
@@ -411,7 +399,7 @@ pp_def("smnsx",
 	GenericTypes => ['D'],
 	Code =>'
 		integer old, new,err;
-		extern double dsmnsx_(paramd f, integer *p, double *step, double *tol,double *X);
+		extern $GENERIC() dsmnsx_(paramd f, integer *p, $GENERIC() *step, $GENERIC() *tol,$GENERIC() *X);
 		extern void erroff_(void);
 		extern void eprint_(void);
 		extern integer* nerror_(integer *err);
@@ -474,8 +462,8 @@ pp_def("mnsx",
 	GenericTypes => ['D'],
 	Code =>'
 		integer old, new,err;
-		extern double dmnsx_(paramd f, integer *itmx, integer *p, integer *pp,
-			double *s, double *tol,double *X);
+		extern $GENERIC() dmnsx_(paramd f, integer *itmx, integer *p, integer *pp,
+			$GENERIC() *s, $GENERIC() *tol,$GENERIC() *X);
 		extern void erroff_(void);
 		extern void eprint_(void);
 		extern integer* nerror_(integer *err);
@@ -555,10 +543,10 @@ pp_def("ivset",
 	GenericTypes => ['F','D'],
 	Code =>'
              types(F) %{
-		extern void ivset_(integer *alg, integer *iv, integer *liv, integer *lv, float *v);
+		extern void ivset_(integer *alg, integer *iv, integer *liv, integer *lv, $GENERIC() *v);
 		%}
              types(D) %{
-		extern void divset_(integer *alg, integer *iv, integer *liv, integer *lv, double *v);
+		extern void divset_(integer *alg, integer *iv, integer *liv, integer *lv, $GENERIC() *v);
 		%}
 		$TFD(ivset_,divset_)($P(type), $P(iv), &$SIZE(n), &$SIZE(p),$P(v));
 ',
@@ -616,12 +604,12 @@ pp_def("rmnf",
 	GenericTypes => ['F','D'],
 	Code =>'
              types(F) %{
-		extern void rmnf_(float *d, float *fx, integer *iv, integer *liv,
-		integer *lv, integer *n, float *v, float*x);
+		extern void rmnf_($GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
+		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
              types(D) %{
-		extern void drmnf_(double *d, double *fx, integer *iv, integer *liv,
-		integer *lv, integer *n, double *v, double*x);
+		extern void drmnf_($GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
+		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
 		
 		pdl4_function    = $COMP(min_func);
@@ -689,12 +677,12 @@ pp_def("rmng",
 	GenericTypes => ['F','D'],
 	Code =>'
              types(F) %{
-		extern void rmng_(float *d, float *fx, float *g, integer *iv, integer *liv,
-		integer *lv, integer *n, float *v, float*x);
+		extern void rmng_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
+		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
              types(D) %{
-		extern void drmng_(double *d, double *fx, double *g, integer *iv, integer *liv,
-		integer *lv, integer *n, double *v, double*x);
+		extern void drmng_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
+		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
 		do{
 			$TFD(rmng_,drmng_)(
@@ -792,12 +780,12 @@ pp_def("rmnh",
 	GenericTypes => ['F','D'],
 	Code =>'
              types(F) %{
-		extern void rmnh_(float *d, float *fx, float *g, float *h, integer *iv, integer *lh,
-		integer *liv, integer *lv, integer *n, float *v, float*x);
+		extern void rmnh_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, integer *lh,
+		integer *liv, integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
              types(D) %{
-		extern void drmnh_(double *d, double *fx, double *g, double *h,integer *iv, integer *lh,
-		integer *liv, integer *lv, integer *n, double *v, double*x);
+		extern void drmnh_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h,integer *iv, integer *lh,
+		integer *liv, integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
 		
 		
@@ -916,12 +904,12 @@ pp_def("rmnfb",
 	GenericTypes => ['F','D'],
 	Code =>'
              types(F) %{
-		extern void rmnfb_(float *bound, float *d, float *fx, integer *iv, integer *liv,
-		integer *lv, integer *n, float *v, float*x);
+		extern void rmnfb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
+		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
              types(D) %{
-		extern void drmnfb_(double *bound, double *d, double *fx, integer *iv, integer *liv,
-		integer *lv, integer *n, double *v, double*x);
+		extern void drmnfb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
+		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
 		
 		pdl4_function    = $COMP(min_func);
@@ -994,12 +982,12 @@ pp_def("rmngb",
 	GenericTypes => ['F','D'],
 	Code =>'
              types(F) %{
-		extern void rmngb_(float *bound, float *d, float *fx, float *g, integer *iv, integer *liv,
-		integer *lv, integer *n, float *v, float*x);
+		extern void rmngb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
+		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
              types(D) %{
-		extern void drmngb_(double *bound, double *d, double *fx, double *g, integer *iv, integer *liv,
-		integer *lv, integer *n, double *v, double*x);
+		extern void drmngb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
+		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
 		do{
 			$TFD(rmngb_,drmngb_)(
@@ -1099,12 +1087,12 @@ pp_def("rmnhb",
 	GenericTypes => ['F','D'],
 	Code =>'
              types(F) %{
-		extern void rmnhb_(float *bound, float *d, float *fx, float *g, float *h, integer *iv, integer *lh,
-		integer *liv,integer *lv, integer *n, float *v, float*x);
+		extern void rmnhb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, integer *lh,
+		integer *liv,integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
              types(D) %{
-		extern void drmnhb_(double *bound, double *d, double *fx, double *g, double *h,integer *iv, integer *lh,
-		integer *liv, integer *lv, integer *n, double *v, double*x);
+		extern void drmnhb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h,integer *iv, integer *lh,
+		integer *liv, integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
 		%}
 		
 		
@@ -1376,13 +1364,13 @@ pp_def("tensoropt",
 	GenericTypes => ['D'],
 	Code =>'
 		integer it, *iwork,i;
-		double *work, *xtmp;
-		extern int tensor_(integer *nr, integer *n, double *x, paramv fcn,
-		paramv grd, paramv hsn, double *typx, double *fscale, double 
-		*gradtl, double *steptl, integer *itnlim, double *stepmx, 
+		$GENERIC() *work, *xtmp;
+		extern int tensor_(integer *nr, integer *n, $GENERIC() *x, paramv fcn,
+		paramv grd, paramv hsn, $GENERIC() *typx, $GENERIC() *fscale, $GENERIC() 
+		*gradtl, $GENERIC() *steptl, integer *itnlim, $GENERIC() *stepmx, 
 		integer *ipr, integer *method, integer *grdflg, integer *hesflg, 
-		integer *ndigit, integer *msg, double *xpls, double *fpls, 
-		double *gpls, double *h__, integer *itnno, double *wrk, 
+		integer *ndigit, integer *msg, $GENERIC() *xpls, $GENERIC() *fpls, 
+		$GENERIC() *gpls, $GENERIC() *h__, integer *itnno, $GENERIC() *wrk, 
 		integer *iwrk);
 
 		tensor_f_function = $COMP(f_func);
@@ -1390,8 +1378,8 @@ pp_def("tensoropt",
 		tensor_hess_function = $COMP(h_func);
 
 		iwork = (integer * ) malloc ( $SIZE(n) * sizeof(integer));
-		work = (double * ) malloc ( ($SIZE(n) * 8) * sizeof(double));
-		xtmp = (double * ) malloc ( $SIZE(n) * sizeof(double));
+		work = ($GENERIC() * ) malloc ( ($SIZE(n) * 8) * sizeof($GENERIC()));
+		xtmp = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
 
 		tensor_(
 		&$SIZE(n),
@@ -1633,12 +1621,12 @@ pp_def("lbfgs",
 	GenericTypes => ['D'],
 	Code =>'
 
-	double *w;
+	$GENERIC() *w;
 	integer i,stop;
-	extern int lbfgs_(integer *n, integer *m, double *x, double 
-	*f, double *g, logical *diagco, double *diag, integer *maxit,integer *iprint,
-	 double *eps, double *xtol, double *gtol,double *w, integer *iflag);
-	w = (double * ) malloc ( ($SIZE(n) * (2*$m() +1)+ 2*$m())* sizeof(double));
+	extern int lbfgs_(integer *n, integer *m, $GENERIC() *x, $GENERIC() 
+	*f, $GENERIC() *g, logical *diagco, $GENERIC() *diag, integer *maxit,integer *iprint,
+	 $GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag);
+	w = ($GENERIC() * ) malloc ( ($SIZE(n) * (2*$m() +1)+ 2*$m())* sizeof($GENERIC()));
 	stop = 0;
 
 	for (i = 1 ; i < $maxfc(); )
@@ -1954,21 +1942,21 @@ pp_def("lbfgsb",
 	char csave[60];
 	char task[60];
 	integer lsave[4]; 
-	double *wa;
+	$GENERIC() *wa;
 	integer *iwa;
 	integer i;
 	
-	extern void setulb_(integer *n, integer *m, double *x, double *l, double *u,
-		integer *nbd, double *f, double *g, double *factr, double *pgtol, double *gtol,
-		double *wa,integer *iwa, char *task, integer *iprint, char *csave, integer *lsave,
-		integer *isave, double *dsave);
+	extern void setulb_(integer *n, integer *m, $GENERIC() *x, $GENERIC() *l, $GENERIC() *u,
+		integer *nbd, $GENERIC() *f, $GENERIC() *g, $GENERIC() *factr, $GENERIC() *pgtol, $GENERIC() *gtol,
+		$GENERIC() *wa,integer *iwa, char *task, integer *iprint, char *csave, integer *lsave,
+		integer *isave, $GENERIC() *dsave);
 
 
 	strcpy(task, "START");
 	//TODO
 	memset(task+5, \' \', sizeof(task)-5);
 	iwa = (integer * ) malloc ( 3 * $SIZE(n)   * sizeof(integer));
-	wa = (double * ) malloc ((2*$m()*$SIZE(n)+4*$SIZE(n)+12*$m()*$m()+12*$m())* sizeof(double));
+	wa = ($GENERIC() * ) malloc ((2*$m()*$SIZE(n)+4*$SIZE(n)+12*$m()*$m()+12*$m())* sizeof($GENERIC()));
  	i = 0;
 
 	while(1)
@@ -2431,8 +2419,8 @@ pp_def("spg",
 	OtherPars => "SV* min_func; SV* grad_func; SV* px_func" ,
 	GenericTypes => ['D'],
 	Code =>'
-		extern void spg_(integer *n, double *x, integer *m, double *eps, double *eps2,
-			integer *maxit, integer *maxfc, integer *output, double  *f, double *pginfn, double *pgtwon,
+		extern void spg_(integer *n, $GENERIC() *x, integer *m, $GENERIC() *eps, $GENERIC() *eps2,
+			integer *maxit, integer *maxfc, integer *output, $GENERIC()  *f, $GENERIC() *pginfn, $GENERIC() *pgtwon,
                     	integer *iter, integer *fcnt, integer *gcnt, integer *flag, paramv *evalf, paramv *evalg, paramv *proj);
 		integer iter;
 
@@ -2656,16 +2644,16 @@ pp_def("lmqn",
 	GenericTypes => ['D'],
 	Code =>'
 		integer lw;
-		double *w;
-		extern void lmqn_(integer *ifail, integer *n, double *x, 
-		double *f, double *g, double *w, integer *lw, paramv *sfun, 
-		integer *msglvl, integer *maxit, integer *maxfun, integer *mxitgc, double *eta, 
-		double *stepmx, double *accrcy, double *xtol);
+		$GENERIC() *w;
+		extern void lmqn_(integer *ifail, integer *n, $GENERIC() *x, 
+		$GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun, 
+		integer *msglvl, integer *maxit, integer *maxfun, integer *mxitgc, $GENERIC() *eta, 
+		$GENERIC() *stepmx, $GENERIC() *accrcy, $GENERIC() *xtol);
 
 
 		lm_function = $COMP(fg_func);
 		lw = 14 *  $SIZE(n);
-		w  = (double *) malloc (lw * sizeof(double));
+		w  = ($GENERIC() *) malloc (lw * sizeof($GENERIC()));
 
 			lmqn_(
 				$P(info),
@@ -2783,17 +2771,17 @@ pp_def("lmqnbc",
 	GenericTypes => ['D'],
 	Code =>'
 		integer lw, *ipivot;
-		double *w;
-		extern void lmqnbc_(integer *ifail, integer *n, double *x, 
-		double *f, double *g, double *w, integer *lw, paramv *sfun, 
-		double *low,double *up, integer *ipivot,
-		integer *msglvl, integer *maxit, integer *maxfun, integer *cgmaxit,double *eta, 
-		double *stepmx, double *accrcy, double *xtol);
+		$GENERIC() *w;
+		extern void lmqnbc_(integer *ifail, integer *n, $GENERIC() *x, 
+		$GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun, 
+		$GENERIC() *low,$GENERIC() *up, integer *ipivot,
+		integer *msglvl, integer *maxit, integer *maxfun, integer *cgmaxit,$GENERIC() *eta, 
+		$GENERIC() *stepmx, $GENERIC() *accrcy, $GENERIC() *xtol);
 
 
 		lm_function    = $COMP(fg_func);
 		lw = 14 *  $SIZE(n);
-		w  = (double *) malloc (lw * sizeof(double));
+		w  = ($GENERIC() *) malloc (lw * sizeof($GENERIC()));
 		ipivot  = (integer *) malloc ($SIZE(n) * sizeof(integer));
 			lmqnbc_(
 				$P(info),
@@ -2924,17 +2912,17 @@ pp_def("cgfam",
 	GenericTypes => ['D'],
 	Code =>'
 
-	double *w, *gold, *d;
+	$GENERIC() *w, *gold, *d;
 	int stop;
 	integer i, irest, finish;	
-	int cgfam_(integer *n, double *x, double *f, 
-	double *g, double *d__, double *gold, integer *iprint, 
-	double *eps, double *xtol, double *gtol,double *w, integer *iflag, integer *irest, 
+	int cgfam_(integer *n, $GENERIC() *x, $GENERIC() *f, 
+	$GENERIC() *g, $GENERIC() *d__, $GENERIC() *gold, integer *iprint, 
+	$GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag, integer *irest, 
 	integer *method, logical *finish);
 
-	w = (double * ) malloc ( $SIZE(n) * sizeof(double));
-	gold = (double * ) malloc ( $SIZE(n) * sizeof(double));
-	d = (double * ) malloc ( $SIZE(n) * sizeof(double));
+	w = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
+	gold = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
+	d = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
 	irest = 1;
 	finish = 0;
 	stop = 0;
@@ -3142,8 +3130,8 @@ pp_def("hooke",
 	OtherPars => "SV* hooke_func" ,
 	GenericTypes => ['D'],
 	Code =>'
-		extern int hooke(int nvars, paramd func, double *startpt, 
-			double *endpt, double rho, double tol, int maxit);
+		extern int hooke(int nvars, paramd func, $GENERIC() *startpt, 
+			$GENERIC() *endpt, $GENERIC() rho, $GENERIC() tol, int maxit);
 
 		hooke_function    = $COMP(hooke_func);
 		
@@ -3423,6 +3411,28 @@ void gencanh_wrapper(integer *nind, integer *ind, integer *n, double *x, double 
 
 ');
 
+pp_addhdr('
+extern void gencan_(integer *n, double *x, double *l, 
+  double *u, double *epsgpen, double *epsgpsn, double *
+  ftol, integer *fmaxit, integer *gmaxit, double *fmin, 
+  integer *maxit, integer *maxfc, double *udelta0, integer *
+  cgmaxit, integer *cgstop, double *cggtol, double *cgitol, 
+  double *cgftol, double *qmptol, integer *qmpmaxit, logical *
+  nearlyq, integer *gtype, integer *htvtype, integer *trtype, integer *
+  iprint, integer *iprint2, double *f, double *g, double *
+  gpeucn2, double *gpsupn, integer *iter, integer *fcnt, integer *
+  gcnt, integer *cgcnt, integer *spgiter, integer *spgfcnt, integer *
+  tniter, integer *tnfcnt, integer *tnstpcnt, integer *tnintcnt, 
+  integer *tnexgcnt, integer *tnexbcnt, integer *tnintfe, integer *
+  tnexgfe, integer *tnexbfe, integer *flag__, double *s, double 
+  *y, double *d__, integer *ind, double *w, double *eta, 
+  double *delmin, double *lammax, double *lammin, 
+  double *theta, double *gamma, double *beta, double *
+  sigma1, double *sigma2, double *nint, double *next, 
+  integer *interpmaxit, integer *ncomp, double *sterel, double *
+  steabs, double *epsrel, double *epsabs, double *infty, 
+  paramv evalf, paramv evalg, paramv evalhd);
+');
 
 pp_def("gencan",
        HandleBad => 0,
@@ -3441,40 +3451,19 @@ pp_def("gencan",
 	OtherPars => "SV* f_func; SV* g_func; SV* h_func",
 	GenericTypes => ['D'],
 	Code =>'
-		extern void gencan_(integer *n, double *x, double *l, 
-		double *u, double *epsgpen, double *epsgpsn, double *
-		ftol, integer *fmaxit, integer *gmaxit, double *fmin, 
-		integer *maxit, integer *maxfc, double *udelta0, integer *
-		cgmaxit, integer *cgstop, double *cggtol, double *cgitol, 
-		double *cgftol, double *qmptol, integer *qmpmaxit, logical *
-		nearlyq, integer *gtype, integer *htvtype, integer *trtype, integer *
-		iprint, integer *iprint2, double *f, double *g, double *
-		gpeucn2, double *gpsupn, integer *iter, integer *fcnt, integer *
-		gcnt, integer *cgcnt, integer *spgiter, integer *spgfcnt, integer *
-		tniter, integer *tnfcnt, integer *tnstpcnt, integer *tnintcnt, 
-		integer *tnexgcnt, integer *tnexbcnt, integer *tnintfe, integer *
-		tnexgfe, integer *tnexbfe, integer *flag__, double *s, double 
-		*y, double *d__, integer *ind, double *w, double *eta, 
-		double *delmin, double *lammax, double *lammin, 
-		double *theta, double *gamma, double *beta, double *
-		sigma1, double *sigma2, double *nint, double *next, 
-		integer *interpmaxit, integer *ncomp, double *sterel, double *
-		steabs, double *epsrel, double *epsabs, double *infty, 
-		paramv evalf, paramv evalg, paramv evalhd);
-
 		integer *ind;
 
-		double *s, *y, *d__, *w;
+		$GENERIC() *s, *y, *d__, *w;
 		gencanf_function    = $COMP(f_func);		
 		gencang_function    = $COMP(g_func);
 		gencanh_function    = $COMP(h_func);
 		
 		
 		ind = (integer * ) malloc ( $SIZE(n) * sizeof(integer));
-		s = (double * ) malloc ( $SIZE(n) * sizeof(double));
-		y = (double * ) malloc ( $SIZE(n) * sizeof(double));
-		d__ = (double * ) malloc ( $SIZE(n) * sizeof(double));
-		w = (double * ) malloc (5 * $SIZE(n) * sizeof(double));
+		s = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
+		y = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
+		d__ = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
+		w = ($GENERIC() * ) malloc (5 * $SIZE(n) * sizeof($GENERIC()));
 
 
 		gencan_(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
@@ -4019,36 +4008,15 @@ pp_def("sgencan",
 	OtherPars => "SV* f_func; SV* g_func; SV* h_func",
 	GenericTypes => ['D'],
 	Code =>'
-		extern void gencan_(integer *n, double *x, double *l, 
-		double *u, double *epsgpen, double *epsgpsn, double *
-		ftol, integer *fmaxit, integer *gmaxit, double *fmin, 
-		integer *maxit, integer *maxfc, double *udelta0, integer *
-		cgmaxit, integer *cgstop, double *cggtol, double *cgitol, 
-		double *cgftol, double *qmptol, integer *qmpmaxit, logical *
-		nearlyq, integer *gtype, integer *htvtype, integer *trtype, integer *
-		iprint, integer *iprint2, double *f, double *g, double *
-		gpeucn2, double *gpsupn, integer *iter, integer *fcnt, integer *
-		gcnt, integer *cgcnt, integer *spgiter, integer *spgfcnt, integer *
-		tniter, integer *tnfcnt, integer *tnstpcnt, integer *tnintcnt, 
-		integer *tnexgcnt, integer *tnexbcnt, integer *tnintfe, integer *
-		tnexgfe, integer *tnexbfe, integer *flag__, double *s, double 
-		*y, double *d__, integer *ind, double *w, double *eta, 
-		double *delmin, double *lammax, double *lammin, 
-		double *theta, double *gamma, double *beta, double *
-		sigma1, double *sigma2, double *nint, double *next, 
-		integer *interpmaxit, integer *ncomp, double *sterel, double *
-		steabs, double *epsrel, double *epsabs, double *infty, 
-		paramv evalf, paramv evalg, paramv evalhd);
-
 		integer iter, fcnt, gcnt, cgcnt, spgiter;
 		integer spgfcnt, tniter, tnfcnt, tnstpcnt, tnintcnt, tnexgcnt, tnexbcnt, tnintfe, tnexgfe;
 		integer tnexbfe, ncomp;
 		integer *ind;
 
-		double fmin;
-		double gpeucn2, gpsupn, lammax, lammin, theta, gamma, beta;
-		double sigma1, sigma2, nint, next, sterel, steabs, epsrel, epsabs, infty;
-		double *s, *y, *d__, *w;
+		$GENERIC() fmin;
+		$GENERIC() gpeucn2, gpsupn, lammax, lammin, theta, gamma, beta;
+		$GENERIC() sigma1, sigma2, nint, next, sterel, steabs, epsrel, epsabs, infty;
+		$GENERIC() *s, *y, *d__, *w;
 		gencanf_function    = $COMP(f_func);		
 		gencang_function    = $COMP(g_func);
 		gencanh_function    = $COMP(h_func);
@@ -4060,10 +4028,10 @@ pp_def("sgencan",
 		fmin = -1e+308;
 
 
-		s = (double * ) malloc ( $SIZE(n) * sizeof(double));
-		y = (double * ) malloc ( $SIZE(n) * sizeof(double));
-		d__ = (double * ) malloc ( $SIZE(n) * sizeof(double));
-		w = (double * ) malloc (5 * $SIZE(n) * sizeof(double));
+		s = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
+		y = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
+		d__ = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
+		w = ($GENERIC() * ) malloc (5 * $SIZE(n) * sizeof($GENERIC()));
 
 
 		lammax = 1e+40;
@@ -4080,7 +4048,6 @@ pp_def("sgencan",
 		epsrel = 1e-30;
 		epsabs= 1e-99;
 		infty= 1e+308;
-
 
 		gencan_(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
 		$P(epsgpen), $P(epsgpsn), $P(ftol), $P(fmaxit), $P(gmaxit), &fmin, 
@@ -4512,14 +4479,14 @@ pp_def("dhc",
 	Code =>'
 		extern double dhc(int nvars, double *xrandom, double init, double tol,
 			double *u, double *v, double *xv, double (*func)());
-		double *u, *v, *xv;
-		double fx;
+		$GENERIC() *u, *v, *xv;
+		$GENERIC() fx;
 		PDL_Indx i,j,k;
 
 		hooke_function    = $COMP(dhc_func);
-		u = (double *) malloc (sizeof(double) * $SIZE(n));
-		v = (double *) malloc (sizeof(double) * $SIZE(n));
-		xv = (double *) malloc (sizeof(double) * $SIZE(n));
+		u = ($GENERIC() *) malloc (sizeof($GENERIC()) * $SIZE(n));
+		v = ($GENERIC() *) malloc (sizeof($GENERIC()) * $SIZE(n));
+		xv = ($GENERIC() *) malloc (sizeof($GENERIC()) * $SIZE(n));
 		
 		$fx() = fx = DBL_MAX;
 		

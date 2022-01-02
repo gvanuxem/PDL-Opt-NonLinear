@@ -5,8 +5,9 @@ use PDL::Opt::NonLinear;
 use Test::More;
 
 sub approx_ok {
-  my($got,$expected,$label) = @_;
-  if (PDL::abs($got-$expected)->max < 0.0001) {
+  my($got,$expected,$eps,$label) = @_;
+  die "No eps" if !$eps or !$label;
+  if (PDL::abs($got-$expected)->max < $eps) {
     pass $label;
   } else {
     fail $label;
@@ -41,7 +42,7 @@ tensoropt($fx, $gx, $hx, $x,
 	  ones(5),0.5,$xtol,$gtol,2,6,
 	  \&min_func, \&grad_func, \&hess_func);
 
-approx_ok $x,$res,'tensoropt';
+approx_ok $x,$res,0.001,'tensoropt';
 
 $x = random(5);
 $gx = rosen_grad($x);
@@ -67,6 +68,6 @@ sub fg_func{
 }
 lbfgs($fx, $gx, $x, $diag, $diagco, $m, $maxit, $maxfc, $eps, $xtol, $gtol,
                        $print,$info,\&fg_func,\&fdiag);
-approx_ok $x,$res,'lbfgs';
+approx_ok $x,$res,0.0001,'lbfgs';
 
 done_testing;

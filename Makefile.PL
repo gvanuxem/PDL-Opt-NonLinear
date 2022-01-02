@@ -29,6 +29,7 @@ WriteMakefile(
     'PDL' => '2.063',
     'PDL::LinearAlgebra' => 0,
   },
+  TEST_REQUIRES => { "Test::More" => '0.88' },
   META_MERGE => {
     "meta-spec" => { version => 2 },
     resources => {

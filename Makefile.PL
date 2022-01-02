@@ -19,7 +19,7 @@ BEGIN {
    }
 }
 
-my @pack = qw(nonlinear.pd NonLinear PDL::Opt::NonLinear);
+my @pack = (qw(nonlinear.pd NonLinear PDL::Opt::NonLinear), undef, 1);
 my @opti_libfiles = map {s/^opti_lib\///; s/\.f$//; $_} glob("opti_lib/*.f");
 my $fobj = join ' ', map {"opti_lib/$_\$(OBJ_EXT)"} @opti_libfiles;
 my @opti_cfiles = qw(hooke asa asa_usr dhc de36);
@@ -44,9 +44,9 @@ WriteMakefile(
         'ABSTRACT' => 'Non linear optimization routines for PDL',
         'AUTHOR' => [ 'Gregory Vanuxem <gvanuxem.perl@gmail.com>' ],
         'LICENSE' => 'artistic_2',
-	'CONFIGURE_REQUIRES' =>  { "PDL" => 0, "ExtUtils::F77" => 0,},
+	'CONFIGURE_REQUIRES' =>  { "PDL" => '2.063', "ExtUtils::F77" => 0,},
 	'PREREQ_PM' => {
-	  'PDL' => 0, 
+	  'PDL' => '2.063',
 	  'PDL::LinearAlgebra' => 0,
 	},
 );

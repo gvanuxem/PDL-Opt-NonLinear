@@ -123,7 +123,7 @@ EOD
 if ($config{PORT3}){
 pp_addhdr('
 static SV*   oned_function;
-double oned_wrapper(double *f)
+static double oned_wrapper(double *f)
 {
 	dSP ;
 	double  ret;
@@ -152,7 +152,7 @@ double oned_wrapper(double *f)
 	return ret;
 }
 static SV*   pdl4_function;
-void dpdl4_wrapper(
+static void dpdl4_wrapper(
 		PDL_Indx m, double *a,
 		PDL_Indx n, double *b,
 		PDL_Indx o, PDL_Indx *c,
@@ -228,7 +228,7 @@ void dpdl4_wrapper(
 
 }
 
-void fpdl4_wrapper(
+static void fpdl4_wrapper(
 		PDL_Indx m, float *a,
 		PDL_Indx n, float *b,
 		PDL_Indx o, PDL_Indx *c,
@@ -305,7 +305,7 @@ void fpdl4_wrapper(
 }
 
 static SV*   doubler_function;
-double np_wrapper(integer *n, double *p)
+static double np_wrapper(integer *n, double *p)
 {
    dSP ;
 
@@ -1061,7 +1061,7 @@ f(x) with user computed hessian and gradient.
 pp_addhdr('
 static SV   *tensor_hess_function, *tensor_f_function, *tensor_grad_function;
 
-void tensor_f_wrapper(integer *n, double *x, double *f)
+static void tensor_f_wrapper(integer *n, double *x, double *f)
 {
    dSP ;
 
@@ -1109,7 +1109,7 @@ void tensor_f_wrapper(integer *n, double *x, double *f)
    PUTBACK ;   FREETMPS ;   LEAVE ;
 }
 
-void tensor_grad_wrapper(integer *n, double *x, double *g)
+static void tensor_grad_wrapper(integer *n, double *x, double *g)
 {
    dSP ;
 
@@ -1153,7 +1153,7 @@ void tensor_grad_wrapper(integer *n, double *x, double *g)
    PUTBACK ;   FREETMPS ;   LEAVE ;
 }
 
-void tensor_hess_wrapper(integer *nr, integer *n, double *x, double *hx)
+static void tensor_hess_wrapper(integer *nr, integer *n, double *x, double *hx)
 {
    dSP ;
 
@@ -1345,7 +1345,7 @@ parameters:
 
 pp_addhdr('
 
-int lbfgs_wrapper(PDL_Indx n, double *a, double *b, double *c, SV *lbfgs_func)
+static int lbfgs_wrapper(PDL_Indx n, double *a, double *b, double *c, SV *lbfgs_func)
 {
 
    dSP ;
@@ -1408,7 +1408,7 @@ int lbfgs_wrapper(PDL_Indx n, double *a, double *b, double *c, SV *lbfgs_func)
    return ret;
 
 }
-int lbfgs_diag_wrapper(PDL_Indx n, double *a, double *b, SV *lbfgs_diag_func)
+static int lbfgs_diag_wrapper(PDL_Indx n, double *a, double *b, SV *lbfgs_diag_func)
 {
 
    dSP ;
@@ -1690,7 +1690,7 @@ the routine csrch written by Moré and Thuente.
 ');
 
 pp_addhdr('
-int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, integer *d, double *e, SV *lbfgsb_func)
+static int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, integer *d, double *e, SV *lbfgsb_func)
 {
 
    dSP ;
@@ -2120,7 +2120,7 @@ It uses the limited memory BFGS method.
 pp_addhdr('
 static SV   *npg_pgrad_function, *npg_f_function, *npg_grad_function;
 
-void npg_f_wrapper(integer *n, double *x, double *f, integer *inform)
+static void npg_f_wrapper(integer *n, double *x, double *f, integer *inform)
 {
    dSP ;
 
@@ -2169,7 +2169,7 @@ void npg_f_wrapper(integer *n, double *x, double *f, integer *inform)
 
    PUTBACK ;   FREETMPS ;   LEAVE ;
 }
-void npg_pgrad_wrapper(integer *n, double *x, integer *inform)
+static void npg_pgrad_wrapper(integer *n, double *x, integer *inform)
 {
    dSP ;
 
@@ -2208,7 +2208,7 @@ void npg_pgrad_wrapper(integer *n, double *x, integer *inform)
    PUTBACK ;   FREETMPS ;   LEAVE ;
 }
 
-void npg_grad_wrapper(integer *n, double *x, double *g, integer *inform)
+static void npg_grad_wrapper(integer *n, double *x, double *g, integer *inform)
 {
    dSP ;
 
@@ -2425,7 +2425,7 @@ Final revision 03 JUL 2001 by E.G.Birgin, J.M.Martinez and M.Raydan.
 
 pp_addhdr('
 static SV   *lm_function;
-void lm_wrapper(integer *n, double *x, double *f, double *g)
+static void lm_wrapper(integer *n, double *x, double *f, double *g)
 {
    dSP ;
 
@@ -2929,7 +2929,7 @@ pp. 21-42.
 
 pp_addhdr('
 static SV*   hooke_function;
-double hooke_wrapper(int n, double *p)
+static double hooke_wrapper(int n, double *p)
 {
    dSP ;
 
@@ -3088,7 +3088,7 @@ begin the second minimization.
 
 pp_addhdr('
 static SV   *gencanf_function;
-void gencanf_wrapper(integer *n, double *x, double *f, integer *inform)
+static void gencanf_wrapper(integer *n, double *x, double *f, integer *inform)
 {
    dSP ;
 
@@ -3135,7 +3135,7 @@ void gencanf_wrapper(integer *n, double *x, double *f, integer *inform)
 }
 
 static SV   *gencang_function;
-void gencang_wrapper(integer *n, double *x, double *g, integer *inform)
+static void gencang_wrapper(integer *n, double *x, double *g, integer *inform)
 {
    dSP ;
 
@@ -3183,7 +3183,7 @@ void gencang_wrapper(integer *n, double *x, double *g, integer *inform)
 }
 
 static SV   *gencanh_function;
-void gencanh_wrapper(integer *nind, integer *ind, integer *n, double *x, double *d, double *hd,integer *inform)
+static void gencanh_wrapper(integer *nind, integer *ind, integer *n, double *x, double *d, double *hd,integer *inform)
 {
    dSP ;
 
@@ -4569,8 +4569,7 @@ Strategy:
 
 pp_addhdr('
 static SV*   asa_function;
-double
-asa_wrapper (double *x,
+static double asa_wrapper (double *x,
                double *parameter_lower_bound,
                double *parameter_upper_bound,
                double *cost_tangents,

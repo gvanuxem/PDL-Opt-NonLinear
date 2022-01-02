@@ -394,7 +394,7 @@ pp_def("fmin",
              types(D) %{
 		extern double dfmin_(paramd f, double *X, double *A,double *B, double *T);
 		%}
-		oned_function    = $PRIV(min_func);
+		oned_function    = $COMP(min_func);
 		$y() = $TFD(fmin_,dfmin_)(oned_wrapper, $P(x), $P(a),$P(b),$P(tol));
 
 
@@ -439,11 +439,11 @@ pp_def("smnsx",
 		extern integer* nerror_(integer *err);
 		extern void entsrc_(integer *old, integer *new);
 		//TODO istkgt istkin: stack
-		doubler_function    = $PRIV(simplex_func);
+		doubler_function    = $COMP(simplex_func);
 		
 		new = 1;
 		entsrc_(&old, &new);
-		$y() = dsmnsx_(np_wrapper, &$PRIV(__n_size), $P(step), $P(tol),$P(x));
+		$y() = dsmnsx_(np_wrapper, &$SIZE(n), $P(step), $P(tol),$P(x));
 		nerror_(&err);
 		if (err > 0 )
 			eprint_();
@@ -504,13 +504,13 @@ pp_def("mnsx",
 		extern void entsrc_(integer *old, integer *new);
 		//TODO istkgt istkin: stack
 
-		doubler_function    = $PRIV(simplex_func);
+		doubler_function    = $COMP(simplex_func);
 		new = 1;
 		entsrc_(&old, &new);
 		$y() = dmnsx_(np_wrapper, 
 				$P(maxit),
-				&$PRIV(__n_size), 
-				&$PRIV(__n_size),
+				&$SIZE(n), 
+				&$SIZE(n),
 				$P(vertices),
 				$P(tol),
 				$P(x));
@@ -582,7 +582,7 @@ pp_def("ivset",
              types(D) %{
 		extern void divset_(integer *alg, integer *iv, integer *liv, integer *lv, double *v);
 		%}
-		$TFD(ivset_,divset_)($P(type), $P(iv), &$PRIV(__n_size), &$PRIV(__p_size),$P(v));
+		$TFD(ivset_,divset_)($P(type), $P(iv), &$SIZE(n), &$SIZE(p),$P(v));
 ',
 	Doc =>'
 
@@ -646,15 +646,15 @@ pp_def("rmnf",
 		integer *lv, integer *n, double *v, double*x);
 		%}
 		
-		pdl4_function    = $PRIV(min_func);
+		pdl4_function    = $COMP(min_func);
 		do{
 			$TFD(rmnf_,drmnf_)(
 				$P(scale),
 				$P(fx), 
 				$P(iv), 
-				&$PRIV(__n_size),
-				&$PRIV(__p_size),
-				&$PRIV(__m_size),
+				&$SIZE(n),
+				&$SIZE(p),
+				&$SIZE(m),
 				$P(v), 
 				$P(x));
              types(F) %{
@@ -724,14 +724,14 @@ pp_def("rmng",
 				$P(fx),
 				$P(gx),
 				$P(iv), 
-				&$PRIV(__n_size),
-				&$PRIV(__p_size),
-				&$PRIV(__m_size),
+				&$SIZE(n),
+				&$SIZE(p),
+				&$SIZE(m),
 				$P(v), 
 				$P(x));
 			if($iv(n=>0) == 1 )
 			{
-				pdl4_function    = $PRIV(min_func);
+				pdl4_function    = $COMP(min_func);
              types(F) %{
 				fpdl4_wrapper(1, $P(fx), 
 					$SIZE(m), $P(x),
@@ -747,7 +747,7 @@ pp_def("rmng",
 			}
 			else if($iv(n=>0) == 2 )
 			{
-				pdl4_function    = $PRIV(grad_func);
+				pdl4_function    = $COMP(grad_func);
              types(F) %{
 				fpdl4_wrapper($SIZE(m), $P(gx), 
 					$SIZE(m), $P(x),
@@ -830,15 +830,15 @@ pp_def("rmnh",
 				$P(gx),
 				$P(hx),
 				$P(iv), 
-				&$PRIV(__n_size),
-				&$PRIV(__p_size),
-				&$PRIV(__q_size),
-				&$PRIV(__m_size),
+				&$SIZE(n),
+				&$SIZE(p),
+				&$SIZE(q),
+				&$SIZE(m),
 				$P(v), 
 				$P(x));
 			if($iv(p=>0) == 1 )
 			{
-				pdl4_function    = $PRIV(min_func);
+				pdl4_function    = $COMP(min_func);
              types(F) %{
 				fpdl4_wrapper(1, $P(fx),
 					$SIZE(m), $P(x),
@@ -854,7 +854,7 @@ pp_def("rmnh",
 			}
 			else if($iv(p=>0) == 2 )
 			{
-				pdl4_function    = $PRIV(grad_func);
+				pdl4_function    = $COMP(grad_func);
              types(F) %{
 				fpdl4_wrapper($SIZE(m), $P(gx),
 					$SIZE(m), $P(x),
@@ -867,7 +867,7 @@ pp_def("rmnh",
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));			
 		%}
-				pdl4_function    = $PRIV(hess_func);
+				pdl4_function    = $COMP(hess_func);
              types(F) %{
 				fpdl4_wrapper($SIZE(n), $P(hx),
 					$SIZE(m), $P(x),
@@ -946,16 +946,16 @@ pp_def("rmnfb",
 		integer *lv, integer *n, double *v, double*x);
 		%}
 		
-		pdl4_function    = $PRIV(min_func);
+		pdl4_function    = $COMP(min_func);
 		do{
 			$TFD(rmnfb_,drmnfb_)(
 				$P(bound),
 				$P(scale),
 				$P(fx), 
 				$P(iv), 
-				&$PRIV(__n_size),
-				&$PRIV(__p_size),
-				&$PRIV(__m_size),
+				&$SIZE(n),
+				&$SIZE(p),
+				&$SIZE(m),
 				$P(v), 
 				$P(x));
              types(F) %{
@@ -1030,14 +1030,14 @@ pp_def("rmngb",
 				$P(fx),
 				$P(gx),
 				$P(iv), 
-				&$PRIV(__n_size),
-				&$PRIV(__p_size),
-				&$PRIV(__m_size),
+				&$SIZE(n),
+				&$SIZE(p),
+				&$SIZE(m),
 				$P(v), 
 				$P(x));
 			if($iv(n=>0) == 1 )
 			{
-				pdl4_function    = $PRIV(min_func);
+				pdl4_function    = $COMP(min_func);
              types(F) %{
 				fpdl4_wrapper(1, $P(fx),
 					$SIZE(m), $P(x),
@@ -1053,7 +1053,7 @@ pp_def("rmngb",
 			}
 			else if($iv(n=>0) == 2 )
 			{
-				pdl4_function    = $PRIV(grad_func);
+				pdl4_function    = $COMP(grad_func);
              types(F) %{	
 				fpdl4_wrapper($SIZE(m), $P(gx),
 					$SIZE(m), $P(x),
@@ -1138,15 +1138,15 @@ pp_def("rmnhb",
 				$P(gx),
 				$P(hx),
 				$P(iv), 
-				&$PRIV(__n_size),
-				&$PRIV(__p_size),
-				&$PRIV(__q_size),
-				&$PRIV(__m_size),
+				&$SIZE(n),
+				&$SIZE(p),
+				&$SIZE(q),
+				&$SIZE(m),
 				$P(v), 
 				$P(x));
 			if($iv(p=>0) == 1 )
 			{
-				pdl4_function    = $PRIV(min_func);
+				pdl4_function    = $COMP(min_func);
              types(F) %{	
 				fpdl4_wrapper(1, $P(fx),
 					$SIZE(m), $P(x),
@@ -1162,7 +1162,7 @@ pp_def("rmnhb",
 			}
 			else if($iv(p=>0) == 2 )
 			{
-				pdl4_function    = $PRIV(grad_func);
+				pdl4_function    = $COMP(grad_func);
              types(F) %{
 				fpdl4_wrapper($SIZE(m), $P(gx),
 					$SIZE(m), $P(x),
@@ -1175,7 +1175,7 @@ pp_def("rmnhb",
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));
 		%}
-				pdl4_function    = $PRIV(hess_func);
+				pdl4_function    = $COMP(hess_func);
              types(F) %{
 				fpdl4_wrapper($SIZE(n), $P(hx),
 					$SIZE(m), $P(x),
@@ -1407,17 +1407,17 @@ pp_def("tensoropt",
 		double *gpls, double *h__, integer *itnno, double *wrk, 
 		integer *iwrk);
 
-		tensor_f_function = $PRIV(f_func);
-		tensor_grad_function = $PRIV(g_func);
-		tensor_hess_function = $PRIV(h_func);
+		tensor_f_function = $COMP(f_func);
+		tensor_grad_function = $COMP(g_func);
+		tensor_hess_function = $COMP(h_func);
 
-		iwork = (integer * ) malloc ( $PRIV(__n_size) * sizeof(integer));
-		work = (double * ) malloc ( ($PRIV(__n_size) * 8) * sizeof(double));
-		xtmp = (double * ) malloc ( $PRIV(__n_size) * sizeof(double));
+		iwork = (integer * ) malloc ( $SIZE(n) * sizeof(integer));
+		work = (double * ) malloc ( ($SIZE(n) * 8) * sizeof(double));
+		xtmp = (double * ) malloc ( $SIZE(n) * sizeof(double));
 
 		tensor_(
-		&$PRIV(__n_size),
-		&$PRIV(__n_size),
+		&$SIZE(n),
+		&$SIZE(n),
 		$P(x),
 		tensor_f_wrapper,
 		tensor_grad_wrapper,
@@ -1660,13 +1660,13 @@ pp_def("lbfgs",
 	extern int lbfgs_(integer *n, integer *m, double *x, double 
 	*f, double *g, logical *diagco, double *diag, integer *maxit,integer *iprint,
 	 double *eps, double *xtol, double *gtol,double *w, integer *iflag);
-	w = (double * ) malloc ( ($PRIV(__n_size) * (2*$m() +1)+ 2*$m())* sizeof(double));
+	w = (double * ) malloc ( ($SIZE(n) * (2*$m() +1)+ 2*$m())* sizeof(double));
 	stop = 0;
 
 	for (i = 1 ; i < $maxfc(); )
 	{
 			lbfgs_(
-			&$PRIV(__n_size),
+			&$SIZE(n),
 			$P(m),
 			$P(x),
 			$P(fx),
@@ -1684,7 +1684,7 @@ pp_def("lbfgs",
 			switch($info())
 			{
 		
-				 case 1:	stop = lbfgs_wrapper($PRIV(__n_size),$P(fx), $P(gx),$P(x), $PRIV(fg_func));
+				 case 1:	stop = lbfgs_wrapper($SIZE(n),$P(fx), $P(gx),$P(x), $COMP(fg_func));
 				 		if (stop != 0)
 				 		{
 							$info() = -3;
@@ -1693,7 +1693,7 @@ pp_def("lbfgs",
 						i++;
 						break;
 			        
-				 case 2:        stop = lbfgs_diag_wrapper($PRIV(__n_size),$P(diag), $P(x), $PRIV(diag_func));
+				 case 2:        stop = lbfgs_diag_wrapper($SIZE(n),$P(diag), $P(x), $COMP(diag_func));
 				 		if (stop != 0)
 				 		{
 							$info() = -3;
@@ -1989,14 +1989,14 @@ pp_def("lbfgsb",
 	strcpy(task, "START");
 	//TODO
 	memset(task+5, \' \', sizeof(task)-5);
-	iwa = (integer * ) malloc ( 3 * $PRIV(__n_size)   * sizeof(integer));
-	wa = (double * ) malloc ((2*$m()*$PRIV(__n_size)+4*$PRIV(__n_size)+12*$m()*$m()+12*$m())* sizeof(double));
+	iwa = (integer * ) malloc ( 3 * $SIZE(n)   * sizeof(integer));
+	wa = (double * ) malloc ((2*$m()*$SIZE(n)+4*$SIZE(n)+12*$m()*$m()+12*$m())* sizeof(double));
  	i = 0;
 
 	while(1)
 	{
 			setulb_(
-			&$PRIV(__n_size),
+			&$SIZE(n),
 			$P(m),
 			$P(x),
 			&$bound(n=>0,m=>0),
@@ -2023,7 +2023,7 @@ pp_def("lbfgsb",
 						goto end;
 			
 				 case \'F\':	/*FG*/
-						stop = lbfgsb_wrapper($SIZE(n), $P(fx), $P(gx), $P(x), $P(iv), $P(v), $PRIV(fg_func));
+						stop = lbfgsb_wrapper($SIZE(n), $P(fx), $P(gx), $P(x), $P(iv), $P(v), $COMP(fg_func));
 						if (stop == -1)
 							strcpy(task, "STOP  CPU, REQUESTED BY USER.");
 						break;
@@ -2458,12 +2458,12 @@ pp_def("spg",
                     	integer *iter, integer *fcnt, integer *gcnt, integer *flag, paramv *evalf, paramv *evalg, paramv *proj);
 		integer iter;
 
-		npg_f_function    = $PRIV(min_func);
-		npg_grad_function    = $PRIV(grad_func);
-		npg_pgrad_function    = $PRIV(px_func);
+		npg_f_function    = $COMP(min_func);
+		npg_grad_function    = $COMP(grad_func);
+		npg_pgrad_function    = $COMP(px_func);
 
 			spg_(
-				&$PRIV(__n_size),
+				&$SIZE(n),
 				$P(x),
 				$P(m),
 				$P(eps1),
@@ -2685,13 +2685,13 @@ pp_def("lmqn",
 		double *stepmx, double *accrcy, double *xtol);
 
 
-		lm_function = $PRIV(fg_func);
-		lw = 14 *  $PRIV(__n_size);
+		lm_function = $COMP(fg_func);
+		lw = 14 *  $SIZE(n);
 		w  = (double *) malloc (lw * sizeof(double));
 
 			lmqn_(
 				$P(info),
-				&$PRIV(__n_size),
+				&$SIZE(n),
 				$P(x),
 				$P(fx),
 				$P(gx),
@@ -2813,13 +2813,13 @@ pp_def("lmqnbc",
 		double *stepmx, double *accrcy, double *xtol);
 
 
-		lm_function    = $PRIV(fg_func);
-		lw = 14 *  $PRIV(__n_size);
+		lm_function    = $COMP(fg_func);
+		lw = 14 *  $SIZE(n);
 		w  = (double *) malloc (lw * sizeof(double));
-		ipivot  = (integer *) malloc ($PRIV(__n_size) * sizeof(integer));
+		ipivot  = (integer *) malloc ($SIZE(n) * sizeof(integer));
 			lmqnbc_(
 				$P(info),
-				&$PRIV(__n_size),
+				&$SIZE(n),
 				$P(x),
 				$P(fx),
 				$P(gx),
@@ -2954,9 +2954,9 @@ pp_def("cgfam",
 	double *eps, double *xtol, double *gtol,double *w, integer *iflag, integer *irest, 
 	integer *method, logical *finish);
 
-	w = (double * ) malloc ( $PRIV(__n_size) * sizeof(double));
-	gold = (double * ) malloc ( $PRIV(__n_size) * sizeof(double));
-	d = (double * ) malloc ( $PRIV(__n_size) * sizeof(double));
+	w = (double * ) malloc ( $SIZE(n) * sizeof(double));
+	gold = (double * ) malloc ( $SIZE(n) * sizeof(double));
+	d = (double * ) malloc ( $SIZE(n) * sizeof(double));
 	irest = 1;
 	finish = 0;
 	stop = 0;
@@ -2964,7 +2964,7 @@ pp_def("cgfam",
 	for (i = 1 ; i <= $maxit(); )
 	{
 			cgfam_(
-			&$PRIV(__n_size),
+			&$SIZE(n),
 			$P(x),
 			$P(fx),
 			$P(gx),
@@ -2987,7 +2987,7 @@ pp_def("cgfam",
 						goto end;
 			
 				 case 1:	
-			 			stop = lbfgs_wrapper($PRIV(__n_size),$P(fx), $P(gx),$P(x), $PRIV(fg_func));
+			 			stop = lbfgs_wrapper($SIZE(n),$P(fx), $P(gx),$P(x), $COMP(fg_func));
 						break;
 			        
 				 case 2:	
@@ -3167,7 +3167,7 @@ pp_def("hooke",
 		extern int hooke(int nvars, paramd func, double *startpt, 
 			double *endpt, double rho, double tol, int maxit);
 
-		hooke_function    = $PRIV(hooke_func);
+		hooke_function    = $COMP(hooke_func);
 		
 		$maxit() = hooke($SIZE(n), hooke_wrapper, $P(x), $P(x), $rho(), $tol(),$maxit());
 ',
@@ -3487,19 +3487,19 @@ pp_def("gencan",
 		integer *ind;
 
 		double *s, *y, *d__, *w;
-		gencanf_function    = $PRIV(f_func);		
-		gencang_function    = $PRIV(g_func);
-		gencanh_function    = $PRIV(h_func);
+		gencanf_function    = $COMP(f_func);		
+		gencang_function    = $COMP(g_func);
+		gencanh_function    = $COMP(h_func);
 		
 		
-		ind = (integer * ) malloc ( $PRIV(__n_size) * sizeof(integer));
-		s = (double * ) malloc ( $PRIV(__n_size) * sizeof(double));
-		y = (double * ) malloc ( $PRIV(__n_size) * sizeof(double));
-		d__ = (double * ) malloc ( $PRIV(__n_size) * sizeof(double));
-		w = (double * ) malloc (5 * $PRIV(__n_size) * sizeof(double));
+		ind = (integer * ) malloc ( $SIZE(n) * sizeof(integer));
+		s = (double * ) malloc ( $SIZE(n) * sizeof(double));
+		y = (double * ) malloc ( $SIZE(n) * sizeof(double));
+		d__ = (double * ) malloc ( $SIZE(n) * sizeof(double));
+		w = (double * ) malloc (5 * $SIZE(n) * sizeof(double));
 
 
-		gencan_(&$PRIV(__n_size), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
+		gencan_(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
 		$P(epsgpen), $P(epsgpsn), $P(ftol), $P(fmaxit), $P(gmaxit), $P(fmin), 
 		$P(maxit), $P(maxfc), $P(delta), $P(cgmaxit), $P(cgstop), $P(cggtol), $P(cgitol), 
 		$P(cgftol), $P(qmptol), $P(qmpmaxit), $P(nearlyq), $P(gtype), $P(htvtype), $P(trtype),
@@ -4071,21 +4071,21 @@ pp_def("sgencan",
 		double gpeucn2, gpsupn, lammax, lammin, theta, gamma, beta;
 		double sigma1, sigma2, nint, next, sterel, steabs, epsrel, epsabs, infty;
 		double *s, *y, *d__, *w;
-		gencanf_function    = $PRIV(f_func);		
-		gencang_function    = $PRIV(g_func);
-		gencanh_function    = $PRIV(h_func);
+		gencanf_function    = $COMP(f_func);		
+		gencang_function    = $COMP(g_func);
+		gencanh_function    = $COMP(h_func);
 		
 		
-		ind = (integer * ) malloc ( $PRIV(__n_size) * sizeof(integer));
+		ind = (integer * ) malloc ( $SIZE(n) * sizeof(integer));
 		ncomp = 10;
 
 		fmin = -1e+308;
 
 
-		s = (double * ) malloc ( $PRIV(__n_size) * sizeof(double));
-		y = (double * ) malloc ( $PRIV(__n_size) * sizeof(double));
-		d__ = (double * ) malloc ( $PRIV(__n_size) * sizeof(double));
-		w = (double * ) malloc (5 * $PRIV(__n_size) * sizeof(double));
+		s = (double * ) malloc ( $SIZE(n) * sizeof(double));
+		y = (double * ) malloc ( $SIZE(n) * sizeof(double));
+		d__ = (double * ) malloc ( $SIZE(n) * sizeof(double));
+		w = (double * ) malloc (5 * $SIZE(n) * sizeof(double));
 
 
 		lammax = 1e+40;
@@ -4104,7 +4104,7 @@ pp_def("sgencan",
 		infty= 1e+308;
 
 
-		gencan_(&$PRIV(__n_size), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
+		gencan_(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
 		$P(epsgpen), $P(epsgpsn), $P(ftol), $P(fmaxit), $P(gmaxit), &fmin, 
 		$P(maxit), $P(maxfc), $P(delta), $P(cgmaxit), $P(cgstop), $P(cggtol), $P(cgitol), 
 		$P(cgftol), $P(qmptol), $P(qmpmaxit), $P(nearlyq), $P(gtype), $P(htvtype), $P(trtype),
@@ -4538,7 +4538,7 @@ pp_def("dhc",
 		double fx;
 		PDL_Indx i,j,k;
 
-		hooke_function    = $PRIV(dhc_func);
+		hooke_function    = $COMP(dhc_func);
 		u = (double *) malloc (sizeof(double) * $SIZE(n));
 		v = (double *) malloc (sizeof(double) * $SIZE(n));
 		xv = (double *) malloc (sizeof(double) * $SIZE(n));
@@ -4658,7 +4658,7 @@ pp_def("de_opt",
    		int  strategy, double F, double CR, double *cvar, 
 		double inibound_h, double inibound_l, int   refresh, double (*evaluate)());
 
-		hooke_function    = $PRIV(de_func);
+		hooke_function    = $COMP(de_func);
 		
 		$fx() = de_optimize($SIZE(n), 
 				$P(x),
@@ -4844,7 +4844,7 @@ pp_def("asa_opt",
 			int *parameter_type, long int seed, long int *limit, double *cost_param, double *temp,
 			long int *generic,double *res, double *coarse, double *tangent, double *curvature, 
 			double *quench_cost, double *quench_scale, long int print, double (*func)());
-  	asa_function  = $PRIV(asa_func);
+  	asa_function  = $COMP(asa_func);
 	$info() = asa_main($SIZE(n), $P(x), $P(fx), $P(inibound_l),
 			$P(inibound_u), $P(parameter_type),$seed(),
 			$P(limit), $P(cost_param), $P(temperature), $P(generic),

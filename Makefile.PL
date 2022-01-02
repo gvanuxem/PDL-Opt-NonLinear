@@ -21,18 +21,18 @@ BEGIN {
 
 my @pack = ([qw(nonlinear.pd NonLinear PDL::Opt::NonLinear)]);
 my @opti_libfiles = map {s/^opti_lib\///; s/\.f$//; $_} glob("opti_lib/*.f");
+my $fobj = join ' ', map {"opti_lib/$_\$(OBJ_EXT)"} @opti_libfiles;
+my @opti_cfiles = qw(hooke asa asa_usr dhc de36);
+my @cshallow = map "$_\$(OBJ_EXT)", @opti_cfiles;
+my $cshallow = join ' ', @cshallow;
+my $cdeep = join ' ', map "opti_lib/$_", @cshallow;
 
 my %hash = pdlpp_stdargs(@pack);
 $hash{INC} .= " -Iopti_lib";  # uncomment as required
-$hash{OBJECT} .= " opti_lib/hooke\$(OBJ_EXT) opti_lib/asa\$(OBJ_EXT) opti_lib/asa_usr\$(OBJ_EXT) opti_lib/dhc\$(OBJ_EXT) opti_lib/de36\$(OBJ_EXT) ";
-my $fobj = join '', map {" opti_lib/$_\$(OBJ_EXT) "} @opti_libfiles;
-$hash{OBJECT} .= $fobj; 
-$hash{LDFROM} .= " hooke\$(OBJ_EXT) asa\$(OBJ_EXT) asa_usr\$(OBJ_EXT) dhc\$(OBJ_EXT) de36\$(OBJ_EXT) ".$fobj." NonLinear\$(OBJ_EXT)";
-$hash{LIBS}[0] .= $f77->runtime ;
-$hash{LIBS}[0] .= ' -L/usr/local/lib -lport -lblas' ;
-$hash{clean}{FILES} .= " f77_underscore" .
-  join '', map {" opti_lib/$_\$(OBJ_EXT) "} @opti_libfiles;
-$hash{clean}{FILES} .= " hooke\$(OBJ_EXT) ";
+$hash{OBJECT} .= " $cdeep $fobj";
+$hash{LDFROM} .= " $cshallow $fobj NonLinear\$(OBJ_EXT)";
+$hash{LIBS}[0] .= $f77->runtime . ' -L/usr/local/lib -lport -lblas' ;
+$hash{clean}{FILES} .= " f77_underscore $fobj $cdeep";
 
 # Create flag file according to whether or not to use
 # underscores (pretty hacky)

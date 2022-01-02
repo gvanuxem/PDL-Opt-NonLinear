@@ -2,22 +2,9 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 use PDL::Core::Dev;
-
-my $f77;
-BEGIN {
-   eval "use ExtUtils::F77";
-   if ($@ ne "") {
-     warn "\n\tExtUtils::F77 module not found. Will not build PDL::Opt::NonLinear\n\n" ;
-     exit(1);
-   }
-   else {
-     $f77 = 'ExtUtils::F77';
-   }
-   if (!$f77->testcompiler) {
-     warn "\n\n\tNo fortran compiler found. Will not build PDL::Opt::NonLinear on this system\n\n";
-     exit(1);
-   }
-}
+use ExtUtils::F77;
+my $f77 = 'ExtUtils::F77';
+die "No fortran compiler found. Will not build PDL::Opt::NonLinear on this system\n" if !$f77->testcompiler;
 
 my @pack = (qw(nonlinear.pd NonLinear PDL::Opt::NonLinear), undef, 1);
 my @opti_libfiles = map {s/^opti_lib\///; s/\.f$//; $_} glob("opti_lib/*.f");
@@ -32,20 +19,33 @@ $hash{LIBS}[0] .= $f77->runtime . ' -L/usr/local/lib -lport -lblas' ;
 $hash{clean}{FILES} .= " $fobj";
 
 WriteMakefile(
-        %hash,
-        'ABSTRACT' => 'Non linear optimization routines for PDL',
-        'AUTHOR' => [ 'Grégory Vanuxem <gvanuxem.perl@gmail.com>' ],
-        'LICENSE' => 'artistic_2',
-	'CONFIGURE_REQUIRES' =>  { "PDL" => '2.063', "ExtUtils::F77" => 0,},
-	'PREREQ_PM' => {
-	  'PDL' => '2.063',
-	  'PDL::LinearAlgebra' => 0,
-	},
+  %hash,
+  'ABSTRACT' => 'Non linear optimization routines for PDL',
+  'AUTHOR' => [ 'Grégory Vanuxem <gvanuxem.perl@gmail.com>' ],
+  'LICENSE' => 'artistic_2',
+  'CONFIGURE_REQUIRES' =>  { "PDL" => '2.063', "ExtUtils::F77" => 0 },
+  'PREREQ_PM' => {
+    'PDL' => '2.063',
+    'PDL::LinearAlgebra' => 0,
+  },
+  META_MERGE => {
+    "meta-spec" => { version => 2 },
+    resources => {
+      homepage => 'http://pdl.perl.org/',
+      repository  => {
+        url => 'git://github.com/PDLPorters/PDL-Opt-NonLinear.git',
+        type => 'git',
+        web => 'https://github.com/PDLPorters/PDL-Opt-NonLinear',
+      },
+      bugtracker => {web=>'https://github.com/PDLPorters/PDL-Opt-NonLinear/issues'},
+    },
+    x_IRC => 'irc://irc.perl.org/#pdl',
+  },
 );
 
 sub MY::postamble {
-        my $mycompiler     = $f77->compiler();
-        my $mycflags       = $f77->cflags();
+        my $mycompiler     = $f77->compiler;
+        my $mycflags       = $f77->cflags;
 	my $orig = pdlpp_postamble(\@pack);
 	$orig =~ s/:\s*nonlinear\.pd/: nonlinear.pd/;
 	$orig .join "\n",map {

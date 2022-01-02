@@ -3,6 +3,7 @@ use warnings;
 use ExtUtils::MakeMaker;
 use PDL::Core::Dev;
 use ExtUtils::F77;
+use utf8; # to get author name right
 my $f77 = 'ExtUtils::F77';
 die "No fortran compiler found. Will not build PDL::Opt::NonLinear on this system\n" if !$f77->testcompiler;
 

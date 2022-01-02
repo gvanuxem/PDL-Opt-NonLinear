@@ -16,7 +16,7 @@ sub approx_ok {
 }
 
 my $res = ones(5);
-my $x = random(5);
+my $x = pdl '[0.49823058 0.98093641 0.63151156 0.66477157 0.60801367]';
 
 my $gx = rosen_grad($x);
 my $hx = rosen_hess($x);
@@ -44,7 +44,7 @@ tensoropt($fx, $gx, $hx, $x,
 
 approx_ok $x,$res,0.001,'tensoropt';
 
-$x = random(5);
+$x = pdl '[0.49823058 0.98093641 0.63151156 0.66477157 0.60801367]';
 $gx = rosen_grad($x);
 $fx = rosen($x);
 my $diag = zeroes(5);

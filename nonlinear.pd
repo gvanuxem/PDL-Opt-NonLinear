@@ -80,6 +80,8 @@ use PDL::Ops;
 use PDL::NiceSlice;
 use PDL::LinearAlgebra qw/diag tritosym/;
 
+=encoding utf8
+
 =head1 NAME
 
 PDL::Opt::NonLinear -- Non Linear optimization routines

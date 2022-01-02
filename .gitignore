@@ -2,6 +2,6 @@ NonLinear.bs
 NonLinear.c
 NonLinear.pm
 NonLinear.xs
-*/pp-*.[co]*
+**/pp-*.[co]*
 f77_underscore
 **/*.o

@@ -35,11 +35,11 @@ extern "C" {
 #define CALLOC_FAILED			((int) -1)
 
 #ifndef TIME_STD
-#define TIME_STD FALSE
+#define TIME_STD ASAFALSE
 #endif
 
 #ifndef TIME_GETRUSAGE
-#define TIME_GETRUSAGE TRUE
+#define TIME_GETRUSAGE ASATRUE
 #endif
 
 #if TIME_CALC
@@ -50,7 +50,7 @@ extern "C" {
 #include <sys/syscall.h>
 #endif                          /* TIME_STD */
 #else                           /* TIME_GETRUSAGE */
-#if TRUE                        /* change to FALSE for SunOS 4.1.x */
+#if ASATRUE                        /* change to ASAFALSE for SunOS 4.1.x */
 #include <time.h>
 #else
 #include </usr/5include/time.h>
@@ -58,30 +58,30 @@ extern "C" {
 #endif                          /* TIME_GETRUSAGE */
 #endif                          /* TIME_CALC */
 
-  /* Set this to TRUE to override the P_TEMP_TOO_SMALL test */
+  /* Set this to ASATRUE to override the P_TEMP_TOO_SMALL test */
 #ifndef NO_PARAM_TEMP_TEST
-#define NO_PARAM_TEMP_TEST TRUE
+#define NO_PARAM_TEMP_TEST ASATRUE
 #endif
 
-  /* Set this to TRUE to override the C_TEMP_TOO_SMALL test */
+  /* Set this to ASATRUE to override the C_TEMP_TOO_SMALL test */
 #ifndef NO_COST_TEMP_TEST
-#define NO_COST_TEMP_TEST TRUE
+#define NO_COST_TEMP_TEST ASATRUE
 #endif
 
 #ifndef SYSTEM_CALL
-#define SYSTEM_CALL TRUE
+#define SYSTEM_CALL ASATRUE
 #endif
 
   /* Printing Options */
 
 #ifndef ASA_PRINT
-#define ASA_PRINT TRUE
+#define ASA_PRINT ASATRUE
 #endif
 
 #if ASA_PRINT
 #else
 #if ASA_SAMPLE
-#define ASA_PRINT TRUE
+#define ASA_PRINT ASATRUE
 #endif
 #endif
 
@@ -90,21 +90,21 @@ extern "C" {
 #endif
 
 #ifndef DROPPED_PARAMETERS
-#define DROPPED_PARAMETERS FALSE
+#define DROPPED_PARAMETERS ASAFALSE
 #endif
 
-  /* You can set ASA_PRINT_INTERMED to TRUE to print out
-     intermediate data when SELF_OPTIMIZE is set to TRUE */
+  /* You can set ASA_PRINT_INTERMED to ASATRUE to print out
+     intermediate data when SELF_OPTIMIZE is set to ASATRUE */
 #ifndef ASA_PRINT_INTERMED
 #if SELF_OPTIMIZE
-#define ASA_PRINT_INTERMED FALSE
+#define ASA_PRINT_INTERMED ASAFALSE
 #else
-#define ASA_PRINT_INTERMED TRUE
+#define ASA_PRINT_INTERMED ASATRUE
 #endif
 #endif
 
 #ifndef ASA_PRINT_MORE
-#define ASA_PRINT_MORE FALSE
+#define ASA_PRINT_MORE ASAFALSE
 #endif
 
   char exit_msg[160];           /* temp storage for exit messages */
@@ -336,7 +336,7 @@ extern "C" {
 #endif                          /* TIME_STD */
 #else                           /* TIME_GETRUSAGE */
   void aux_print_time (clock_t time, char *message, FILE * ptr_asa_out);
-#if FALSE                       /* change to TRUE for SunOS 4.1.x */
+#if ASAFALSE                       /* change to ASATRUE for SunOS 4.1.x */
   clock_t clock ();
 #endif
 #endif                          /* TIME_GETRUSAGE */
@@ -379,7 +379,7 @@ extern "C" {
   int getrusage ();
 #endif                          /* TIME_STD */
 #else                           /* TIME_GETRUSAGE */
-#if FALSE                       /* change to TRUE for SunOS 4.1.x */
+#if ASAFALSE                       /* change to ASATRUE for SunOS 4.1.x */
   clock_t clock ();
 #endif
 #endif                          /* TIME_GETRUSAGE */

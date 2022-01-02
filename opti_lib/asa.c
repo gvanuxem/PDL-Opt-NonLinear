@@ -93,7 +93,7 @@ asa (user_cost_function,
   char asa_save_comm[100];
 #if ASA_SAVE_OPT
   char read_option[80];
-  char read_if[4], read_FALSE[6], read_comm1[3], read_ASA_SAVE[9],
+  char read_if[4], read_ASAFALSE[6], read_comm1[3], read_ASA_SAVE[9],
     read_comm2[3];
   int read_int;
 #if INT_LONG
@@ -176,7 +176,7 @@ asa (user_cost_function,
   /* used to index repeated and recursive calls to asa */
   /* This assumes that multiple calls (>= 1) _or_ recursive
      calls are being made to asa */
-  static int asa_open = FALSE;
+  static int asa_open = ASAFALSE;
   static int number_asa_open = 0;
   static int recursive_asa_open = 0;
 
@@ -339,10 +339,10 @@ asa (user_cost_function,
   /* set default */
   ptr_asa_out = (FILE *) NULL;
 
-  OPTIONS->Immediate_Exit = FALSE;
+  OPTIONS->Immediate_Exit = ASAFALSE;
 
-  if (asa_open == FALSE) {
-    asa_open = TRUE;
+  if (asa_open == ASAFALSE) {
+    asa_open = ASATRUE;
     ++number_asa_open;
 #if ASA_PRINT
     if (number_asa_open == 1) {
@@ -523,7 +523,7 @@ asa (user_cost_function,
 #endif
 
   /* do not calculate curvatures initially */
-  *curvature_flag = FALSE;
+  *curvature_flag = ASAFALSE;
 
   /* allocate storage for all parameters */
   if ((current_generated_state->parameter =
@@ -693,8 +693,8 @@ asa (user_cost_function,
 #if USER_ACCEPTANCE_TEST
   OPTIONS->Random_Seed = seed;
   OPTIONS->Random_Seed[0] = *seed;
-  OPTIONS->User_Acceptance_Flag = TRUE;
-  OPTIONS->Cost_Acceptance_Flag = FALSE;
+  OPTIONS->User_Acceptance_Flag = ASATRUE;
+  OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
 
 #if ASA_PRINT
@@ -881,13 +881,13 @@ asa (user_cost_function,
   else
     sprintf (asa_save_comm, "asa_save");
   if ((ptr_save = fopen (asa_save_comm, "r")) == NULL) {
-    asa_read = FALSE;
+    asa_read = ASAFALSE;
   } else {
 #if ASA_PRINT
     fprintf (ptr_asa_out, "\n\n\trestart after ASA_SAVE\n\n");
 #endif
     fclose (ptr_save);
-    asa_read = TRUE;
+    asa_read = ASATRUE;
 
     /* give some value to avoid any problems with other OPTIONS */
 #if USER_ACCEPTANCE_TEST
@@ -988,7 +988,7 @@ asa (user_cost_function,
 #if USER_INITIAL_COST_TEMP
 #else
 #if ASA_SAVE
-  if (asa_read == TRUE)
+  if (asa_read == ASATRUE)
     OPTIONS->Number_Cost_Samples = 1;
 #endif
   /* calculate the average cost over samplings of the cost function */
@@ -1021,10 +1021,10 @@ asa (user_cost_function,
                           number_parameters,
                           parameter_type,
                           current_generated_state, last_saved_state, OPTIONS);
-      *valid_state_generated_flag = TRUE;
+      *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-      OPTIONS->User_Acceptance_Flag = TRUE;
-      OPTIONS->Cost_Acceptance_Flag = FALSE;
+      OPTIONS->User_Acceptance_Flag = ASATRUE;
+      OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
       tmp_var_db =
         user_cost_function (current_generated_state->parameter,
@@ -1049,7 +1049,7 @@ asa (user_cost_function,
         goto EXIT_ASA;
       }
     }
-    while (*valid_state_generated_flag == FALSE);
+    while (*valid_state_generated_flag == ASAFALSE);
     --(*number_invalid_generated_states);
 
     if (OPTIONS->Number_Cost_Samples < -1) {
@@ -1086,14 +1086,14 @@ asa (user_cost_function,
   OPTIONS->Locate_Cost = 1;     /* initial cost value */
 
   /* if using user's initial parameters */
-  if (OPTIONS->User_Initial_Parameters == TRUE) {
-    *valid_state_generated_flag = TRUE;
+  if (OPTIONS->User_Initial_Parameters == ASATRUE) {
+    *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-    OPTIONS->User_Acceptance_Flag = TRUE;
-    OPTIONS->Cost_Acceptance_Flag = FALSE;
+    OPTIONS->User_Acceptance_Flag = ASATRUE;
+    OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
 #if ASA_SAVE
-    if (asa_read == FALSE)
+    if (asa_read == ASAFALSE)
 #endif
       current_generated_state->cost =
         user_cost_function (current_generated_state->parameter,
@@ -1112,9 +1112,9 @@ asa (user_cost_function,
       goto EXIT_ASA;
     }
 #if ASA_PRINT
-    if (*valid_state_generated_flag == FALSE)
+    if (*valid_state_generated_flag == ASAFALSE)
       fprintf (ptr_asa_out, "user's initial parameters generated \
-FALSE *valid_state_generated_flag\n");
+ASAFALSE *valid_state_generated_flag\n");
 #endif
   } else {
     /* let asa generate valid initial parameters */
@@ -1133,10 +1133,10 @@ FALSE *valid_state_generated_flag\n");
                           number_parameters,
                           parameter_type,
                           current_generated_state, last_saved_state, OPTIONS);
-      *valid_state_generated_flag = TRUE;
+      *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-      OPTIONS->User_Acceptance_Flag = TRUE;
-      OPTIONS->Cost_Acceptance_Flag = FALSE;
+      OPTIONS->User_Acceptance_Flag = ASATRUE;
+      OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
       current_generated_state->cost =
         user_cost_function (current_generated_state->parameter,
@@ -1160,7 +1160,7 @@ FALSE *valid_state_generated_flag\n");
         goto EXIT_ASA;
       }
     }
-    while (*valid_state_generated_flag == FALSE);
+    while (*valid_state_generated_flag == ASAFALSE);
     --(*number_invalid_generated_states);
   }                             /* OPTIONS->User_Initial_Parameters */
 
@@ -1183,7 +1183,7 @@ FALSE *valid_state_generated_flag\n");
   *accepted_to_generated_ratio = ONE;
 
   /* do not calculate curvatures initially */
-  *curvature_flag = FALSE;
+  *curvature_flag = ASAFALSE;
 
 #if ASA_PRINT
   fprintf (ptr_asa_out,
@@ -1261,8 +1261,8 @@ FALSE *valid_state_generated_flag\n");
     index_parameter_generations[index_v] = 1;
   }
 #if USER_ACCEPTANCE_TEST
-  OPTIONS->User_Acceptance_Flag = FALSE;
-  OPTIONS->Cost_Acceptance_Flag = FALSE;
+  OPTIONS->User_Acceptance_Flag = ASAFALSE;
+  OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
 
 #if ASA_QUEUE
@@ -1479,7 +1479,7 @@ FALSE *valid_state_generated_flag\n");
 #endif
 
 #if ASA_SAVE
-    if (asa_read == TRUE && OPTIONS->Asa_Recursive_Level == asa_recursive_max) {
+    if (asa_read == ASATRUE && OPTIONS->Asa_Recursive_Level == asa_recursive_max) {
       if (OPTIONS->Asa_Recursive_Level > 0)
         sprintf (asa_save_comm, "asa_save_%d", OPTIONS->Asa_Recursive_Level);
       else
@@ -1714,7 +1714,7 @@ FALSE *valid_state_generated_flag\n");
 
       fclose (ptr_save);
 
-      asa_read = FALSE;
+      asa_read = ASAFALSE;
 #if ASA_PRINT
   if (ptr_asa_out)
       print_state (parameter_minimum,
@@ -1747,8 +1747,8 @@ FALSE *valid_state_generated_flag\n");
 #endif
       } else {
         fscanf (ptr_save_opt, "%s%s%s%s%s",
-                read_if, read_FALSE, read_comm1, read_ASA_SAVE, read_comm2);
-        if (strcmp (read_if, "#if") || strcmp (read_FALSE, "FALSE")
+                read_if, read_ASAFALSE, read_comm1, read_ASA_SAVE, read_comm2);
+        if (strcmp (read_if, "#if") || strcmp (read_ASAFALSE, "FALSE")
             || strcmp (read_comm1, "/*")
             || strcmp (read_ASA_SAVE, "ASA_SAVE")
             || strcmp (read_comm2, "*/")) {
@@ -1926,10 +1926,10 @@ FALSE *valid_state_generated_flag\n");
                             current_generated_state,
                             last_saved_state, OPTIONS);
 
-        *valid_state_generated_flag = TRUE;
+        *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-        OPTIONS->User_Acceptance_Flag = FALSE;
-        OPTIONS->Cost_Acceptance_Flag = FALSE;
+        OPTIONS->User_Acceptance_Flag = ASAFALSE;
+        OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
 #if ASA_QUEUE
         /* Binary trees do not seem necessary since we are assuming
@@ -2045,7 +2045,7 @@ FALSE *valid_state_generated_flag\n");
           goto EXIT_ASA;
         }
       }
-      while (*valid_state_generated_flag == FALSE);
+      while (*valid_state_generated_flag == ASAFALSE);
       --(*number_invalid_generated_states);
 #if ASA_PARALLEL
       gener_block_state[index_parallel].cost = current_generated_state->cost;
@@ -2346,7 +2346,7 @@ FALSE *valid_state_generated_flag\n");
         ((((double) OPTIONS->Gener_Mov_Avr - ONE)
           * (double) (OPTIONS->Gener_Block) + (double) parallel_generated)
          / (double) (OPTIONS->Gener_Mov_Avr));
-      OPTIONS->Gener_Block = MIN (OPTIONS->Gener_Block, parallel_block_max);
+      OPTIONS->Gener_Block = ASAMIN (OPTIONS->Gener_Block, parallel_block_max);
     }
 #endif /* ASA_PARALLEL */
 
@@ -2634,7 +2634,7 @@ FALSE *valid_state_generated_flag\n");
     }
 #endif /* ASA_SAVE */
 
-    if (OPTIONS->Immediate_Exit == TRUE) {
+    if (OPTIONS->Immediate_Exit == ASATRUE) {
       *exit_status = IMMEDIATE_EXIT;
       goto EXIT_ASA;
     }
@@ -2642,23 +2642,23 @@ FALSE *valid_state_generated_flag\n");
     /* PERIODIC TESTING/REANNEALING/PRINTING SECTION */
 
     if (OPTIONS->Acceptance_Frequency_Modulus == 0)
-      tmp_var_int1 = FALSE;
+      tmp_var_int1 = ASAFALSE;
     else if ((int) (*number_accepted %
                     ((LONG_INT) OPTIONS->Acceptance_Frequency_Modulus)) == 0
              && *number_acceptances_saved == *number_accepted)
-      tmp_var_int1 = TRUE;
+      tmp_var_int1 = ASATRUE;
     else
-      tmp_var_int1 = FALSE;
+      tmp_var_int1 = ASAFALSE;
 
     if (OPTIONS->Generated_Frequency_Modulus == 0)
-      tmp_var_int2 = FALSE;
+      tmp_var_int2 = ASAFALSE;
     else if ((int) (*number_generated %
                     ((LONG_INT) OPTIONS->Generated_Frequency_Modulus)) == 0)
-      tmp_var_int2 = TRUE;
+      tmp_var_int2 = ASATRUE;
     else
-      tmp_var_int2 = FALSE;
+      tmp_var_int2 = ASAFALSE;
 
-    if (tmp_var_int1 == TRUE || tmp_var_int2 == TRUE
+    if (tmp_var_int1 == ASATRUE || tmp_var_int2 == ASATRUE
         || (*accepted_to_generated_ratio
             < OPTIONS->Accepted_To_Generated_Ratio)) {
       if (*accepted_to_generated_ratio
@@ -2679,11 +2679,11 @@ FALSE *valid_state_generated_flag\n");
         }
       }
 
-      if (OPTIONS->Reanneal_Parameters == TRUE) {
+      if (OPTIONS->Reanneal_Parameters == ASATRUE) {
         OPTIONS->Locate_Cost = 3;       /* reanneal parameters */
 
         /* calculate tangents, not curvatures, to reanneal */
-        *curvature_flag = FALSE;
+        *curvature_flag = ASAFALSE;
         cost_derivatives (user_cost_function,
                           parameter_minimum,
                           parameter_maximum,
@@ -2739,10 +2739,10 @@ FALSE *valid_state_generated_flag\n");
                                 parameter_type,
                                 current_generated_state,
                                 last_saved_state, OPTIONS);
-            *valid_state_generated_flag = TRUE;
+            *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-            OPTIONS->User_Acceptance_Flag = TRUE;
-            OPTIONS->Cost_Acceptance_Flag = FALSE;
+            OPTIONS->User_Acceptance_Flag = ASATRUE;
+            OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
 
 #if ASA_QUEUE
@@ -2851,7 +2851,7 @@ FALSE *valid_state_generated_flag\n");
               goto EXIT_ASA;
             }
           }
-          while (*valid_state_generated_flag == FALSE);
+          while (*valid_state_generated_flag == ASAFALSE);
           --(*number_invalid_generated_states);
 
           tmp_var_db1 += tmp_var_db;
@@ -3005,7 +3005,7 @@ EXIT_ASA:
   free (current_user_parameter_temp);
   free (temperature_scale_parameters);
   if (recursive_asa_open == 0)
-    asa_open = FALSE;
+    asa_open = ASAFALSE;
   return (final_cost);
 }
 
@@ -3136,11 +3136,11 @@ asa_exit (user_cost_function,
         && *exit_status != INVALID_USER_INPUT
         && *exit_status != INVALID_COST_FUNCTION
         && *exit_status != INVALID_COST_FUNCTION_DERIV) {
-      if (OPTIONS->Curvature_0 != TRUE)
+      if (OPTIONS->Curvature_0 != ASATRUE)
         OPTIONS->Locate_Cost = 5;       /* calc curvatures while exiting asa */
 
       /* calculate curvatures and tangents at best point */
-      curvatureFlag = TRUE;
+      curvatureFlag = ASATRUE;
       cost_derivatives (user_cost_function,
                         parameter_minimum,
                         parameter_maximum,
@@ -3684,22 +3684,22 @@ accept_new_state (user_random_generator,
      calculate the cost difference and divide by the temperature */
   curr_cost_temp = *current_cost_temperature;
 #if USER_ACCEPTANCE_TEST
-  if (OPTIONS->Cost_Acceptance_Flag == TRUE) {
-    if (OPTIONS->User_Acceptance_Flag == TRUE) {
+  if (OPTIONS->Cost_Acceptance_Flag == ASATRUE) {
+    if (OPTIONS->User_Acceptance_Flag == ASATRUE) {
       unif_test = ZERO;
-      OPTIONS->User_Acceptance_Flag = FALSE;
-      OPTIONS->Cost_Acceptance_Flag = FALSE;
+      OPTIONS->User_Acceptance_Flag = ASAFALSE;
+      OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
     } else {
       unif_test = ONE;
-      OPTIONS->Cost_Acceptance_Flag = FALSE;
+      OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
     }
   } else {
     OPTIONS->Acceptance_Test (current_generated_state->cost,
                               parameter_minimum,
                               parameter_maximum, *number_parameters, OPTIONS);
-    if (OPTIONS->User_Acceptance_Flag == TRUE) {
+    if (OPTIONS->User_Acceptance_Flag == ASATRUE) {
       unif_test = ZERO;
-      OPTIONS->User_Acceptance_Flag = FALSE;
+      OPTIONS->User_Acceptance_Flag = ASAFALSE;
     } else {
       unif_test = ONE;
     }
@@ -3718,18 +3718,18 @@ accept_new_state (user_random_generator,
 #if USER_ACCEPT_ASYMP_EXP
   q = OPTIONS->Asymp_Exp_Param;
   if (fabs (ONE - q) < (double) EPS_DOUBLE)
-    prob_test = MIN (ONE, (F_EXP (EXPONENT_CHECK (-delta_cost))));
+    prob_test = ASAMIN (ONE, (F_EXP (EXPONENT_CHECK (-delta_cost))));
   else if ((ONE - (ONE - q) * delta_cost) < (double) EPS_DOUBLE)
-    prob_test = MIN (ONE, (F_EXP (EXPONENT_CHECK (-delta_cost))));
+    prob_test = ASAMIN (ONE, (F_EXP (EXPONENT_CHECK (-delta_cost))));
   else
-    prob_test = MIN (ONE, F_POW ((ONE - (ONE - q) * delta_cost),
+    prob_test = ASAMIN (ONE, F_POW ((ONE - (ONE - q) * delta_cost),
                                  (ONE / (ONE - q))));
 #else /* USER_ACCEPT_ASYMP_EXP */
 
 #if USER_ACCEPT_THRESHOLD       /* USER_ACCEPT_THRESHOLD */
   prob_test = delta_cost <= 1.0 ? 1.0 : 0.0;
 #else /* Metropolis */
-  prob_test = MIN (ONE, (F_EXP (EXPONENT_CHECK (-delta_cost))));
+  prob_test = ASAMIN (ONE, (F_EXP (EXPONENT_CHECK (-delta_cost))));
 #endif /* USER_ACCEPT_THRESHOLD */
 
 #endif /* USER_ACCEPT_ASYMP_EXP */
@@ -3939,7 +3939,7 @@ reanneal (parameter_minimum,
                                   parameter_maximum, number_parameters,
                                   xnumber_parameters);
 
-  if (OPTIONS->Reanneal_Parameters == TRUE) {
+  if (OPTIONS->Reanneal_Parameters == ASATRUE) {
     VFOR (index_v) {
       if (NO_REANNEAL (index_v))
         continue;
@@ -3948,7 +3948,7 @@ reanneal (parameter_minimum,
       tmp_dbl = (double) index_parameter_generations[index_v];
 
       /* skip parameters with too small range or integer parameters */
-      if (OPTIONS->Include_Integer_Parameters == TRUE) {
+      if (OPTIONS->Include_Integer_Parameters == ASATRUE) {
         if (PARAMETER_RANGE_TOO_SMALL (index_v))
           continue;
       } else {
@@ -4050,22 +4050,22 @@ reanneal (parameter_minimum,
                                                  OPTIONS);
     tmp_dbl1 = *current_cost_temperature;
 #else
-    cost_test = TRUE;
+    cost_test = ASATRUE;
     if (OPTIONS->Reanneal_Cost == 1) {
       /* (re)set the initial cost_temperature */
-      tmp_dbl = MAX (fabs (cost_last), fabs (cost_best));
-      tmp_dbl = MAX (tmp_dbl, fabs (cost_best - cost_last));
-      tmp_dbl = MAX ((double) EPS_DOUBLE, tmp_dbl);
-      *initial_cost_temperature = MIN (*initial_cost_temperature, tmp_dbl);
+      tmp_dbl = ASAMAX (fabs (cost_last), fabs (cost_best));
+      tmp_dbl = ASAMAX (tmp_dbl, fabs (cost_best - cost_last));
+      tmp_dbl = ASAMAX ((double) EPS_DOUBLE, tmp_dbl);
+      *initial_cost_temperature = ASAMIN (*initial_cost_temperature, tmp_dbl);
     }
 
     tmp_dbl = (double) *index_cost_acceptances;
 
-    tmp_dbl1 = MAX (fabs (cost_last - cost_best), *current_cost_temperature);
-    tmp_dbl1 = MAX ((double) EPS_DOUBLE, tmp_dbl1);
-    tmp_dbl1 = MIN (tmp_dbl1, *initial_cost_temperature);
+    tmp_dbl1 = ASAMAX (fabs (cost_last - cost_best), *current_cost_temperature);
+    tmp_dbl1 = ASAMAX ((double) EPS_DOUBLE, tmp_dbl1);
+    tmp_dbl1 = ASAMIN (tmp_dbl1, *initial_cost_temperature);
 #endif /* USER_REANNEAL_COST */
-    if (cost_test == TRUE && (*current_cost_temperature > tmp_dbl1)) {
+    if (cost_test == ASATRUE && (*current_cost_temperature > tmp_dbl1)) {
       tmp_var_db3 =
         fabs (F_LOG (((double) EPS_DOUBLE + *initial_cost_temperature) /
                      (tmp_dbl1)));
@@ -4133,7 +4133,7 @@ reanneal (parameter_minimum,
 *	This procedure calculates the derivatives of the cost function
 *	with respect to its parameters.  The first derivatives are
 *	used as a sensitivity measure for reannealing.  The second
-*	derivatives are calculated only if *curvature_flag=TRUE;
+*	derivatives are calculated only if *curvature_flag=ASATRUE;
 *	these are a measure of the covariance of the fit when a
 *	minimum is found.
 ***********************************************************************/
@@ -4141,7 +4141,7 @@ reanneal (parameter_minimum,
      generated state found so far */
 
   /* In this implementation of ASA, no checks are made for
-   *valid_state_generated_flag=FALSE for differential neighbors
+   *valid_state_generated_flag=ASAFALSE for differential neighbors
    to the current best state. */
 
   /* Assuming no information is given about the metric of the parameter
@@ -4210,10 +4210,10 @@ cost_derivatives (user_cost_function,
   int immediate_flag;
   double xnumber_parameters[1];
 
-  if (OPTIONS->Curvature_0 == TRUE)
-    *curvature_flag = FALSE;
+  if (OPTIONS->Curvature_0 == ASATRUE)
+    *curvature_flag = ASAFALSE;
   if (OPTIONS->Curvature_0 == -1)
-    *curvature_flag = TRUE;
+    *curvature_flag = ASATRUE;
 
   /* save Immediate_Exit flag */
   immediate_flag = OPTIONS->Immediate_Exit;
@@ -4233,10 +4233,10 @@ cost_derivatives (user_cost_function,
   saved_num_invalid_gen_states = (*number_invalid_generated_states);
 
   /* set parameters (& possibly constraints) to best state */
-  *valid_state_generated_flag = TRUE;
+  *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-  OPTIONS->User_Acceptance_Flag = TRUE;
-  OPTIONS->Cost_Acceptance_Flag = FALSE;
+  OPTIONS->User_Acceptance_Flag = ASATRUE;
+  OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
   current_generated_state->cost =
     user_cost_function (current_generated_state->parameter,
@@ -4255,14 +4255,14 @@ cost_derivatives (user_cost_function,
     *exit_status = INVALID_COST_FUNCTION_DERIV;
     return;
   }
-  if (*valid_state_generated_flag == FALSE)
+  if (*valid_state_generated_flag == ASAFALSE)
     ++(*number_invalid_generated_states);
 
-  if (OPTIONS->User_Tangents == TRUE) {
-    *valid_state_generated_flag = FALSE;
+  if (OPTIONS->User_Tangents == ASATRUE) {
+    *valid_state_generated_flag = ASAFALSE;
 #if USER_ACCEPTANCE_TEST
-    OPTIONS->User_Acceptance_Flag = TRUE;
-    OPTIONS->Cost_Acceptance_Flag = FALSE;
+    OPTIONS->User_Acceptance_Flag = ASATRUE;
+    OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
     current_generated_state->cost =
       user_cost_function (current_generated_state->parameter,
@@ -4281,7 +4281,7 @@ cost_derivatives (user_cost_function,
       *exit_status = INVALID_COST_FUNCTION_DERIV;
       return;
     }
-    if (*valid_state_generated_flag == FALSE)
+    if (*valid_state_generated_flag == ASAFALSE)
       ++(*number_invalid_generated_states);
   } else {
     /* calculate tangents */
@@ -4291,7 +4291,7 @@ cost_derivatives (user_cost_function,
         continue;
       }
       /* skip parameters with too small range or integer parameters */
-      if (OPTIONS->Include_Integer_Parameters == TRUE) {
+      if (OPTIONS->Include_Integer_Parameters == ASATRUE) {
         if (PARAMETER_RANGE_TOO_SMALL (index_v)) {
           tangents[index_v] = ZERO;
           continue;
@@ -4321,10 +4321,10 @@ cost_derivatives (user_cost_function,
 
       /* generate the first sample point */
       current_generated_state->parameter[index_v] = parameter_v_offset;
-      *valid_state_generated_flag = TRUE;
+      *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-      OPTIONS->User_Acceptance_Flag = TRUE;
-      OPTIONS->Cost_Acceptance_Flag = FALSE;
+      OPTIONS->User_Acceptance_Flag = ASATRUE;
+      OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
       current_generated_state->cost =
         user_cost_function (current_generated_state->parameter,
@@ -4342,7 +4342,7 @@ cost_derivatives (user_cost_function,
         *exit_status = INVALID_COST_FUNCTION_DERIV;
         return;
       }
-      if (*valid_state_generated_flag == FALSE)
+      if (*valid_state_generated_flag == ASAFALSE)
         ++(*number_invalid_generated_states);
       new_cost_state_1 = current_generated_state->cost;
 
@@ -4363,7 +4363,7 @@ cost_derivatives (user_cost_function,
       continue;
 
     /* ignore too small ranges and integer parameters types */
-    if (OPTIONS->Include_Integer_Parameters == TRUE) {
+    if (OPTIONS->Include_Integer_Parameters == ASATRUE) {
       if (PARAMETER_RANGE_TOO_SMALL (index_v))
         continue;
     } else {
@@ -4378,7 +4378,7 @@ cost_derivatives (user_cost_function,
     }
   }
 
-  if (*curvature_flag == TRUE || *curvature_flag == -1) {
+  if (*curvature_flag == ASATRUE || *curvature_flag == -1) {
     /* calculate diagonal curvatures */
     VFOR (index_v) {
       if (NO_REANNEAL (index_v)) {
@@ -4387,7 +4387,7 @@ cost_derivatives (user_cost_function,
         continue;
       }
       /* skip parameters with too small range or integer parameters */
-      if (OPTIONS->Include_Integer_Parameters == TRUE) {
+      if (OPTIONS->Include_Integer_Parameters == ASATRUE) {
         if (PARAMETER_RANGE_TOO_SMALL (index_v)) {
           index_v_vv = ROW_COL_INDEX (index_v, index_v);
           curvature[index_v_vv] = ZERO;
@@ -4415,10 +4415,10 @@ cost_derivatives (user_cost_function,
         /* generate the first sample point */
         current_generated_state->parameter[index_v] =
           parameter_v - TWO * delta_parameter_v * fabs (parameter_v);
-        *valid_state_generated_flag = TRUE;
+        *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-        OPTIONS->User_Acceptance_Flag = TRUE;
-        OPTIONS->Cost_Acceptance_Flag = FALSE;
+        OPTIONS->User_Acceptance_Flag = ASATRUE;
+        OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
         current_generated_state->cost =
           user_cost_function (current_generated_state->parameter,
@@ -4438,7 +4438,7 @@ cost_derivatives (user_cost_function,
           *exit_status = INVALID_COST_FUNCTION_DERIV;
           return;
         }
-        if (*valid_state_generated_flag == FALSE)
+        if (*valid_state_generated_flag == ASAFALSE)
           ++(*number_invalid_generated_states);
         new_cost_state_1 = current_generated_state->cost;
 
@@ -4446,10 +4446,10 @@ cost_derivatives (user_cost_function,
         current_generated_state->parameter[index_v] =
           parameter_v - delta_parameter_v * fabs (parameter_v);
 
-        *valid_state_generated_flag = TRUE;
+        *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-        OPTIONS->User_Acceptance_Flag = TRUE;
-        OPTIONS->Cost_Acceptance_Flag = FALSE;
+        OPTIONS->User_Acceptance_Flag = ASATRUE;
+        OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
         current_generated_state->cost =
           user_cost_function (current_generated_state->parameter,
@@ -4469,7 +4469,7 @@ cost_derivatives (user_cost_function,
           *exit_status = INVALID_COST_FUNCTION_DERIV;
           return;
         }
-        if (*valid_state_generated_flag == FALSE)
+        if (*valid_state_generated_flag == ASAFALSE)
           ++(*number_invalid_generated_states);
         new_cost_state_2 = current_generated_state->cost;
 
@@ -4490,10 +4490,10 @@ cost_derivatives (user_cost_function,
         /* generate the first sample point */
         current_generated_state->parameter[index_v] =
           parameter_v + TWO * delta_parameter_v * fabs (parameter_v);
-        *valid_state_generated_flag = TRUE;
+        *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-        OPTIONS->User_Acceptance_Flag = TRUE;
-        OPTIONS->Cost_Acceptance_Flag = FALSE;
+        OPTIONS->User_Acceptance_Flag = ASATRUE;
+        OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
         current_generated_state->cost =
           user_cost_function (current_generated_state->parameter,
@@ -4513,7 +4513,7 @@ cost_derivatives (user_cost_function,
           *exit_status = INVALID_COST_FUNCTION_DERIV;
           return;
         }
-        if (*valid_state_generated_flag == FALSE)
+        if (*valid_state_generated_flag == ASAFALSE)
           ++(*number_invalid_generated_states);
         new_cost_state_1 = current_generated_state->cost;
 
@@ -4521,10 +4521,10 @@ cost_derivatives (user_cost_function,
         current_generated_state->parameter[index_v] =
           parameter_v + delta_parameter_v * fabs (parameter_v);
 
-        *valid_state_generated_flag = TRUE;
+        *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-        OPTIONS->User_Acceptance_Flag = TRUE;
-        OPTIONS->Cost_Acceptance_Flag = FALSE;
+        OPTIONS->User_Acceptance_Flag = ASATRUE;
+        OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
         current_generated_state->cost =
           user_cost_function (current_generated_state->parameter,
@@ -4544,7 +4544,7 @@ cost_derivatives (user_cost_function,
           *exit_status = INVALID_COST_FUNCTION_DERIV;
           return;
         }
-        if (*valid_state_generated_flag == FALSE)
+        if (*valid_state_generated_flag == ASAFALSE)
           ++(*number_invalid_generated_states);
         new_cost_state_2 = current_generated_state->cost;
 
@@ -4564,10 +4564,10 @@ cost_derivatives (user_cost_function,
         /* generate the first sample point */
         parameter_v_offset = (ONE + delta_parameter_v) * parameter_v;
         current_generated_state->parameter[index_v] = parameter_v_offset;
-        *valid_state_generated_flag = TRUE;
+        *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-        OPTIONS->User_Acceptance_Flag = TRUE;
-        OPTIONS->Cost_Acceptance_Flag = FALSE;
+        OPTIONS->User_Acceptance_Flag = ASATRUE;
+        OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
         current_generated_state->cost =
           user_cost_function (current_generated_state->parameter,
@@ -4587,7 +4587,7 @@ cost_derivatives (user_cost_function,
           *exit_status = INVALID_COST_FUNCTION_DERIV;
           return;
         }
-        if (*valid_state_generated_flag == FALSE)
+        if (*valid_state_generated_flag == ASAFALSE)
           ++(*number_invalid_generated_states);
         new_cost_state_1 = current_generated_state->cost;
 
@@ -4595,10 +4595,10 @@ cost_derivatives (user_cost_function,
         current_generated_state->parameter[index_v] =
           (ONE - delta_parameter_v) * parameter_v;
 
-        *valid_state_generated_flag = TRUE;
+        *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-        OPTIONS->User_Acceptance_Flag = TRUE;
-        OPTIONS->Cost_Acceptance_Flag = FALSE;
+        OPTIONS->User_Acceptance_Flag = ASATRUE;
+        OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
         current_generated_state->cost =
           user_cost_function (current_generated_state->parameter,
@@ -4618,7 +4618,7 @@ cost_derivatives (user_cost_function,
           *exit_status = INVALID_COST_FUNCTION_DERIV;
           return;
         }
-        if (*valid_state_generated_flag == FALSE)
+        if (*valid_state_generated_flag == ASAFALSE)
           ++(*number_invalid_generated_states);
         new_cost_state_2 = current_generated_state->cost;
 
@@ -4662,7 +4662,7 @@ cost_derivatives (user_cost_function,
           continue;
 
         /* skip parms with too small range or integer parameters */
-        if (OPTIONS->Include_Integer_Parameters == TRUE) {
+        if (OPTIONS->Include_Integer_Parameters == ASATRUE) {
           if (PARAMETER_RANGE_TOO_SMALL (index_v) ||
               PARAMETER_RANGE_TOO_SMALL (index_vv)) {
             curvature[index_vv_v] = curvature[index_v_vv] = ZERO;
@@ -4703,10 +4703,10 @@ cost_derivatives (user_cost_function,
             (ONE + delta_parameter_vv) * parameter_vv;
         }
 
-        *valid_state_generated_flag = TRUE;
+        *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-        OPTIONS->User_Acceptance_Flag = TRUE;
-        OPTIONS->Cost_Acceptance_Flag = FALSE;
+        OPTIONS->User_Acceptance_Flag = ASATRUE;
+        OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
         current_generated_state->cost =
           user_cost_function (current_generated_state->parameter,
@@ -4726,7 +4726,7 @@ cost_derivatives (user_cost_function,
           *exit_status = INVALID_COST_FUNCTION_DERIV;
           return;
         }
-        if (*valid_state_generated_flag == FALSE)
+        if (*valid_state_generated_flag == ASAFALSE)
           ++(*number_invalid_generated_states);
         new_cost_state_1 = current_generated_state->cost;
 
@@ -4734,10 +4734,10 @@ cost_derivatives (user_cost_function,
         current_generated_state->parameter[index_v] = parameter_v;
 
         /* generate second sample point */
-        *valid_state_generated_flag = TRUE;
+        *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-        OPTIONS->User_Acceptance_Flag = TRUE;
-        OPTIONS->Cost_Acceptance_Flag = FALSE;
+        OPTIONS->User_Acceptance_Flag = ASATRUE;
+        OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
         current_generated_state->cost =
           user_cost_function (current_generated_state->parameter,
@@ -4757,7 +4757,7 @@ cost_derivatives (user_cost_function,
           *exit_status = INVALID_COST_FUNCTION_DERIV;
           return;
         }
-        if (*valid_state_generated_flag == FALSE)
+        if (*valid_state_generated_flag == ASAFALSE)
           ++(*number_invalid_generated_states);
         new_cost_state_2 = current_generated_state->cost;
 
@@ -4767,10 +4767,10 @@ cost_derivatives (user_cost_function,
         /* generate third sample point */
         current_generated_state->parameter[index_v] =
           (ONE + delta_parameter_v) * parameter_v;
-        *valid_state_generated_flag = TRUE;
+        *valid_state_generated_flag = ASATRUE;
 #if USER_ACCEPTANCE_TEST
-        OPTIONS->User_Acceptance_Flag = TRUE;
-        OPTIONS->Cost_Acceptance_Flag = FALSE;
+        OPTIONS->User_Acceptance_Flag = ASATRUE;
+        OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
         current_generated_state->cost =
           user_cost_function (current_generated_state->parameter,
@@ -4790,7 +4790,7 @@ cost_derivatives (user_cost_function,
           *exit_status = INVALID_COST_FUNCTION_DERIV;
           return;
         }
-        if (*valid_state_generated_flag == FALSE)
+        if (*valid_state_generated_flag == ASAFALSE)
           ++(*number_invalid_generated_states);
         new_cost_state_3 = current_generated_state->cost;
 
@@ -4827,8 +4827,8 @@ cost_derivatives (user_cost_function,
 #endif /* ASA_PRINT */
   *number_invalid_generated_states = saved_num_invalid_gen_states;
 #if USER_ACCEPTANCE_TEST
-  OPTIONS->User_Acceptance_Flag = TRUE;
-  OPTIONS->Cost_Acceptance_Flag = FALSE;
+  OPTIONS->User_Acceptance_Flag = ASATRUE;
+  OPTIONS->Cost_Acceptance_Flag = ASAFALSE;
 #endif
 }
 
@@ -4906,7 +4906,7 @@ asa_test_asa_options (seed,
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (OPTIONS->Curvature_0 == FALSE || OPTIONS->Curvature_0 == -1) {
+  if (OPTIONS->Curvature_0 == ASAFALSE || OPTIONS->Curvature_0 == -1) {
     if (curvature == NULL) {
       strcpy (exit_msg, "*** curvature == NULL ***");
       print_string (ptr_asa_out, exit_msg);
@@ -4974,85 +4974,85 @@ asa_test_asa_options (seed,
     ++invalid;
   }
 
-  if (OPTIONS_FILE != FALSE && OPTIONS_FILE != TRUE) {
+  if (OPTIONS_FILE != ASAFALSE && OPTIONS_FILE != ASATRUE) {
     strcpy (exit_msg,
-            "*** OPTIONS_FILE != FALSE && OPTIONS_FILE != TRUE ***");
+            "*** OPTIONS_FILE != ASAFALSE && OPTIONS_FILE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (OPTIONS_FILE_DATA != FALSE && OPTIONS_FILE_DATA != TRUE) {
+  if (OPTIONS_FILE_DATA != ASAFALSE && OPTIONS_FILE_DATA != ASATRUE) {
     strcpy (exit_msg,
-            "*** OPTIONS_FILE_DATA != FALSE && OPTIONS_FILE_DATA != TRUE ***");
+            "*** OPTIONS_FILE_DATA != ASAFALSE && OPTIONS_FILE_DATA != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (RECUR_OPTIONS_FILE != FALSE && RECUR_OPTIONS_FILE != TRUE) {
+  if (RECUR_OPTIONS_FILE != ASAFALSE && RECUR_OPTIONS_FILE != ASATRUE) {
     strcpy (exit_msg,
-            "*** RECUR_OPTIONS_FILE != FALSE && RECUR_OPTIONS_FILE != TRUE ***");
+            "*** RECUR_OPTIONS_FILE != ASAFALSE && RECUR_OPTIONS_FILE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (RECUR_OPTIONS_FILE_DATA != FALSE && RECUR_OPTIONS_FILE_DATA != TRUE) {
+  if (RECUR_OPTIONS_FILE_DATA != ASAFALSE && RECUR_OPTIONS_FILE_DATA != ASATRUE) {
     strcpy (exit_msg,
-            "*** RECUR_OPTIONS_FILE_DATA != FALSE && RECUR_OPTIONS_FILE_DATA != TRUE ***");
+            "*** RECUR_OPTIONS_FILE_DATA != ASAFALSE && RECUR_OPTIONS_FILE_DATA != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (COST_FILE != FALSE && COST_FILE != TRUE) {
-    strcpy (exit_msg, "*** COST_FILE != FALSE && COST_FILE != TRUE ***");
+  if (COST_FILE != ASAFALSE && COST_FILE != ASATRUE) {
+    strcpy (exit_msg, "*** COST_FILE != ASAFALSE && COST_FILE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_LIB != FALSE && ASA_LIB != TRUE) {
-    strcpy (exit_msg, "*** ASA_LIB != FALSE && ASA_LIB != TRUE ***");
+  if (ASA_LIB != ASAFALSE && ASA_LIB != ASATRUE) {
+    strcpy (exit_msg, "*** ASA_LIB != ASAFALSE && ASA_LIB != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (MY_TEMPLATE != FALSE && MY_TEMPLATE != TRUE) {
-    strcpy (exit_msg, "*** MY_TEMPLATE != FALSE && MY_TEMPLATE != TRUE ***");
+  if (MY_TEMPLATE != ASAFALSE && MY_TEMPLATE != ASATRUE) {
+    strcpy (exit_msg, "*** MY_TEMPLATE != ASAFALSE && MY_TEMPLATE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEMPLATE_LIB != FALSE && ASA_TEMPLATE_LIB != TRUE) {
+  if (ASA_TEMPLATE_LIB != ASAFALSE && ASA_TEMPLATE_LIB != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_TEMPLATE_LIB != FALSE && ASA_TEMPLATE_LIB != TRUE ***");
+            "*** ASA_TEMPLATE_LIB != ASAFALSE && ASA_TEMPLATE_LIB != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (HAVE_ANSI != FALSE && HAVE_ANSI != TRUE) {
-    strcpy (exit_msg, "*** HAVE_ANSI != FALSE && HAVE_ANSI != TRUE ***");
+  if (HAVE_ANSI != ASAFALSE && HAVE_ANSI != ASATRUE) {
+    strcpy (exit_msg, "*** HAVE_ANSI != ASAFALSE && HAVE_ANSI != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (IO_PROTOTYPES != FALSE && IO_PROTOTYPES != TRUE) {
+  if (IO_PROTOTYPES != ASAFALSE && IO_PROTOTYPES != ASATRUE) {
     strcpy (exit_msg,
-            "*** IO_PROTOTYPES != FALSE && IO_PROTOTYPES != TRUE ***");
+            "*** IO_PROTOTYPES != ASAFALSE && IO_PROTOTYPES != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (TIME_CALC != FALSE && TIME_CALC != TRUE) {
-    strcpy (exit_msg, "*** TIME_CALC != FALSE && TIME_CALC != TRUE ***");
+  if (TIME_CALC != ASAFALSE && TIME_CALC != ASATRUE) {
+    strcpy (exit_msg, "*** TIME_CALC != ASAFALSE && TIME_CALC != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (TIME_STD != FALSE && TIME_STD != TRUE) {
-    strcpy (exit_msg, "*** TIME_STD != FALSE && TIME_STD != TRUE ***");
+  if (TIME_STD != ASAFALSE && TIME_STD != ASATRUE) {
+    strcpy (exit_msg, "*** TIME_STD != ASAFALSE && TIME_STD != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (TIME_GETRUSAGE != FALSE && TIME_GETRUSAGE != TRUE) {
+  if (TIME_GETRUSAGE != ASAFALSE && TIME_GETRUSAGE != ASATRUE) {
     strcpy (exit_msg,
-            "*** TIME_GETRUSAGE != FALSE && TIME_GETRUSAGE != TRUE ***");
+            "*** TIME_GETRUSAGE != ASAFALSE && TIME_GETRUSAGE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (INT_LONG != FALSE && INT_LONG != TRUE) {
-    strcpy (exit_msg, "*** INT_LONG != FALSE && INT_LONG != TRUE ***");
+  if (INT_LONG != ASAFALSE && INT_LONG != ASATRUE) {
+    strcpy (exit_msg, "*** INT_LONG != ASAFALSE && INT_LONG != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (INT_ALLOC != FALSE && INT_ALLOC != TRUE) {
-    strcpy (exit_msg, "*** INT_ALLOC != FALSE && INT_ALLOC != TRUE ***");
+  if (INT_ALLOC != ASAFALSE && INT_ALLOC != ASATRUE) {
+    strcpy (exit_msg, "*** INT_ALLOC != ASAFALSE && INT_ALLOC != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
@@ -5076,193 +5076,193 @@ asa_test_asa_options (seed,
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (CHECK_EXPONENT != FALSE && CHECK_EXPONENT != TRUE) {
+  if (CHECK_EXPONENT != ASAFALSE && CHECK_EXPONENT != ASATRUE) {
     strcpy (exit_msg,
-            "*** CHECK_EXPONENT != FALSE && CHECK_EXPONENT != TRUE ***");
+            "*** CHECK_EXPONENT != ASAFALSE && CHECK_EXPONENT != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (NO_PARAM_TEMP_TEST != FALSE && NO_PARAM_TEMP_TEST != TRUE) {
+  if (NO_PARAM_TEMP_TEST != ASAFALSE && NO_PARAM_TEMP_TEST != ASATRUE) {
     strcpy (exit_msg,
-            "*** NO_PARAM_TEMP_TEST != FALSE && NO_PARAM_TEMP_TEST != TRUE ***");
+            "*** NO_PARAM_TEMP_TEST != ASAFALSE && NO_PARAM_TEMP_TEST != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (NO_COST_TEMP_TEST != FALSE && NO_COST_TEMP_TEST != TRUE) {
+  if (NO_COST_TEMP_TEST != ASAFALSE && NO_COST_TEMP_TEST != ASATRUE) {
     strcpy (exit_msg,
-            "*** NO_COST_TEMP_TEST != FALSE && NO_COST_TEMP_TEST != TRUE ***");
+            "*** NO_COST_TEMP_TEST != ASAFALSE && NO_COST_TEMP_TEST != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (SELF_OPTIMIZE != FALSE && SELF_OPTIMIZE != TRUE) {
+  if (SELF_OPTIMIZE != ASAFALSE && SELF_OPTIMIZE != ASATRUE) {
     strcpy (exit_msg,
-            "*** SELF_OPTIMIZE != FALSE && SELF_OPTIMIZE != TRUE ***");
+            "*** SELF_OPTIMIZE != ASAFALSE && SELF_OPTIMIZE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEST != FALSE && ASA_TEST != TRUE) {
-    strcpy (exit_msg, "*** ASA_TEST != FALSE && ASA_TEST != TRUE ***");
+  if (ASA_TEST != ASAFALSE && ASA_TEST != ASATRUE) {
+    strcpy (exit_msg, "*** ASA_TEST != ASAFALSE && ASA_TEST != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEST_POINT != FALSE && ASA_TEST_POINT != TRUE) {
+  if (ASA_TEST_POINT != ASAFALSE && ASA_TEST_POINT != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_TEST_POINT != FALSE && ASA_TEST_POINT != TRUE ***");
+            "*** ASA_TEST_POINT != ASAFALSE && ASA_TEST_POINT != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEMPLATE != FALSE) {
-    strcpy (exit_msg, "*** ASA_TEMPLATE != FALSE ***");
+  if (ASA_TEMPLATE != ASAFALSE) {
+    strcpy (exit_msg, "*** ASA_TEMPLATE != ASAFALSE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEMPLATE_ASA_OUT_PID != FALSE && ASA_TEMPLATE_ASA_OUT_PID != TRUE) {
+  if (ASA_TEMPLATE_ASA_OUT_PID != ASAFALSE && ASA_TEMPLATE_ASA_OUT_PID != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_TEMPLATE_ASA_OUT_PID != FALSE && ASA_TEMPLATE_ASA_OUT_PID != TRUE ***");
+            "*** ASA_TEMPLATE_ASA_OUT_PID != ASAFALSE && ASA_TEMPLATE_ASA_OUT_PID != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEMPLATE_MULTIPLE != FALSE && ASA_TEMPLATE_MULTIPLE != TRUE) {
+  if (ASA_TEMPLATE_MULTIPLE != ASAFALSE && ASA_TEMPLATE_MULTIPLE != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_TEMPLATE_MULTIPLE != FALSE && ASA_TEMPLATE_MULTIPLE != TRUE ***");
+            "*** ASA_TEMPLATE_MULTIPLE != ASAFALSE && ASA_TEMPLATE_MULTIPLE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEMPLATE_SELFOPT != FALSE && ASA_TEMPLATE_SELFOPT != TRUE) {
+  if (ASA_TEMPLATE_SELFOPT != ASAFALSE && ASA_TEMPLATE_SELFOPT != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_TEMPLATE_SELFOPT != FALSE && ASA_TEMPLATE_SELFOPT != TRUE ***");
+            "*** ASA_TEMPLATE_SELFOPT != ASAFALSE && ASA_TEMPLATE_SELFOPT != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEMPLATE_SAMPLE != FALSE && ASA_TEMPLATE_SAMPLE != TRUE) {
+  if (ASA_TEMPLATE_SAMPLE != ASAFALSE && ASA_TEMPLATE_SAMPLE != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_TEMPLATE_SAMPLE != FALSE && ASA_TEMPLATE_SAMPLE != TRUE ***");
+            "*** ASA_TEMPLATE_SAMPLE != ASAFALSE && ASA_TEMPLATE_SAMPLE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEMPLATE_QUEUE != FALSE && ASA_TEMPLATE_QUEUE != TRUE) {
+  if (ASA_TEMPLATE_QUEUE != ASAFALSE && ASA_TEMPLATE_QUEUE != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_TEMPLATE_QUEUE != FALSE && ASA_TEMPLATE_QUEUE != TRUE ***");
+            "*** ASA_TEMPLATE_QUEUE != ASAFALSE && ASA_TEMPLATE_QUEUE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEMPLATE_PARALLEL != FALSE && ASA_TEMPLATE_PARALLEL != TRUE) {
+  if (ASA_TEMPLATE_PARALLEL != ASAFALSE && ASA_TEMPLATE_PARALLEL != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_TEMPLATE_PARALLEL != FALSE && ASA_TEMPLATE_PARALLEL != TRUE ***");
+            "*** ASA_TEMPLATE_PARALLEL != ASAFALSE && ASA_TEMPLATE_PARALLEL != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_TEMPLATE_SAVE != FALSE && ASA_TEMPLATE_SAVE != TRUE) {
+  if (ASA_TEMPLATE_SAVE != ASAFALSE && ASA_TEMPLATE_SAVE != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_TEMPLATE_SAVE != FALSE && ASA_TEMPLATE_SAVE != TRUE ***");
+            "*** ASA_TEMPLATE_SAVE != ASAFALSE && ASA_TEMPLATE_SAVE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (USER_INITIAL_COST_TEMP != FALSE && USER_INITIAL_COST_TEMP != TRUE) {
+  if (USER_INITIAL_COST_TEMP != ASAFALSE && USER_INITIAL_COST_TEMP != ASATRUE) {
     strcpy (exit_msg,
-            "*** USER_INITIAL_COST_TEMP != FALSE && USER_INITIAL_COST_TEMP != TRUE ***");
+            "*** USER_INITIAL_COST_TEMP != ASAFALSE && USER_INITIAL_COST_TEMP != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (RATIO_TEMPERATURE_SCALES != FALSE && RATIO_TEMPERATURE_SCALES != TRUE) {
+  if (RATIO_TEMPERATURE_SCALES != ASAFALSE && RATIO_TEMPERATURE_SCALES != ASATRUE) {
     strcpy (exit_msg,
-            "*** RATIO_TEMPERATURE_SCALES != FALSE && RATIO_TEMPERATURE_SCALES != TRUE ***");
+            "*** RATIO_TEMPERATURE_SCALES != ASAFALSE && RATIO_TEMPERATURE_SCALES != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (USER_INITIAL_PARAMETERS_TEMPS != FALSE
-      && USER_INITIAL_PARAMETERS_TEMPS != TRUE) {
+  if (USER_INITIAL_PARAMETERS_TEMPS != ASAFALSE
+      && USER_INITIAL_PARAMETERS_TEMPS != ASATRUE) {
     strcpy (exit_msg,
-            "*** USER_INITIAL_PARAMETERS_TEMPS != FALSE && USER_INITIAL_PARAMETERS_TEMPS != TRUE ***");
+            "*** USER_INITIAL_PARAMETERS_TEMPS != ASAFALSE && USER_INITIAL_PARAMETERS_TEMPS != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (DELTA_PARAMETERS != FALSE && DELTA_PARAMETERS != TRUE) {
+  if (DELTA_PARAMETERS != ASAFALSE && DELTA_PARAMETERS != ASATRUE) {
     strcpy (exit_msg,
-            "*** DELTA_PARAMETERS != FALSE && DELTA_PARAMETERS != TRUE ***");
+            "*** DELTA_PARAMETERS != ASAFALSE && DELTA_PARAMETERS != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (QUENCH_PARAMETERS != FALSE && QUENCH_PARAMETERS != TRUE) {
+  if (QUENCH_PARAMETERS != ASAFALSE && QUENCH_PARAMETERS != ASATRUE) {
     strcpy (exit_msg,
-            "*** QUENCH_PARAMETERS != FALSE && QUENCH_PARAMETERS != TRUE ***");
+            "*** QUENCH_PARAMETERS != ASAFALSE && QUENCH_PARAMETERS != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (QUENCH_COST != FALSE && QUENCH_COST != TRUE) {
-    strcpy (exit_msg, "*** QUENCH_COST != FALSE && QUENCH_COST != TRUE ***");
+  if (QUENCH_COST != ASAFALSE && QUENCH_COST != ASATRUE) {
+    strcpy (exit_msg, "*** QUENCH_COST != ASAFALSE && QUENCH_COST != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (QUENCH_PARAMETERS_SCALE != FALSE && QUENCH_PARAMETERS_SCALE != TRUE) {
+  if (QUENCH_PARAMETERS_SCALE != ASAFALSE && QUENCH_PARAMETERS_SCALE != ASATRUE) {
     strcpy (exit_msg,
-            "*** QUENCH_PARAMETERS_SCALE != FALSE && QUENCH_PARAMETERS_SCALE != TRUE ***");
+            "*** QUENCH_PARAMETERS_SCALE != ASAFALSE && QUENCH_PARAMETERS_SCALE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (QUENCH_COST_SCALE != FALSE && QUENCH_COST_SCALE != TRUE) {
+  if (QUENCH_COST_SCALE != ASAFALSE && QUENCH_COST_SCALE != ASATRUE) {
     strcpy (exit_msg,
-            "*** QUENCH_COST_SCALE != FALSE && QUENCH_COST_SCALE != TRUE ***");
+            "*** QUENCH_COST_SCALE != ASAFALSE && QUENCH_COST_SCALE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (OPTIONAL_DATA_DBL != FALSE && OPTIONAL_DATA_DBL != TRUE) {
+  if (OPTIONAL_DATA_DBL != ASAFALSE && OPTIONAL_DATA_DBL != ASATRUE) {
     strcpy (exit_msg,
-            "*** OPTIONAL_DATA_DBL != FALSE && OPTIONAL_DATA_DBL != TRUE ***");
+            "*** OPTIONAL_DATA_DBL != ASAFALSE && OPTIONAL_DATA_DBL != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (OPTIONAL_DATA_INT != FALSE && OPTIONAL_DATA_INT != TRUE) {
+  if (OPTIONAL_DATA_INT != ASAFALSE && OPTIONAL_DATA_INT != ASATRUE) {
     strcpy (exit_msg,
-            "*** OPTIONAL_DATA_INT != FALSE && OPTIONAL_DATA_INT != TRUE ***");
+            "*** OPTIONAL_DATA_INT != ASAFALSE && OPTIONAL_DATA_INT != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (OPTIONAL_DATA_PTR != FALSE && OPTIONAL_DATA_PTR != TRUE) {
+  if (OPTIONAL_DATA_PTR != ASAFALSE && OPTIONAL_DATA_PTR != ASATRUE) {
     strcpy (exit_msg,
-            "*** OPTIONAL_DATA_PTR != FALSE && OPTIONAL_DATA_PTR != TRUE ***");
+            "*** OPTIONAL_DATA_PTR != ASAFALSE && OPTIONAL_DATA_PTR != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (USER_COST_SCHEDULE != FALSE && USER_COST_SCHEDULE != TRUE) {
+  if (USER_COST_SCHEDULE != ASAFALSE && USER_COST_SCHEDULE != ASATRUE) {
     strcpy (exit_msg,
-            "*** USER_COST_SCHEDULE != FALSE && USER_COST_SCHEDULE != TRUE ***");
+            "*** USER_COST_SCHEDULE != ASAFALSE && USER_COST_SCHEDULE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (USER_ACCEPT_ASYMP_EXP != FALSE && USER_ACCEPT_ASYMP_EXP != TRUE) {
+  if (USER_ACCEPT_ASYMP_EXP != ASAFALSE && USER_ACCEPT_ASYMP_EXP != ASATRUE) {
     strcpy (exit_msg,
-            "*** USER_ACCEPT_ASYMP_EXP != FALSE && USER_ACCEPT_ASYMP_EXP != TRUE ***");
+            "*** USER_ACCEPT_ASYMP_EXP != ASAFALSE && USER_ACCEPT_ASYMP_EXP != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (USER_ACCEPT_THRESHOLD != FALSE && USER_ACCEPT_THRESHOLD != TRUE) {
+  if (USER_ACCEPT_THRESHOLD != ASAFALSE && USER_ACCEPT_THRESHOLD != ASATRUE) {
     strcpy (exit_msg,
-            "*** USER_ACCEPT_THRESHOLD != FALSE && USER_ACCEPT_THRESHOLD != TRUE ***");
+            "*** USER_ACCEPT_THRESHOLD != ASAFALSE && USER_ACCEPT_THRESHOLD != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (USER_ACCEPTANCE_TEST != FALSE && USER_ACCEPTANCE_TEST != TRUE) {
+  if (USER_ACCEPTANCE_TEST != ASAFALSE && USER_ACCEPTANCE_TEST != ASATRUE) {
     strcpy (exit_msg,
-            "*** USER_ACCEPTANCE_TEST != FALSE && USER_ACCEPTANCE_TEST != TRUE ***");
+            "*** USER_ACCEPTANCE_TEST != ASAFALSE && USER_ACCEPTANCE_TEST != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (USER_GENERATING_FUNCTION != FALSE && USER_GENERATING_FUNCTION != TRUE) {
+  if (USER_GENERATING_FUNCTION != ASAFALSE && USER_GENERATING_FUNCTION != ASATRUE) {
     strcpy (exit_msg,
-            "*** USER_GENERATING_FUNCTION != FALSE && USER_GENERATING_FUNCTION != TRUE ***");
+            "*** USER_GENERATING_FUNCTION != ASAFALSE && USER_GENERATING_FUNCTION != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (USER_REANNEAL_COST != FALSE && USER_REANNEAL_COST != TRUE) {
+  if (USER_REANNEAL_COST != ASAFALSE && USER_REANNEAL_COST != ASATRUE) {
     strcpy (exit_msg,
-            "*** USER_REANNEAL_COST != FALSE && USER_REANNEAL_COST != TRUE ***");
+            "*** USER_REANNEAL_COST != ASAFALSE && USER_REANNEAL_COST != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (USER_REANNEAL_PARAMETERS != FALSE && USER_REANNEAL_PARAMETERS != TRUE) {
+  if (USER_REANNEAL_PARAMETERS != ASAFALSE && USER_REANNEAL_PARAMETERS != ASATRUE) {
     strcpy (exit_msg,
-            "*** USER_REANNEAL_PARAMETERS != FALSE && USER_REANNEAL_PARAMETERS != TRUE ***");
+            "*** USER_REANNEAL_PARAMETERS != ASAFALSE && USER_REANNEAL_PARAMETERS != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
@@ -5276,41 +5276,41 @@ asa_test_asa_options (seed,
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_SAMPLE != FALSE && ASA_SAMPLE != TRUE) {
-    strcpy (exit_msg, "*** ASA_SAMPLE != FALSE && ASA_SAMPLE != TRUE ***");
+  if (ASA_SAMPLE != ASAFALSE && ASA_SAMPLE != ASATRUE) {
+    strcpy (exit_msg, "*** ASA_SAMPLE != ASAFALSE && ASA_SAMPLE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_QUEUE != FALSE && ASA_QUEUE != TRUE) {
-    strcpy (exit_msg, "*** ASA_QUEUE != FALSE && ASA_QUEUE != TRUE ***");
+  if (ASA_QUEUE != ASAFALSE && ASA_QUEUE != ASATRUE) {
+    strcpy (exit_msg, "*** ASA_QUEUE != ASAFALSE && ASA_QUEUE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_RESOLUTION != FALSE && ASA_RESOLUTION != TRUE) {
+  if (ASA_RESOLUTION != ASAFALSE && ASA_RESOLUTION != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_RESOLUTION != FALSE && ASA_RESOLUTION != TRUE ***");
+            "*** ASA_RESOLUTION != ASAFALSE && ASA_RESOLUTION != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (FITLOC != FALSE && FITLOC != TRUE) {
-    strcpy (exit_msg, "*** FITLOC != FALSE && FITLOC != TRUE ***");
+  if (FITLOC != ASAFALSE && FITLOC != ASATRUE) {
+    strcpy (exit_msg, "*** FITLOC != ASAFALSE && FITLOC != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (FITLOC_ROUND != FALSE && FITLOC_ROUND != TRUE) {
+  if (FITLOC_ROUND != ASAFALSE && FITLOC_ROUND != ASATRUE) {
     strcpy (exit_msg,
-            "*** FITLOC_ROUND != FALSE && FITLOC_ROUND != TRUE ***");
+            "*** FITLOC_ROUND != ASAFALSE && FITLOC_ROUND != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (FITLOC_PRINT != FALSE && FITLOC_PRINT != TRUE) {
+  if (FITLOC_PRINT != ASAFALSE && FITLOC_PRINT != ASATRUE) {
     strcpy (exit_msg,
-            "*** FITLOC_PRINT != FALSE && FITLOC_PRINT != TRUE ***");
+            "*** FITLOC_PRINT != ASAFALSE && FITLOC_PRINT != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (MULTI_MIN != FALSE && MULTI_MIN != TRUE) {
-    strcpy (exit_msg, "*** MULTI_MIN != FALSE && MULTI_MIN != TRUE ***");
+  if (MULTI_MIN != ASAFALSE && MULTI_MIN != ASATRUE) {
+    strcpy (exit_msg, "*** MULTI_MIN != ASAFALSE && MULTI_MIN != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
@@ -5336,80 +5336,80 @@ asa_test_asa_options (seed,
     ++invalid;
   }
 #endif
-  if (ASA_PARALLEL != FALSE && ASA_PARALLEL != TRUE) {
+  if (ASA_PARALLEL != ASAFALSE && ASA_PARALLEL != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_PARALLEL != FALSE && ASA_PARALLEL != TRUE ***");
+            "*** ASA_PARALLEL != ASAFALSE && ASA_PARALLEL != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_SAVE != FALSE && ASA_SAVE != TRUE) {
-    strcpy (exit_msg, "*** ASA_SAVE != FALSE && ASA_SAVE != TRUE ***");
+  if (ASA_SAVE != ASAFALSE && ASA_SAVE != ASATRUE) {
+    strcpy (exit_msg, "*** ASA_SAVE != ASAFALSE && ASA_SAVE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_SAVE_OPT != FALSE && ASA_SAVE_OPT != TRUE) {
+  if (ASA_SAVE_OPT != ASAFALSE && ASA_SAVE_OPT != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_SAVE_OPT != FALSE && ASA_SAVE_OPT != TRUE ***");
+            "*** ASA_SAVE_OPT != ASAFALSE && ASA_SAVE_OPT != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_SAVE_BACKUP != FALSE && ASA_SAVE_BACKUP != TRUE) {
+  if (ASA_SAVE_BACKUP != ASAFALSE && ASA_SAVE_BACKUP != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_SAVE_BACKUP != FALSE && ASA_SAVE_BACKUP != TRUE ***");
+            "*** ASA_SAVE_BACKUP != ASAFALSE && ASA_SAVE_BACKUP != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_PIPE != FALSE && ASA_PIPE != TRUE) {
-    strcpy (exit_msg, "*** ASA_PIPE != FALSE && ASA_PIPE != TRUE ***");
+  if (ASA_PIPE != ASAFALSE && ASA_PIPE != ASATRUE) {
+    strcpy (exit_msg, "*** ASA_PIPE != ASAFALSE && ASA_PIPE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_PIPE_FILE != FALSE && ASA_PIPE_FILE != TRUE) {
+  if (ASA_PIPE_FILE != ASAFALSE && ASA_PIPE_FILE != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_PIPE_FILE != FALSE && ASA_PIPE_FILE != TRUE ***");
+            "*** ASA_PIPE_FILE != ASAFALSE && ASA_PIPE_FILE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (SYSTEM_CALL != FALSE && SYSTEM_CALL != TRUE) {
-    strcpy (exit_msg, "*** SYSTEM_CALL != FALSE && SYSTEM_CALL != TRUE ***");
+  if (SYSTEM_CALL != ASAFALSE && SYSTEM_CALL != ASATRUE) {
+    strcpy (exit_msg, "*** SYSTEM_CALL != ASAFALSE && SYSTEM_CALL != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (FDLIBM_POW != FALSE && FDLIBM_POW != TRUE) {
-    strcpy (exit_msg, "*** FDLIBM_POW != FALSE && FDLIBM_POW != TRUE ***");
+  if (FDLIBM_POW != ASAFALSE && FDLIBM_POW != ASATRUE) {
+    strcpy (exit_msg, "*** FDLIBM_POW != ASAFALSE && FDLIBM_POW != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (FDLIBM_LOG != FALSE && FDLIBM_LOG != TRUE) {
-    strcpy (exit_msg, "*** FDLIBM_LOG != FALSE && FDLIBM_LOG != TRUE ***");
+  if (FDLIBM_LOG != ASAFALSE && FDLIBM_LOG != ASATRUE) {
+    strcpy (exit_msg, "*** FDLIBM_LOG != ASAFALSE && FDLIBM_LOG != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (FDLIBM_EXP != FALSE && FDLIBM_EXP != TRUE) {
-    strcpy (exit_msg, "*** FDLIBM_EXP != FALSE && FDLIBM_EXP != TRUE ***");
+  if (FDLIBM_EXP != ASAFALSE && FDLIBM_EXP != ASATRUE) {
+    strcpy (exit_msg, "*** FDLIBM_EXP != ASAFALSE && FDLIBM_EXP != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_PRINT != FALSE && ASA_PRINT != TRUE) {
-    strcpy (exit_msg, "*** ASA_PRINT != FALSE && ASA_PRINT != TRUE ***");
+  if (ASA_PRINT != ASAFALSE && ASA_PRINT != ASATRUE) {
+    strcpy (exit_msg, "*** ASA_PRINT != ASAFALSE && ASA_PRINT != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (USER_ASA_OUT != FALSE && USER_ASA_OUT != TRUE) {
+  if (USER_ASA_OUT != ASAFALSE && USER_ASA_OUT != ASATRUE) {
     strcpy (exit_msg,
-            "*** USER_ASA_OUT != FALSE && USER_ASA_OUT != TRUE ***");
+            "*** USER_ASA_OUT != ASAFALSE && USER_ASA_OUT != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_PRINT_INTERMED != FALSE && ASA_PRINT_INTERMED != TRUE) {
+  if (ASA_PRINT_INTERMED != ASAFALSE && ASA_PRINT_INTERMED != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_PRINT_INTERMED != FALSE && ASA_PRINT_INTERMED != TRUE ***");
+            "*** ASA_PRINT_INTERMED != ASAFALSE && ASA_PRINT_INTERMED != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (ASA_PRINT_MORE != FALSE && ASA_PRINT_MORE != TRUE) {
+  if (ASA_PRINT_MORE != ASAFALSE && ASA_PRINT_MORE != ASATRUE) {
     strcpy (exit_msg,
-            "*** ASA_PRINT_MORE != FALSE && ASA_PRINT_MORE != TRUE ***");
+            "*** ASA_PRINT_MORE != ASAFALSE && ASA_PRINT_MORE != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
@@ -5482,16 +5482,16 @@ asa_test_asa_options (seed,
     ++invalid;
   }
 #endif
-  if (OPTIONS->Include_Integer_Parameters != FALSE
-      && OPTIONS->Include_Integer_Parameters != TRUE) {
+  if (OPTIONS->Include_Integer_Parameters != ASAFALSE
+      && OPTIONS->Include_Integer_Parameters != ASATRUE) {
     strcpy (exit_msg, "");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (OPTIONS->User_Initial_Parameters != FALSE
-      && OPTIONS->User_Initial_Parameters != TRUE) {
+  if (OPTIONS->User_Initial_Parameters != ASAFALSE
+      && OPTIONS->User_Initial_Parameters != ASATRUE) {
     strcpy (exit_msg,
-            "*** User_Initial_Parameters != FALSE && User_Initial_Parameters != TRUE ***");
+            "*** User_Initial_Parameters != ASAFALSE && User_Initial_Parameters != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
@@ -5534,10 +5534,10 @@ asa_test_asa_options (seed,
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (OPTIONS->Reanneal_Parameters != FALSE
-      && OPTIONS->Reanneal_Parameters != TRUE) {
+  if (OPTIONS->Reanneal_Parameters != ASAFALSE
+      && OPTIONS->Reanneal_Parameters != ASATRUE) {
     strcpy (exit_msg,
-            "*** Reanneal_Parameters != FALSE && Reanneal_Parameters != TRUE ***");
+            "*** Reanneal_Parameters != ASAFALSE && Reanneal_Parameters != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
@@ -5553,16 +5553,16 @@ asa_test_asa_options (seed,
     ++invalid;
   }
 #endif
-  if (OPTIONS->User_Tangents != FALSE && OPTIONS->User_Tangents != TRUE) {
+  if (OPTIONS->User_Tangents != ASAFALSE && OPTIONS->User_Tangents != ASATRUE) {
     strcpy (exit_msg,
-            "*** User_Tangents != FALSE && User_Tangents != TRUE ***");
+            "*** User_Tangents != ASAFALSE && User_Tangents != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (OPTIONS->Curvature_0 != -1 && OPTIONS->Curvature_0 != FALSE
-      && OPTIONS->Curvature_0 != TRUE) {
+  if (OPTIONS->Curvature_0 != -1 && OPTIONS->Curvature_0 != ASAFALSE
+      && OPTIONS->Curvature_0 != ASATRUE) {
     strcpy (exit_msg,
-            "*** Curvature_0 -1 && Curvature_0 != FALSE && Curvature_0 != TRUE ***");
+            "*** Curvature_0 -1 && Curvature_0 != ASAFALSE && Curvature_0 != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
@@ -5648,17 +5648,17 @@ asa_test_asa_options (seed,
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (OPTIONS->User_Acceptance_Flag != FALSE
-      && OPTIONS->User_Acceptance_Flag != TRUE) {
+  if (OPTIONS->User_Acceptance_Flag != ASAFALSE
+      && OPTIONS->User_Acceptance_Flag != ASATRUE) {
     strcpy (exit_msg,
-            "*** User_Acceptance_Flag != FALSE && User_Acceptance_Flag != TRUE ***");
+            "*** User_Acceptance_Flag != ASAFALSE && User_Acceptance_Flag != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
-  if (OPTIONS->Cost_Acceptance_Flag != FALSE
-      && OPTIONS->Cost_Acceptance_Flag != TRUE) {
+  if (OPTIONS->Cost_Acceptance_Flag != ASAFALSE
+      && OPTIONS->Cost_Acceptance_Flag != ASATRUE) {
     strcpy (exit_msg,
-            "*** Cost_Acceptance_Flag != FALSE && Cost_Acceptance_Flag != TRUE ***");
+            "*** Cost_Acceptance_Flag != ASAFALSE && Cost_Acceptance_Flag != ASATRUE ***");
     print_string (ptr_asa_out, exit_msg);
     ++invalid;
   }
@@ -5837,7 +5837,7 @@ print_string_index (ptr_asa_out, string, index)
 #if INT_LONG
   printf ("\n\n%s index = %ld\n\n", string, index);
 #else /* INT_LONG */
-  printf ("\n\n%s index = %ld\n\n", string, index);
+  printf ("\n\n%s index = %d\n\n", string, index);
 #endif /* INT_LONG */
 #endif /* INT_ALLOC */
 #endif /* INCL_STDOUT */
@@ -5930,10 +5930,10 @@ print_state (parameter_minimum,
   print_time ("", ptr_asa_out);
 #endif
 
-  if (OPTIONS->Curvature_0 == TRUE)
-    *curvature_flag = FALSE;
+  if (OPTIONS->Curvature_0 == ASATRUE)
+    *curvature_flag = ASAFALSE;
   if (OPTIONS->Curvature_0 == -1)
-    *curvature_flag = TRUE;
+    *curvature_flag = ASATRUE;
 
 #if INT_LONG
   fprintf (ptr_asa_out,
@@ -5988,7 +5988,7 @@ print_state (parameter_minimum,
              G_FIELD, G_PRECISION, tangents[index_v]);
   }
 
-  if (*curvature_flag == TRUE) {
+  if (*curvature_flag == ASATRUE) {
     /* print curvatures */
     VFOR (index_v) {
       /* ignore too small ranges */
@@ -6329,7 +6329,7 @@ aux_print_time (time, message, ptr_asa_out)
    * resolution.  Because of this, the value returned will wrap around
    * after accumulating only 2147 seconds of CPU time (about 36 minutes).
    *
-   * Set TIME_GETRUSAGE to FALSE and TIME_STD to TRUE under
+   * Set TIME_GETRUSAGE to ASAFALSE and TIME_STD to ASATRUE under
    * Cygwin with -mno-cygwin
    *
    * See asa.h for two places where some additional modifications should

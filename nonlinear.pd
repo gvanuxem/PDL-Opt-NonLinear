@@ -41,16 +41,11 @@ if ($^O =~ /MSWin/) {
 pp_addhdr('
 #define finite _finite
 #include <float.h>
-typedef long int logical;
 ');
-}
-else{
-pp_addhdr('
-typedef int logical;
-')
 }
 pp_addhdr('
 /* avoid annoying warnings */
+typedef int logical;
 typedef logical integer;
 typedef logical ftnlen;
 #ifdef __cplusplus
@@ -394,7 +389,7 @@ pp_def("smnsx",
 	GenericTypes => ['D'],
 	Code =>'
 		integer old, new,err;
-		extern $GENERIC() dsmnsx_(paramd f, integer *p, $GENERIC() *step, $GENERIC() *tol,$GENERIC() *X);
+		extern $GENERIC() dsmnsx_(paramd f, PDL_Indx *p, $GENERIC() *step, $GENERIC() *tol,$GENERIC() *X);
 		extern void erroff_(void);
 		extern void eprint_(void);
 		extern integer* nerror_(integer *err);
@@ -457,7 +452,7 @@ pp_def("mnsx",
 	GenericTypes => ['D'],
 	Code =>'
 		integer old, new,err;
-		extern $GENERIC() dmnsx_(paramd f, integer *itmx, integer *p, integer *pp,
+		extern $GENERIC() dmnsx_(paramd f, integer *itmx, PDL_Indx *p, PDL_Indx *pp,
 			$GENERIC() *s, $GENERIC() *tol,$GENERIC() *X);
 		extern void erroff_(void);
 		extern void eprint_(void);
@@ -537,7 +532,7 @@ pp_def("ivset",
 	Pars => 'int [phys]type();int [io,phys]iv(n);[io,phys]v(p)',
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)ivset_(integer *alg, integer *iv, integer *liv, integer *lv, $GENERIC() *v);
+		extern void $TFD(,d)ivset_(integer *alg, integer *iv, PDL_Indx *liv, PDL_Indx *lv, $GENERIC() *v);
 		$TFD(,d)ivset_($P(type), $P(iv), &$SIZE(n), &$SIZE(p),$P(v));
 ',
 	Doc =>'
@@ -592,8 +587,8 @@ pp_def("rmnf",
 	OtherPars => "SV* min_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmnf_($GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
-		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
+		extern void $TFD(,d)rmnf_($GENERIC() *d, $GENERIC() *fx, integer *iv, PDL_Indx *liv,
+		PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		pdl4_function    = $COMP(min_func);
 		do{
 			$TFD(,d)rmnf_(
@@ -650,8 +645,8 @@ pp_def("rmng",
 	OtherPars => "SV* min_func; SV* grad_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmng_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
-		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
+		extern void $TFD(,d)rmng_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, PDL_Indx *liv,
+		PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		do{
 			$TFD(,d)rmng_(
 				$P(scale),
@@ -730,8 +725,8 @@ pp_def("rmnh",
 	OtherPars => "SV* min_func; SV* grad_func; SV* hess_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmnh_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, integer *lh,
-		integer *liv, integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
+		extern void $TFD(,d)rmnh_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, PDL_Indx *lh,
+		PDL_Indx *liv, PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		do{
 			$TFD(,d)rmnh_(
 				$P(scale),
@@ -826,8 +821,8 @@ pp_def("rmnfb",
 	OtherPars => "SV* min_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmnfb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
-		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
+		extern void $TFD(,d)rmnfb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, integer *iv, PDL_Indx *liv,
+		PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		pdl4_function    = $COMP(min_func);
 		do{
 			$TFD(,d)rmnfb_(
@@ -889,8 +884,8 @@ pp_def("rmngb",
 	OtherPars => "SV* min_func; SV* grad_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmngb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
-		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
+		extern void $TFD(,d)rmngb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, PDL_Indx *liv,
+		PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		do{
 			$TFD(,d)rmngb_(
 				$P(bound),
@@ -971,8 +966,8 @@ pp_def("rmnhb",
 	OtherPars => "SV* min_func; SV* grad_func; SV* hess_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmnhb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, integer *lh,
-		integer *liv,integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
+		extern void $TFD(,d)rmnhb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, PDL_Indx *lh,
+		PDL_Indx *liv,PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		do{
 			$TFD(,d)rmnhb_(
 				$P(bound),
@@ -1215,7 +1210,7 @@ pp_def("tensoropt",
 	Code =>'
 		integer it, *iwork,i;
 		$GENERIC() *work, *xtmp;
-		extern int tensor_(integer *nr, integer *n, $GENERIC() *x, paramv fcn,
+		extern int tensor_(PDL_Indx *nr, PDL_Indx *n, $GENERIC() *x, paramv fcn,
 		paramv grd, paramv hsn, $GENERIC() *typx, $GENERIC() *fscale, $GENERIC()
 		*gradtl, $GENERIC() *steptl, integer *itnlim, $GENERIC() *stepmx,
 		integer *ipr, integer *method, integer *grdflg, integer *hesflg,
@@ -1473,7 +1468,7 @@ pp_def("lbfgs",
 
 	$GENERIC() *w;
 	integer i,stop;
-	extern int lbfgs_(integer *n, integer *m, $GENERIC() *x, $GENERIC()
+	extern int lbfgs_(PDL_Indx *n, integer *m, $GENERIC() *x, $GENERIC()
 	*f, $GENERIC() *g, logical *diagco, $GENERIC() *diag, integer *maxit,integer *iprint,
 	 $GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag);
 	w = ($GENERIC() * ) malloc ( ($SIZE(n) * (2*$m() +1)+ 2*$m())* sizeof($GENERIC()));
@@ -1695,7 +1690,7 @@ the routine csrch written by Moré and Thuente.
 ');
 
 pp_addhdr('
-int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, PDL_Indx *d, double *e, SV *lbfgsb_func)
+int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, integer *d, double *e, SV *lbfgsb_func)
 {
 
    dSP ;
@@ -1784,7 +1779,7 @@ int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, PDL_Indx *d, do
 pp_def("lbfgsb",
        HandleBad => 0,
 	Pars => '[io,phys]fx(); [io,phys]gx(n); [io,phys]x(n);int [phys]m();[phys]bound(n,m=2);int [phys]tbound(n);int [io]maxit();[phys]factr();[phys]pgtol();[phys]gtol();int [phys]print(2);int [io,phys]info();int [o,phys]iv(p=44);[o,phys]v(q=29)',
-	OtherPars => "SV* fg_func" ,
+	OtherPars => "SV* fg_func",
 	GenericTypes => ['D'],
 	Code =>'
 
@@ -1795,8 +1790,7 @@ pp_def("lbfgsb",
 	$GENERIC() *wa;
 	integer *iwa;
 	integer i;
-	
-	extern void setulb_(integer *n, integer *m, $GENERIC() *x, $GENERIC() *l, $GENERIC() *u,
+	extern void setulb_(PDL_Indx *n, integer *m, $GENERIC() *x, $GENERIC() *l, $GENERIC() *u,
 		integer *nbd, $GENERIC() *f, $GENERIC() *g, $GENERIC() *factr, $GENERIC() *pgtol, $GENERIC() *gtol,
 		$GENERIC() *wa,integer *iwa, char *task, integer *iprint, char *csave, integer *lsave,
 		integer *isave, $GENERIC() *dsave);
@@ -2269,7 +2263,7 @@ pp_def("spg",
 	OtherPars => "SV* min_func; SV* grad_func; SV* px_func" ,
 	GenericTypes => ['D'],
 	Code =>'
-		extern void spg_(integer *n, $GENERIC() *x, integer *m, $GENERIC() *eps, $GENERIC() *eps2,
+		extern void spg_(PDL_Indx *n, $GENERIC() *x, integer *m, $GENERIC() *eps, $GENERIC() *eps2,
 			integer *maxit, integer *maxfc, integer *output, $GENERIC()  *f, $GENERIC() *pginfn, $GENERIC() *pgtwon,
 	integer *iter, integer *fcnt, integer *gcnt, integer *flag, paramv *evalf, paramv *evalg, paramv *proj);
 		integer iter;
@@ -2495,7 +2489,7 @@ pp_def("lmqn",
 	Code =>'
 		integer lw;
 		$GENERIC() *w;
-		extern void lmqn_(integer *ifail, integer *n, $GENERIC() *x,
+		extern void lmqn_(integer *ifail, PDL_Indx *n, $GENERIC() *x,
 		$GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun,
 		integer *msglvl, integer *maxit, integer *maxfun, integer *mxitgc, $GENERIC() *eta,
 		$GENERIC() *stepmx, $GENERIC() *accrcy, $GENERIC() *xtol);
@@ -2622,7 +2616,7 @@ pp_def("lmqnbc",
 	Code =>'
 		integer lw, *ipivot;
 		$GENERIC() *w;
-		extern void lmqnbc_(integer *ifail, integer *n, $GENERIC() *x,
+		extern void lmqnbc_(integer *ifail, PDL_Indx *n, $GENERIC() *x,
 		$GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun,
 		$GENERIC() *low,$GENERIC() *up, integer *ipivot,
 		integer *msglvl, integer *maxit, integer *maxfun, integer *cgmaxit,$GENERIC() *eta,
@@ -2764,8 +2758,8 @@ pp_def("cgfam",
 
 	$GENERIC() *w, *gold, *d;
 	int stop;
-	integer i, irest, finish;	
-	int cgfam_(integer *n, $GENERIC() *x, $GENERIC() *f,
+	integer i, irest, finish;
+	int cgfam_(PDL_Indx *n, $GENERIC() *x, $GENERIC() *f,
 	$GENERIC() *g, $GENERIC() *d__, $GENERIC() *gold, integer *iprint,
 	$GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag, integer *irest,
 	integer *method, logical *finish);
@@ -2980,7 +2974,7 @@ pp_def("hooke",
 	OtherPars => "SV* hooke_func" ,
 	GenericTypes => ['D'],
 	Code =>'
-		extern int hooke(int nvars, paramd func, $GENERIC() *startpt,
+		extern int hooke(PDL_Indx nvars, paramd func, $GENERIC() *startpt,
 			$GENERIC() *endpt, $GENERIC() rho, $GENERIC() tol, int maxit);
 
 		hooke_function    = $COMP(hooke_func);
@@ -3262,7 +3256,7 @@ void gencanh_wrapper(integer *nind, integer *ind, integer *n, double *x, double 
 ');
 
 pp_addhdr('
-extern void gencan_(integer *n, double *x, double *l,
+extern void gencan_(PDL_Indx *n, double *x, double *l,
   double *u, double *epsgpen, double *epsgpsn, double *
   ftol, integer *fmaxit, integer *gmaxit, double *fmin,
   integer *maxit, integer *maxfc, double *udelta0, integer *
@@ -4327,7 +4321,7 @@ pp_def("dhc",
 	OtherPars => "SV* dhc_func" ,
 	GenericTypes => ['D'],
 	Code =>'
-		extern double dhc(int nvars, double *xrandom, double init, double tol,
+		extern double dhc(PDL_Indx nvars, double *xrandom, double init, double tol,
 			double *u, double *v, double *xv, double (*func)());
 		$GENERIC() *u, *v, *xv;
 		$GENERIC() fx;
@@ -4353,7 +4347,7 @@ pp_def("dhc",
 			
 			if ($print())
 			{
-				printf("\nAt starting location %d:\n",i+1);
+				printf("\nAt starting location %"IND_FLAG":\n",i+1);
 				printf("Minimal point (first components):\n");
 				for(k = 0; k < $SIZE(n); k++)
 				{
@@ -4449,7 +4443,7 @@ pp_def("de_opt",
 	OtherPars => "SV* de_func" ,
 	GenericTypes => ['D'],
 	Code =>'
-		extern double de_optimize(int D, double *best, int genmax, int seed, int  NP,
+		extern double de_optimize(PDL_Indx D, double *best, int genmax, int seed, int  NP,
 		int  strategy, double F, double CR, double *cvar,
 		double inibound_h, double inibound_l, int   refresh, double (*evaluate)());
 
@@ -4635,10 +4629,10 @@ pp_def("asa_opt",
 	GenericTypes => ['D'],
 	Code =>'
 
-	extern int asa_main (long int n, double *x,double *fx, double *upper, double *lower,
-			int *parameter_type, long int seed, long int *limit, double *cost_param, double *temp,
-			long int *generic,double *res, double *coarse, double *tangent, double *curvature,
-			double *quench_cost, double *quench_scale, long int print, double (*func)());
+	extern int asa_main (PDL_Indx n, double *x,double *fx, double *upper, double *lower,
+			int *parameter_type, PDL_Long seed, PDL_Long *limit, double *cost_param, double *temp,
+			PDL_Long *generic,double *res, double *coarse, double *tangent, double *curvature,
+			double *quench_cost, double *quench_scale, PDL_Long print, double (*func)());
 	asa_function  = $COMP(asa_func);
 	$info() = asa_main($SIZE(n), $P(x), $P(fx), $P(inibound_l),
 			$P(inibound_u), $P(parameter_type),$seed(),

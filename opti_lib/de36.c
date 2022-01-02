@@ -297,42 +297,42 @@ double de_optimize(int D, double *best, int genmax, int seed, int  NP,
   if (D <= 0)
   {
      printf("\nError! D=%d, should be > 0\n",D);
-     return;
+     return NAN;
   }
   if (NP <= 0)
   {
      printf("\nError! NP=%d, should be > 0\n",NP);
-     return;
+     return NAN;
   }
   if ((CR < 0) || (CR > 1.0))
   {
      printf("\nError! CR=%f, should be ex [0,1]\n",CR);
-     return;
+     return NAN;
   }
   if (seed <= 0)
   {
      printf("\nError! seed=%d, should be > 0\n",seed);
-     return;
+     return NAN;
   }
   if (refresh <= 0)
   {
      printf("\nError! refresh=%d, should be > 0\n",refresh);
-     return;
+     return NAN;
   }
   if (genmax <= 0)
   {
      printf("\nError! genmax=%d, should be > 0\n",genmax);
-     return;
+     return NAN;
   }
   if ((strategy < 0) || (strategy > 10))
   {
      printf("\nError! strategy=%d, should be ex {1,2,3,4,5,6,7,8,9,10}\n",strategy);
-     return;
+     return NAN;
   }
   if (inibound_h < inibound_l)
   {
      printf("\nError! inibound_h=%f < inibound_l=%f\n",inibound_h, inibound_l);
-     return;
+     return NAN;
   }
 
 
@@ -344,7 +344,7 @@ double de_optimize(int D, double *best, int genmax, int seed, int  NP,
    bestit=(double *) malloc(D * sizeof(double));
    if (!c || !d || !cost || ! tmp || !bestit){
    	printf("Allocation failure\n");
-	return;
+	return NAN;
    }
 
    for(i=0; i < NP ;i++) {
@@ -352,7 +352,7 @@ double de_optimize(int D, double *best, int genmax, int seed, int  NP,
    	d[i]=(double *) malloc(D * sizeof(double));
         if (!c[i] || !d[i]){
 	       printf("Allocation failure\n");
-	       return;
+	       return NAN;
 	}
    }
   

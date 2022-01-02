@@ -26,11 +26,11 @@ extern "C" {
 /* test for memory leaks */
 /* #include "/usr/local/include/leak.h" */
 
-#define	TRUE			1
-#define	FALSE			0
+#define	ASATRUE			1
+#define	ASAFALSE			0
 
-#define MIN(x,y)	((x) < (y) ? (x) : (y))
-#define MAX(x,y)	((x) > (y) ? (x) : (y))
+#define ASAMIN(x,y)	((x) < (y) ? (x) : (y))
+#define ASAMAX(x,y)	((x) > (y) ? (x) : (y))
 
   /* DEFAULT PARAMETERS SETTINGS */
 
@@ -39,102 +39,102 @@ extern "C" {
   /* Special ASA_TEMPLATEs */
 
 #ifndef MY_TEMPLATE
-#define MY_TEMPLATE FALSE
+#define MY_TEMPLATE ASAFALSE
 #endif
 #if MY_TEMPLATE                 /* MY_TEMPLATE_asa_user */
   /* you can add your own set of #define here */
 #endif                          /* MY_TEMPLATE */
 
 #ifndef ASA_TEMPLATE_LIB
-#define ASA_TEMPLATE_LIB FALSE
+#define ASA_TEMPLATE_LIB ASAFALSE
 #endif
 #if ASA_TEMPLATE_LIB
-#define ASA_LIB TRUE
-#define ASA_TEST TRUE
+#define ASA_LIB ASATRUE
+#define ASA_TEST ASATRUE
 #endif
 
 #ifndef ASA_TEMPLATE_ASA_OUT_PID
-#define ASA_TEMPLATE_ASA_OUT_PID FALSE
+#define ASA_TEMPLATE_ASA_OUT_PID ASAFALSE
 #endif
 #if ASA_TEMPLATE_ASA_OUT_PID
-#define USER_ASA_OUT TRUE
+#define USER_ASA_OUT ASATRUE
 #endif
 
 #ifndef ASA_TEMPLATE_MULTIPLE
-#define ASA_TEMPLATE_MULTIPLE FALSE
+#define ASA_TEMPLATE_MULTIPLE ASAFALSE
 #endif
 #if ASA_TEMPLATE_MULTIPLE
-#define COST_FILE FALSE
-#define USER_ASA_OUT TRUE
-#define ASA_TEST TRUE
-#define QUENCH_COST TRUE
-#define QUENCH_PARAMETERS TRUE
-#define OPTIONS_FILE FALSE
+#define COST_FILE ASAFALSE
+#define USER_ASA_OUT ASATRUE
+#define ASA_TEST ASATRUE
+#define QUENCH_COST ASATRUE
+#define QUENCH_PARAMETERS ASATRUE
+#define OPTIONS_FILE ASAFALSE
 #endif
 
 #ifndef ASA_TEMPLATE_SELFOPT
-#define ASA_TEMPLATE_SELFOPT FALSE
+#define ASA_TEMPLATE_SELFOPT ASAFALSE
 #endif
 #if ASA_TEMPLATE_SELFOPT
-#define COST_FILE FALSE
-#define SELF_OPTIMIZE TRUE
-#define OPTIONAL_DATA_DBL TRUE
-#define USER_ASA_OUT TRUE
-#define ASA_TEST TRUE
-#define OPTIONS_FILE FALSE
+#define COST_FILE ASAFALSE
+#define SELF_OPTIMIZE ASATRUE
+#define OPTIONAL_DATA_DBL ASATRUE
+#define USER_ASA_OUT ASATRUE
+#define ASA_TEST ASATRUE
+#define OPTIONS_FILE ASAFALSE
 #endif
 
 #ifndef ASA_TEMPLATE_SAMPLE
-#define ASA_TEMPLATE_SAMPLE FALSE
+#define ASA_TEMPLATE_SAMPLE ASAFALSE
 #endif
 #if ASA_TEMPLATE_SAMPLE
-#define COST_FILE FALSE
-#define ASA_SAMPLE TRUE
-#define USER_ACCEPTANCE_TEST TRUE
-#define USER_COST_SCHEDULE TRUE
-#define OPTIONS_FILE_DATA FALSE
-#define USER_ACCEPT_ASYMP_EXP TRUE
+#define COST_FILE ASAFALSE
+#define ASA_SAMPLE ASATRUE
+#define USER_ACCEPTANCE_TEST ASATRUE
+#define USER_COST_SCHEDULE ASATRUE
+#define OPTIONS_FILE_DATA ASAFALSE
+#define USER_ACCEPT_ASYMP_EXP ASATRUE
 #endif
 
 #ifndef ASA_TEMPLATE_PARALLEL
-#define ASA_TEMPLATE_PARALLEL FALSE
+#define ASA_TEMPLATE_PARALLEL ASAFALSE
 #endif
 #if ASA_TEMPLATE_PARALLEL
-#define COST_FILE FALSE
-#define ASA_TEST TRUE
-#define ASA_PARALLEL TRUE
+#define COST_FILE ASAFALSE
+#define ASA_TEST ASATRUE
+#define ASA_PARALLEL ASATRUE
 #endif
 
 #ifndef ASA_TEMPLATE_SAVE
-#define ASA_TEMPLATE_SAVE FALSE
+#define ASA_TEMPLATE_SAVE ASAFALSE
 #endif
 #if ASA_TEMPLATE_SAVE
-#define COST_FILE FALSE
-#define ASA_TEST TRUE
-#define ASA_SAVE TRUE
-#define QUENCH_PARAMETERS TRUE
-#define QUENCH_COST TRUE
+#define COST_FILE ASAFALSE
+#define ASA_TEST ASATRUE
+#define ASA_SAVE ASATRUE
+#define QUENCH_PARAMETERS ASATRUE
+#define QUENCH_COST ASATRUE
 #endif
 
 #ifndef ASA_TEMPLATE_QUEUE
-#define ASA_TEMPLATE_QUEUE FALSE
+#define ASA_TEMPLATE_QUEUE ASAFALSE
 #endif
 #if ASA_TEMPLATE_QUEUE
-#define ASA_QUEUE TRUE
-#define ASA_RESOLUTION FALSE
-#define ASA_TEST TRUE
-#define COST_FILE FALSE
-#define ASA_PRINT_MORE TRUE
+#define ASA_QUEUE ASATRUE
+#define ASA_RESOLUTION ASAFALSE
+#define ASA_TEST ASATRUE
+#define COST_FILE ASAFALSE
+#define ASA_PRINT_MORE ASATRUE
 #endif
 
 #ifndef ASA_TEST_POINT
-#define ASA_TEST_POINT FALSE
+#define ASA_TEST_POINT ASAFALSE
 #endif
 #if ASA_TEST_POINT
-#define ASA_TEST TRUE
-#define COST_FILE FALSE
+#define ASA_TEST ASATRUE
+#define COST_FILE ASAFALSE
 #define SMALL_FLOAT 1.0E-50
-#define QUENCH_COST TRUE
+#define QUENCH_COST ASATRUE
 #endif
 
   /* Standard Pre-Compile Options */
@@ -148,65 +148,65 @@ extern "C" {
 #define RECUR_USER_COST_FUNCTION recur_cost_function
 #endif
 #ifndef INCL_STDOUT
-#define INCL_STDOUT FALSE
+#define INCL_STDOUT ASAFALSE
 #endif
 #endif
 
 #ifndef INCL_STDOUT
-#define INCL_STDOUT TRUE
+#define INCL_STDOUT ASATRUE
 #endif
 #if INCL_STDOUT
 #ifndef TIME_CALC
-#define TIME_CALC FALSE
+#define TIME_CALC ASAFALSE
 #endif
 #endif
 
 #ifndef OPTIONS_FILE
-#define OPTIONS_FILE FALSE
+#define OPTIONS_FILE ASAFALSE
 #endif
 
 #if OPTIONS_FILE
 #ifndef OPTIONS_FILE_DATA
-#define OPTIONS_FILE_DATA FALSE
+#define OPTIONS_FILE_DATA ASAFALSE
 #endif
 #else
-#define OPTIONS_FILE_DATA FALSE
+#define OPTIONS_FILE_DATA ASAFALSE
 #endif
 
 #ifndef RECUR_OPTIONS_FILE
-#define RECUR_OPTIONS_FILE FALSE
+#define RECUR_OPTIONS_FILE ASAFALSE
 #endif
 
 #if RECUR_OPTIONS_FILE
 #ifndef RECUR_OPTIONS_FILE_DATA
-#define RECUR_OPTIONS_FILE_DATA FALSE
+#define RECUR_OPTIONS_FILE_DATA ASAFALSE
 #endif
 #else
-#define RECUR_OPTIONS_FILE_DATA FALSE
+#define RECUR_OPTIONS_FILE_DATA ASAFALSE
 #endif
 
 #ifndef COST_FILE
-#define COST_FILE FALSE
+#define COST_FILE ASAFALSE
 #endif
 
 #ifndef ASA_LIB
-#define ASA_LIB TRUE
+#define ASA_LIB ASATRUE
 #endif
 
 #ifndef HAVE_ANSI
-#define HAVE_ANSI TRUE
+#define HAVE_ANSI ASATRUE
 #endif
 
 #ifndef IO_PROTOTYPES
-#define IO_PROTOTYPES FALSE
+#define IO_PROTOTYPES ASAFALSE
 #endif
 
 #ifndef TIME_CALC
-#define TIME_CALC FALSE
+#define TIME_CALC ASAFALSE
 #endif
 
 #ifndef INT_LONG
-#define INT_LONG FALSE
+#define INT_LONG ASAFALSE
 #endif
 
 #if INT_LONG
@@ -216,7 +216,7 @@ extern "C" {
 #endif
 
 #ifndef INT_ALLOC
-#define INT_ALLOC FALSE
+#define INT_ALLOC ASAFALSE
 #endif
 
 #if INT_ALLOC
@@ -245,59 +245,59 @@ extern "C" {
 #endif
 
 #ifndef CHECK_EXPONENT
-#define CHECK_EXPONENT FALSE
+#define CHECK_EXPONENT ASAFALSE
 #endif
 
 #ifndef ASA_TEST
-#define ASA_TEST FALSE
+#define ASA_TEST ASAFALSE
 #endif
 
 #ifndef ASA_TEMPLATE
-#define ASA_TEMPLATE FALSE
+#define ASA_TEMPLATE ASAFALSE
 #endif
 
 #ifndef USER_INITIAL_COST_TEMP
-#define USER_INITIAL_COST_TEMP FALSE
+#define USER_INITIAL_COST_TEMP ASAFALSE
 #endif
 
 #ifndef RATIO_TEMPERATURE_SCALES
-#define RATIO_TEMPERATURE_SCALES FALSE
+#define RATIO_TEMPERATURE_SCALES ASAFALSE
 #endif
 
 #ifndef USER_INITIAL_PARAMETERS_TEMPS
-#define USER_INITIAL_PARAMETERS_TEMPS FALSE
+#define USER_INITIAL_PARAMETERS_TEMPS ASAFALSE
 #endif
 
 #ifndef DELTA_PARAMETERS
-#define DELTA_PARAMETERS FALSE
+#define DELTA_PARAMETERS ASAFALSE
 #endif
 
 #ifndef QUENCH_PARAMETERS
-#define QUENCH_PARAMETERS TRUE
+#define QUENCH_PARAMETERS ASATRUE
 #endif
 
 #ifndef QUENCH_COST
-#define QUENCH_COST TRUE
+#define QUENCH_COST ASATRUE
 #endif
 
 #ifndef QUENCH_PARAMETERS_SCALE
-#define QUENCH_PARAMETERS_SCALE TRUE
+#define QUENCH_PARAMETERS_SCALE ASATRUE
 #endif
 
 #ifndef QUENCH_COST_SCALE
-#define QUENCH_COST_SCALE TRUE
+#define QUENCH_COST_SCALE ASATRUE
 #endif
 
 #ifndef OPTIONAL_DATA_DBL
-#define OPTIONAL_DATA_DBL FALSE
+#define OPTIONAL_DATA_DBL ASAFALSE
 #endif
 
 #ifndef OPTIONAL_DATA_INT
-#define OPTIONAL_DATA_INT FALSE
+#define OPTIONAL_DATA_INT ASAFALSE
 #endif
 
 #ifndef OPTIONAL_DATA_PTR
-#define OPTIONAL_DATA_PTR FALSE
+#define OPTIONAL_DATA_PTR ASAFALSE
 #endif
 #if OPTIONAL_DATA_PTR
 /* user must define USER_TYPE; if a struct, it must be declared above */
@@ -307,11 +307,11 @@ extern "C" {
 #endif                          /* OPTIONAL_DATA_PTR */
 
 #ifndef USER_REANNEAL_COST
-#define USER_REANNEAL_COST FALSE
+#define USER_REANNEAL_COST ASAFALSE
 #endif
 
 #ifndef USER_REANNEAL_PARAMETERS
-#define USER_REANNEAL_PARAMETERS FALSE
+#define USER_REANNEAL_PARAMETERS ASAFALSE
 #endif
 
 #ifndef MAXIMUM_REANNEAL_INDEX
@@ -323,23 +323,23 @@ extern "C" {
 #endif
 
 #ifndef USER_COST_SCHEDULE
-#define USER_COST_SCHEDULE FALSE
+#define USER_COST_SCHEDULE ASAFALSE
 #endif
 
 #ifndef USER_ACCEPT_ASYMP_EXP
-#define USER_ACCEPT_ASYMP_EXP FALSE
+#define USER_ACCEPT_ASYMP_EXP ASAFALSE
 #endif
 
 #ifndef USER_ACCEPT_THRESHOLD
-#define USER_ACCEPT_THRESHOLD FALSE
+#define USER_ACCEPT_THRESHOLD ASAFALSE
 #endif
 
 #ifndef USER_ACCEPTANCE_TEST
-#define USER_ACCEPTANCE_TEST FALSE
+#define USER_ACCEPTANCE_TEST ASAFALSE
 #endif
 
 #ifndef USER_GENERATING_FUNCTION
-#define USER_GENERATING_FUNCTION FALSE
+#define USER_GENERATING_FUNCTION ASAFALSE
 #endif
 
   /* in asa.c, field-width.precision = G_FIELD.G_PRECISION */
@@ -355,9 +355,9 @@ extern "C" {
 #define INTEGER_NO_REANNEAL	((int) 2)
 #define REAL_NO_REANNEAL	((int) -2)
 
-  /* Set this to TRUE to self-optimize the Program Options */
+  /* Set this to ASATRUE to self-optimize the Program Options */
 #ifndef SELF_OPTIMIZE
-#define SELF_OPTIMIZE FALSE
+#define SELF_OPTIMIZE ASAFALSE
 #endif
 
 #ifndef USER_OUT
@@ -365,53 +365,53 @@ extern "C" {
 #endif
 
 #ifndef USER_ASA_OUT
-#define USER_ASA_OUT TRUE
+#define USER_ASA_OUT ASATRUE
 #endif
 
 #ifndef ASA_SAMPLE
-#define ASA_SAMPLE FALSE
+#define ASA_SAMPLE ASAFALSE
 #endif
 
 #ifndef ASA_QUEUE
-#define ASA_QUEUE TRUE
+#define ASA_QUEUE ASATRUE
 #endif
 
 #ifndef ASA_RESOLUTION
-#define ASA_RESOLUTION TRUE
+#define ASA_RESOLUTION ASATRUE
 #endif
 
 #ifndef ASA_PARALLEL
-#define ASA_PARALLEL FALSE
+#define ASA_PARALLEL ASAFALSE
 #endif
 
 #ifndef ASA_SAVE_OPT
-#define ASA_SAVE_OPT FALSE
+#define ASA_SAVE_OPT ASAFALSE
 #endif
 #if ASA_SAVE_OPT
-#define ASA_SAVE TRUE
+#define ASA_SAVE ASATRUE
 #endif
 
 #ifndef ASA_SAVE_BACKUP
-#define ASA_SAVE_BACKUP FALSE
+#define ASA_SAVE_BACKUP ASAFALSE
 #endif
 #if ASA_SAVE_BACKUP
-#define ASA_SAVE TRUE
+#define ASA_SAVE ASATRUE
 #endif
 
 #ifndef ASA_SAVE
-#define ASA_SAVE FALSE
+#define ASA_SAVE ASAFALSE
 #endif
 
 #ifndef ASA_PIPE
-#define ASA_PIPE FALSE
+#define ASA_PIPE ASAFALSE
 #endif
 
 #ifndef ASA_PIPE_FILE
-#define ASA_PIPE_FILE FALSE
+#define ASA_PIPE_FILE ASAFALSE
 #endif
 
 #ifndef FDLIBM_POW
-#define FDLIBM_POW FALSE
+#define FDLIBM_POW ASAFALSE
 #endif
 #if FDLIBM_POW
 #define F_POW s_pow
@@ -420,7 +420,7 @@ extern "C" {
 #endif
 
 #ifndef FDLIBM_LOG
-#define FDLIBM_LOG FALSE
+#define FDLIBM_LOG ASAFALSE
 #endif
 #if FDLIBM_LOG
 #define F_LOG s_log
@@ -429,7 +429,7 @@ extern "C" {
 #endif
 
 #ifndef FDLIBM_EXP
-#define FDLIBM_EXP FALSE
+#define FDLIBM_EXP ASAFALSE
 #endif
 #if FDLIBM_EXP
 #define F_EXP s_exp
@@ -438,19 +438,19 @@ extern "C" {
 #endif
 
 #ifndef FITLOC
-#define FITLOC FALSE
+#define FITLOC ASAFALSE
 #endif
 
 #ifndef FITLOC_ROUND
-#define FITLOC_ROUND TRUE
+#define FITLOC_ROUND ASATRUE
 #endif
 
 #ifndef FITLOC_PRINT
-#define FITLOC_PRINT TRUE
+#define FITLOC_PRINT ASATRUE
 #endif
 
 #ifndef MULTI_MIN
-#define MULTI_MIN FALSE
+#define MULTI_MIN ASAFALSE
 #endif
 
   /* Program Options */
@@ -593,7 +593,7 @@ extern "C" {
 #if HAVE_ANSI
 
 /* This block gives trouble under some Ultrix */
-#if FALSE
+#if ASAFALSE
   int fprintf (FILE * fp, const char *string, ...);
   int sprintf (char *s, const char *format, ...);
   FILE *popen (const char *command, const char *mode);

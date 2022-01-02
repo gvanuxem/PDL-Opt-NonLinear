@@ -42,6 +42,5 @@ RCS
 ^cover_db/
 \.gc(ov|no|da)$
 pp-\w*\.c$
-f77_underscore$
 ^blib/
 ^NonLinear\.(c|pm|xs)$

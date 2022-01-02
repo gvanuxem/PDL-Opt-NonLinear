@@ -16,6 +16,12 @@ use PDL::Exporter;
 
 pp_setversion($VERSION);
 
+use ExtUtils::F77;
+my $after = ExtUtils::F77->trail_ ? '##_' : '';
+pp_addhdr("
+#define PDL_FORTRAN(x) x$after
+");
+
 pp_addhdr('
 #include<asa_usr_asa.h>
 pdl    *pdl1, *pdl2, *pdl3, *pdl4, *pdl5;
@@ -349,9 +355,9 @@ pp_def("fmin",
 	OtherPars => "SV* min_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern $GENERIC() $TFD(,d)fmin_(param$TFD(f,d) f, $GENERIC() *X, $GENERIC() *A, $GENERIC() *B, $GENERIC() *T);
+		extern $GENERIC() $TFD(,d)PDL_FORTRAN(fmin)(param$TFD(f,d) f, $GENERIC() *X, $GENERIC() *A, $GENERIC() *B, $GENERIC() *T);
 		oned_function    = $COMP(min_func);
-		$y() = $TFD(,d)fmin_(oned_wrapper, $P(x), $P(a),$P(b),$P(tol));
+		$y() = $TFD(,d)PDL_FORTRAN(fmin)(oned_wrapper, $P(x), $P(a),$P(b),$P(tol));
 
 
 ',
@@ -382,6 +388,13 @@ and returns the value of f in x. Uses algorithm from Brent (1973).
 
 ');
 
+pp_addhdr('
+extern void PDL_FORTRAN(erroff)(void);
+extern void PDL_FORTRAN(eprint)(void);
+extern integer* PDL_FORTRAN(nerror)(integer *err);
+extern void PDL_FORTRAN(entsrc)(integer *old, integer *new);
+');
+
 pp_def("smnsx",
        HandleBad => 0,
 	Pars => '[io,phys]x(n);[io,phys]step();[io,phys]tol();[o,phys]y()',
@@ -389,21 +402,17 @@ pp_def("smnsx",
 	GenericTypes => ['D'],
 	Code =>'
 		integer old, new,err;
-		extern $GENERIC() dsmnsx_(paramd f, PDL_Indx *p, $GENERIC() *step, $GENERIC() *tol,$GENERIC() *X);
-		extern void erroff_(void);
-		extern void eprint_(void);
-		extern integer* nerror_(integer *err);
-		extern void entsrc_(integer *old, integer *new);
+		extern $GENERIC() PDL_FORTRAN(dsmnsx)(paramd f, PDL_Indx *p, $GENERIC() *step, $GENERIC() *tol,$GENERIC() *X);
 		//TODO istkgt istkin: stack
 		doubler_function    = $COMP(simplex_func);
 		
 		new = 1;
-		entsrc_(&old, &new);
-		$y() = dsmnsx_(np_wrapper, &$SIZE(n), $P(step), $P(tol),$P(x));
-		nerror_(&err);
+		PDL_FORTRAN(entsrc)(&old, &new);
+		$y() = PDL_FORTRAN(dsmnsx)(np_wrapper, &$SIZE(n), $P(step), $P(tol),$P(x));
+		PDL_FORTRAN(nerror)(&err);
 		if (err > 0 )
-			eprint_();
-		erroff_();
+			PDL_FORTRAN(eprint)();
+		PDL_FORTRAN(erroff)();
 ',
 	Doc =>'
 
@@ -452,28 +461,24 @@ pp_def("mnsx",
 	GenericTypes => ['D'],
 	Code =>'
 		integer old, new,err;
-		extern $GENERIC() dmnsx_(paramd f, integer *itmx, PDL_Indx *p, PDL_Indx *pp,
+		extern $GENERIC() PDL_FORTRAN(dmnsx)(paramd f, integer *itmx, PDL_Indx *p, PDL_Indx *pp,
 			$GENERIC() *s, $GENERIC() *tol,$GENERIC() *X);
-		extern void erroff_(void);
-		extern void eprint_(void);
-		extern integer* nerror_(integer *err);
-		extern void entsrc_(integer *old, integer *new);
 		//TODO istkgt istkin: stack
 
 		doubler_function    = $COMP(simplex_func);
 		new = 1;
-		entsrc_(&old, &new);
-		$y() = dmnsx_(np_wrapper,
+		PDL_FORTRAN(entsrc)(&old, &new);
+		$y() = PDL_FORTRAN(dmnsx)(np_wrapper,
 				$P(maxit),
 				&$SIZE(n),
 				&$SIZE(n),
 				$P(vertices),
 				$P(tol),
 				$P(x));
-		nerror_(&err);
+		PDL_FORTRAN(nerror)(&err);
 		if (err > 0 )
-			eprint_();
-		erroff_();
+			PDL_FORTRAN(eprint)();
+		PDL_FORTRAN(erroff)();
 
 ',
 	Doc =>'
@@ -532,8 +537,8 @@ pp_def("ivset",
 	Pars => 'int [phys]type();int [io,phys]iv(n);[io,phys]v(p)',
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)ivset_(integer *alg, integer *iv, PDL_Indx *liv, PDL_Indx *lv, $GENERIC() *v);
-		$TFD(,d)ivset_($P(type), $P(iv), &$SIZE(n), &$SIZE(p),$P(v));
+		extern void $TFD(,d)PDL_FORTRAN(ivset)(integer *alg, integer *iv, PDL_Indx *liv, PDL_Indx *lv, $GENERIC() *v);
+		$TFD(,d)PDL_FORTRAN(ivset)($P(type), $P(iv), &$SIZE(n), &$SIZE(p),$P(v));
 ',
 	Doc =>'
 
@@ -587,11 +592,11 @@ pp_def("rmnf",
 	OtherPars => "SV* min_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmnf_($GENERIC() *d, $GENERIC() *fx, integer *iv, PDL_Indx *liv,
+		extern void $TFD(,d)PDL_FORTRAN(rmnf)($GENERIC() *d, $GENERIC() *fx, integer *iv, PDL_Indx *liv,
 		PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		pdl4_function    = $COMP(min_func);
 		do{
-			$TFD(,d)rmnf_(
+			$TFD(,d)PDL_FORTRAN(rmnf)(
 				$P(scale),
 				$P(fx),
 				$P(iv),
@@ -645,10 +650,10 @@ pp_def("rmng",
 	OtherPars => "SV* min_func; SV* grad_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmng_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, PDL_Indx *liv,
+		extern void $TFD(,d)PDL_FORTRAN(rmng)($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, PDL_Indx *liv,
 		PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		do{
-			$TFD(,d)rmng_(
+			$TFD(,d)PDL_FORTRAN(rmng)(
 				$P(scale),
 				$P(fx),
 				$P(gx),
@@ -725,10 +730,10 @@ pp_def("rmnh",
 	OtherPars => "SV* min_func; SV* grad_func; SV* hess_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmnh_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, PDL_Indx *lh,
+		extern void $TFD(,d)PDL_FORTRAN(rmnh)($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, PDL_Indx *lh,
 		PDL_Indx *liv, PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		do{
-			$TFD(,d)rmnh_(
+			$TFD(,d)PDL_FORTRAN(rmnh)(
 				$P(scale),
 				$P(fx),
 				$P(gx),
@@ -821,11 +826,11 @@ pp_def("rmnfb",
 	OtherPars => "SV* min_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmnfb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, integer *iv, PDL_Indx *liv,
+		extern void $TFD(,d)PDL_FORTRAN(rmnfb)($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, integer *iv, PDL_Indx *liv,
 		PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		pdl4_function    = $COMP(min_func);
 		do{
-			$TFD(,d)rmnfb_(
+			$TFD(,d)PDL_FORTRAN(rmnfb)(
 				$P(bound),
 				$P(scale),
 				$P(fx),
@@ -884,10 +889,10 @@ pp_def("rmngb",
 	OtherPars => "SV* min_func; SV* grad_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmngb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, PDL_Indx *liv,
+		extern void $TFD(,d)PDL_FORTRAN(rmngb)($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, PDL_Indx *liv,
 		PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		do{
-			$TFD(,d)rmngb_(
+			$TFD(,d)PDL_FORTRAN(rmngb)(
 				$P(bound),
 				$P(scale),
 				$P(fx),
@@ -966,10 +971,10 @@ pp_def("rmnhb",
 	OtherPars => "SV* min_func; SV* grad_func; SV* hess_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-		extern void $TFD(,d)rmnhb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, PDL_Indx *lh,
+		extern void $TFD(,d)PDL_FORTRAN(rmnhb)($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, PDL_Indx *lh,
 		PDL_Indx *liv,PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
 		do{
-			$TFD(,d)rmnhb_(
+			$TFD(,d)PDL_FORTRAN(rmnhb)(
 				$P(bound),
 				$P(scale),
 				$P(fx),
@@ -1210,7 +1215,7 @@ pp_def("tensoropt",
 	Code =>'
 		integer it, *iwork,i;
 		$GENERIC() *work, *xtmp;
-		extern int tensor_(PDL_Indx *nr, PDL_Indx *n, $GENERIC() *x, paramv fcn,
+		extern int PDL_FORTRAN(tensor)(PDL_Indx *nr, PDL_Indx *n, $GENERIC() *x, paramv fcn,
 		paramv grd, paramv hsn, $GENERIC() *typx, $GENERIC() *fscale, $GENERIC()
 		*gradtl, $GENERIC() *steptl, integer *itnlim, $GENERIC() *stepmx,
 		integer *ipr, integer *method, integer *grdflg, integer *hesflg,
@@ -1226,7 +1231,7 @@ pp_def("tensoropt",
 		work = ($GENERIC() * ) malloc ( ($SIZE(n) * 8) * sizeof($GENERIC()));
 		xtmp = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
 
-		tensor_(
+		PDL_FORTRAN(tensor)(
 		&$SIZE(n),
 		&$SIZE(n),
 		$P(x),
@@ -1468,7 +1473,7 @@ pp_def("lbfgs",
 
 	$GENERIC() *w;
 	integer i,stop;
-	extern int lbfgs_(PDL_Indx *n, integer *m, $GENERIC() *x, $GENERIC()
+	extern int PDL_FORTRAN(lbfgs)(PDL_Indx *n, integer *m, $GENERIC() *x, $GENERIC()
 	*f, $GENERIC() *g, logical *diagco, $GENERIC() *diag, integer *maxit,integer *iprint,
 	 $GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag);
 	w = ($GENERIC() * ) malloc ( ($SIZE(n) * (2*$m() +1)+ 2*$m())* sizeof($GENERIC()));
@@ -1476,7 +1481,7 @@ pp_def("lbfgs",
 
 	for (i = 1 ; i < $maxfc(); )
 	{
-			lbfgs_(
+			PDL_FORTRAN(lbfgs)(
 			&$SIZE(n),
 			$P(m),
 			$P(x),
@@ -1790,7 +1795,7 @@ pp_def("lbfgsb",
 	$GENERIC() *wa;
 	integer *iwa;
 	integer i;
-	extern void setulb_(PDL_Indx *n, integer *m, $GENERIC() *x, $GENERIC() *l, $GENERIC() *u,
+	extern void PDL_FORTRAN(setulb)(PDL_Indx *n, integer *m, $GENERIC() *x, $GENERIC() *l, $GENERIC() *u,
 		integer *nbd, $GENERIC() *f, $GENERIC() *g, $GENERIC() *factr, $GENERIC() *pgtol, $GENERIC() *gtol,
 		$GENERIC() *wa,integer *iwa, char *task, integer *iprint, char *csave, integer *lsave,
 		integer *isave, $GENERIC() *dsave);
@@ -1805,7 +1810,7 @@ pp_def("lbfgsb",
 
 	while(1)
 	{
-			setulb_(
+			PDL_FORTRAN(setulb)(
 			&$SIZE(n),
 			$P(m),
 			$P(x),
@@ -2263,7 +2268,7 @@ pp_def("spg",
 	OtherPars => "SV* min_func; SV* grad_func; SV* px_func" ,
 	GenericTypes => ['D'],
 	Code =>'
-		extern void spg_(PDL_Indx *n, $GENERIC() *x, integer *m, $GENERIC() *eps, $GENERIC() *eps2,
+		extern void PDL_FORTRAN(spg)(PDL_Indx *n, $GENERIC() *x, integer *m, $GENERIC() *eps, $GENERIC() *eps2,
 			integer *maxit, integer *maxfc, integer *output, $GENERIC()  *f, $GENERIC() *pginfn, $GENERIC() *pgtwon,
 	integer *iter, integer *fcnt, integer *gcnt, integer *flag, paramv *evalf, paramv *evalg, paramv *proj);
 		integer iter;
@@ -2272,7 +2277,7 @@ pp_def("spg",
 		npg_grad_function    = $COMP(grad_func);
 		npg_pgrad_function    = $COMP(px_func);
 
-			spg_(
+			PDL_FORTRAN(spg)(
 				&$SIZE(n),
 				$P(x),
 				$P(m),
@@ -2489,7 +2494,7 @@ pp_def("lmqn",
 	Code =>'
 		integer lw;
 		$GENERIC() *w;
-		extern void lmqn_(integer *ifail, PDL_Indx *n, $GENERIC() *x,
+		extern void PDL_FORTRAN(lmqn)(integer *ifail, PDL_Indx *n, $GENERIC() *x,
 		$GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun,
 		integer *msglvl, integer *maxit, integer *maxfun, integer *mxitgc, $GENERIC() *eta,
 		$GENERIC() *stepmx, $GENERIC() *accrcy, $GENERIC() *xtol);
@@ -2499,7 +2504,7 @@ pp_def("lmqn",
 		lw = 14 *  $SIZE(n);
 		w  = ($GENERIC() *) malloc (lw * sizeof($GENERIC()));
 
-			lmqn_(
+			PDL_FORTRAN(lmqn)(
 				$P(info),
 				&$SIZE(n),
 				$P(x),
@@ -2616,7 +2621,7 @@ pp_def("lmqnbc",
 	Code =>'
 		integer lw, *ipivot;
 		$GENERIC() *w;
-		extern void lmqnbc_(integer *ifail, PDL_Indx *n, $GENERIC() *x,
+		extern void PDL_FORTRAN(lmqnbc)(integer *ifail, PDL_Indx *n, $GENERIC() *x,
 		$GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun,
 		$GENERIC() *low,$GENERIC() *up, integer *ipivot,
 		integer *msglvl, integer *maxit, integer *maxfun, integer *cgmaxit,$GENERIC() *eta,
@@ -2627,7 +2632,7 @@ pp_def("lmqnbc",
 		lw = 14 *  $SIZE(n);
 		w  = ($GENERIC() *) malloc (lw * sizeof($GENERIC()));
 		ipivot  = (integer *) malloc ($SIZE(n) * sizeof(integer));
-			lmqnbc_(
+			PDL_FORTRAN(lmqnbc)(
 				$P(info),
 				&$SIZE(n),
 				$P(x),
@@ -2759,7 +2764,7 @@ pp_def("cgfam",
 	$GENERIC() *w, *gold, *d;
 	int stop;
 	integer i, irest, finish;
-	int cgfam_(PDL_Indx *n, $GENERIC() *x, $GENERIC() *f,
+	int PDL_FORTRAN(cgfam)(PDL_Indx *n, $GENERIC() *x, $GENERIC() *f,
 	$GENERIC() *g, $GENERIC() *d__, $GENERIC() *gold, integer *iprint,
 	$GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag, integer *irest,
 	integer *method, logical *finish);
@@ -2773,7 +2778,7 @@ pp_def("cgfam",
 
 	for (i = 1 ; i <= $maxit(); )
 	{
-			cgfam_(
+			PDL_FORTRAN(cgfam)(
 			&$SIZE(n),
 			$P(x),
 			$P(fx),
@@ -3254,7 +3259,7 @@ static void gencanh_wrapper(integer *nind, integer *ind, integer *n, double *x, 
 ');
 
 pp_addhdr('
-extern void gencan_(PDL_Indx *n, double *x, double *l,
+extern void PDL_FORTRAN(gencan)(PDL_Indx *n, double *x, double *l,
   double *u, double *epsgpen, double *epsgpsn, double *
   ftol, integer *fmaxit, integer *gmaxit, double *fmin,
   integer *maxit, integer *maxfc, double *udelta0, integer *
@@ -3308,7 +3313,7 @@ pp_def("gencan",
 		w = ($GENERIC() * ) malloc (5 * $SIZE(n) * sizeof($GENERIC()));
 
 
-		gencan_(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
+		PDL_FORTRAN(gencan)(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
 		$P(epsgpen), $P(epsgpsn), $P(ftol), $P(fmaxit), $P(gmaxit), $P(fmin),
 		$P(maxit), $P(maxfc), $P(delta), $P(cgmaxit), $P(cgstop), $P(cggtol), $P(cgitol),
 		$P(cgftol), $P(qmptol), $P(qmpmaxit), $P(nearlyq), $P(gtype), $P(htvtype), $P(trtype),
@@ -3891,7 +3896,7 @@ pp_def("sgencan",
 		epsabs= 1e-99;
 		infty= 1e+308;
 
-		gencan_(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
+		PDL_FORTRAN(gencan)(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
 		$P(epsgpen), $P(epsgpsn), $P(ftol), $P(fmaxit), $P(gmaxit), &fmin,
 		$P(maxit), $P(maxfc), $P(delta), $P(cgmaxit), $P(cgstop), $P(cggtol), $P(cgitol),
 		$P(cgftol), $P(qmptol), $P(qmpmaxit), $P(nearlyq), $P(gtype), $P(htvtype), $P(trtype),

@@ -3,5 +3,4 @@ NonLinear.c
 NonLinear.pm
 NonLinear.xs
 **/pp-*.[co]*
-f77_underscore
 **/*.o

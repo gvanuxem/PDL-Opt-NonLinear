@@ -29,20 +29,12 @@ my %hash = pdlpp_stdargs(\@pack);
 $hash{INC} .= " -I.";  # uncomment as required
 $hash{OBJECT} .= " $cobj $fobj";
 $hash{LIBS}[0] .= $f77->runtime . ' -L/usr/local/lib -lport -lblas' ;
-$hash{clean}{FILES} .= " f77_underscore $fobj";
-
-# Create flag file according to whether or not to use
-# underscores (pretty hacky)
-unlink("f77_underscore") if -e "f77_underscore";
-if ($f77->trail_) {
-   open OUT, ">f77_underscore" or die "unable to write scratch file";
-   close OUT;
-}
+$hash{clean}{FILES} .= " $fobj";
 
 WriteMakefile(
         %hash,
         'ABSTRACT' => 'Non linear optimization routines for PDL',
-        'AUTHOR' => [ 'Gregory Vanuxem <gvanuxem.perl@gmail.com>' ],
+        'AUTHOR' => [ 'Grégory Vanuxem <gvanuxem.perl@gmail.com>' ],
         'LICENSE' => 'artistic_2',
 	'CONFIGURE_REQUIRES' =>  { "PDL" => '2.063', "ExtUtils::F77" => 0,},
 	'PREREQ_PM' => {

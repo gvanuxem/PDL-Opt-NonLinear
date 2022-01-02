@@ -50,9 +50,18 @@ sub MY::postamble {
         my $mycflags       = $f77->cflags;
 	my $orig = pdlpp_postamble(\@pack);
 	$orig =~ s/:\s*nonlinear\.pd/: nonlinear.pd/;
+	$orig .= <<EOF;
+
+FC = $mycompiler
+FFLAGS = $mycflags
+FOPTIMIZE = -O3
+FLDFLAGS = -fPIC
+
+EOF
+
 	$orig .join "\n",map {
 ("
 $_\$(OBJ_EXT): $_.f
-	$mycompiler -c -o $_\$(OBJ_EXT) $mycflags -O3 -fPIC $_.f
+	\$(FC) -c -o \$@ \$(FFLAGS) \$(FOPTIMIZE) \$(FLDFLAGS) \$<
 " )} @ffiles;
 }

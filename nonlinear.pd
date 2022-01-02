@@ -810,7 +810,7 @@ f(x) with user computed hessian and gradient.
 	sub hess_func{
 		my ($hx, $x) = @_;
 		rosen_hess($x,1)->squaretotri($hx);
-	}	
+	}
 	rmnh($fx, $gx, $hx, $x, $scale, $iv, $v, \&min_func, \&grad_func, \&hess_func);
 
 ');
@@ -1053,7 +1053,7 @@ f(x) with user computed hessian and gradient.
 	sub hess_func{
 		my ($hx, $x) = @_;
 		rosen_hess($x,1)->squaretotri($hx);
-	}	
+	}
 	rmnhb($fx, $gx, $hx, $x, $bounds, $scale, $iv, $v, \&min_func, \&grad_func, \&hess_func);
 ');
 }
@@ -2795,12 +2795,10 @@ pp_def("cgfam",
 		
 				 case 0:	/*CONV*/
 						goto end;
-			
 				 case 1:	
 						stop = lbfgs_wrapper($SIZE(n),$P(fx), $P(gx),$P(x), $COMP(fg_func));
 						break;
-			
-				 case 2:	
+				 case 2:
 						if ( i == $maxit() || stop == 1)
 							finish = 1;
 						else

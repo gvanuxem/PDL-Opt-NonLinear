@@ -23,16 +23,14 @@ my @pack = ([qw(nonlinear.pd NonLinear PDL::Opt::NonLinear)]);
 my @opti_libfiles = map {s/^opti_lib\///; s/\.f$//; $_} glob("opti_lib/*.f");
 my $fobj = join ' ', map {"opti_lib/$_\$(OBJ_EXT)"} @opti_libfiles;
 my @opti_cfiles = qw(hooke asa asa_usr dhc de36);
-my @cshallow = map "$_\$(OBJ_EXT)", @opti_cfiles;
-my $cshallow = join ' ', @cshallow;
-my $cdeep = join ' ', map "opti_lib/$_", @cshallow;
+my $cobj = join ' ', map "$_\$(OBJ_EXT)", @opti_cfiles;
 
 my %hash = pdlpp_stdargs(@pack);
-$hash{INC} .= " -Iopti_lib";  # uncomment as required
-$hash{OBJECT} .= " $cdeep $fobj";
-$hash{LDFROM} .= " $cshallow $fobj NonLinear\$(OBJ_EXT)";
+$hash{INC} .= " -I.";  # uncomment as required
+$hash{OBJECT} .= " $cobj $fobj";
+$hash{LDFROM} .= " $cobj $fobj NonLinear\$(OBJ_EXT)";
 $hash{LIBS}[0] .= $f77->runtime . ' -L/usr/local/lib -lport -lblas' ;
-$hash{clean}{FILES} .= " f77_underscore $fobj $cdeep";
+$hash{clean}{FILES} .= " f77_underscore $fobj";
 
 # Create flag file according to whether or not to use
 # underscores (pretty hacky)

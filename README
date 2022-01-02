@@ -1,4 +1,4 @@
-PDL/Opt/NonLinear version 0.01
+PDL/Opt/NonLinear version 0.04
 =============================
 
 This module provide some optimization routines for PDL.
@@ -22,7 +22,7 @@ and C and Fortran compilers.
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2005-2007 Grégory Vanuxem
+Copyright (C) 2005-2018 Grégory Vanuxem
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

@@ -1,5 +1,11 @@
 Revision history for Perl extension PDL::Opt::NonLinear
 
+0.04  Thu Aug 03 00:00:00 2018
+
+  * Adjust indexin operations introduced in PDL v2.014 2015-10-12
+    (full support of 64bit indexing operations using 64bit PDL_Indx
+    data type).
+
 0.03  Fri Aug 18 00:00:00 2007
 
   * ASA fixes (64bit arch)

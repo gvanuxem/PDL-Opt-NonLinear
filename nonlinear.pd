@@ -31,21 +31,20 @@
 # Redo rmn example
 # optimize without function parameter => pb
 
-do('Config.pl');
+do('./Config.pl');
 
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 use PDL::Exporter;
 
-pp_setversion(0.03);
+pp_setversion(0.04);
 
 pp_addhdr('
-#include<asa.h>
+#include<asa_usr_asa.h>
 pdl    *pdl1, *pdl2, *pdl3, *pdl4, *pdl5;
 SV    *sv_pdl1, *sv_pdl2, *sv_pdl3, *sv_pdl4, *sv_pdl5;
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include <asa.h>
 /* Change names when fixing glibc-2.1 bug */
 #ifdef MY_FIXY0
 #define y0(a) fixy0(a)
@@ -113,13 +112,6 @@ use PDL::Ufunc;
 use PDL::Ops;
 use PDL::NiceSlice;
 use PDL::LinearAlgebra qw/diag tritosym/;
-
-{ 
-  package PDL;
-  use UNIVERSAL 'isa'; # need that later in info function
-  use Carp;
-}
-
 
 
 =head1 NAME
@@ -198,22 +190,22 @@ double oned_wrapper(double *f)
 }
 static SV*   pdl4_function;
 void dpdl4_wrapper(
-		PDL_Long m, double *a, 
-		PDL_Long n, double *b, 
-		PDL_Long o, PDL_Long *c,
-		PDL_Long p, double *d)
+		PDL_Indx m, double *a, 
+		PDL_Indx n, double *b, 
+		PDL_Indx o, PDL_Indx *c,
+		PDL_Indx p, double *d)
 {
 
    dSP ;   
 
    int ret ;
 
-   PDL_Long odims[1];
+   PDL_Indx odims[1];
 
-   PDL_Long adims[] = {m};
-   PDL_Long bdims[] = {n};
-   PDL_Long cdims[] = {o};
-   PDL_Long ddims[] = {p};
+   PDL_Indx adims[] = {m};
+   PDL_Indx bdims[] = {n};
+   PDL_Indx cdims[] = {o};
+   PDL_Indx ddims[] = {p};
    
    PDL->setdims (pdl1, adims, 1);
    PDL->setdims (pdl2, bdims, 1);
@@ -274,22 +266,22 @@ void dpdl4_wrapper(
 }
 
 void fpdl4_wrapper(
-		PDL_Long m, float *a, 
-		PDL_Long n, float *b, 
-		PDL_Long o, PDL_Long *c,
-		PDL_Long p, float *d)
+		PDL_Indx m, float *a, 
+		PDL_Indx n, float *b, 
+		PDL_Indx o, PDL_Indx *c,
+		PDL_Indx p, float *d)
 {
 
    dSP ;   
 
    int ret ;
 
-   PDL_Long odims[1];
+   PDL_Indx odims[1];
 
-   PDL_Long adims[] = {m};
-   PDL_Long bdims[] = {n};
-   PDL_Long cdims[] = {o};
-   PDL_Long ddims[] = {p};
+   PDL_Indx adims[] = {m};
+   PDL_Indx bdims[] = {n};
+   PDL_Indx cdims[] = {o};
+   PDL_Indx ddims[] = {p};
    
    PDL->setdims (pdl1, adims, 1);
    PDL->setdims (pdl2, bdims, 1);
@@ -356,9 +348,9 @@ double np_wrapper(integer *n, double *p)
 
    int pret;
    double ret;
-   PDL_Long odims[1];
+   PDL_Indx odims[1];
 
-   PDL_Long dims[] = {*n};
+   PDL_Indx dims[] = {*n};
    PDL->setdims (pdl1, dims, 1);
    pdl1->datatype = PDL_D;
    pdl1->data = p;
@@ -1263,9 +1255,9 @@ void tensor_f_wrapper(integer *n, double *x, double *f)
    dSP ;
 
    int pret;
-   PDL_Long odims[1];
-   PDL_Long dims[1];
-   PDL_Long mdims[] = {*n};
+   PDL_Indx odims[1];
+   PDL_Indx dims[1];
+   PDL_Indx mdims[] = {*n};
 
    dims[0] = 1;
    
@@ -1311,8 +1303,8 @@ void tensor_grad_wrapper(integer *n, double *x, double *g)
    dSP ;
 
    int pret;
-   PDL_Long odims[1];
-   PDL_Long mdims[] = {*n};
+   PDL_Indx odims[1];
+   PDL_Indx mdims[] = {*n};
 
    PDL->setdims (pdl1, mdims, 1);
    PDL->setdims (pdl2, mdims, 1);
@@ -1355,9 +1347,9 @@ void tensor_hess_wrapper(integer *nr, integer *n, double *x, double *hx)
    dSP ;
 
    int pret;
-   PDL_Long odims[1];
-   PDL_Long hessdims[] = {*n,*nr};
-   PDL_Long mdims[] = {*n};
+   PDL_Indx odims[1];
+   PDL_Indx hessdims[] = {*n,*nr};
+   PDL_Indx mdims[] = {*n};
    
 
    PDL->setdims (pdl1, hessdims, 2);
@@ -1542,18 +1534,18 @@ parameters:
 
 pp_addhdr('
 
-int lbfgs_wrapper(PDL_Long n, double *a, double *b, double *c, SV *lbfgs_func)
+int lbfgs_wrapper(PDL_Indx n, double *a, double *b, double *c, SV *lbfgs_func)
 {
 
    dSP ;   
 
    int pret, ret;
 
-   PDL_Long odims[1];
+   PDL_Indx odims[1];
 
-   PDL_Long adims[] = {1};
-   PDL_Long bdims[] = {n};
-   PDL_Long cdims[] = {n};
+   PDL_Indx adims[] = {1};
+   PDL_Indx bdims[] = {n};
+   PDL_Indx cdims[] = {n};
    
    PDL->setdims (pdl1, adims, 1);
    PDL->setdims (pdl2, bdims, 1);
@@ -1605,15 +1597,15 @@ int lbfgs_wrapper(PDL_Long n, double *a, double *b, double *c, SV *lbfgs_func)
    return ret;
 
 }
-int lbfgs_diag_wrapper(PDL_Long n, double *a, double *b, SV *lbfgs_diag_func)
+int lbfgs_diag_wrapper(PDL_Indx n, double *a, double *b, SV *lbfgs_diag_func)
 {
 
    dSP ;   
 
    int pret,ret ;
-   PDL_Long odims[1];
-   PDL_Long adims[] = {n};
-   PDL_Long bdims[] = {n};
+   PDL_Indx odims[1];
+   PDL_Indx adims[] = {n};
+   PDL_Indx bdims[] = {n};
    
    PDL->setdims (pdl1, adims, 1);
    PDL->setdims (pdl2, bdims, 1);
@@ -1738,7 +1730,7 @@ mathematical programming b 45 (1989) 503-528.
 
 The steplength is determined at each iteration by means of the
 line search routine mcvsrch, which is a slight modification of
-the routine csrch written by moré and thuente.
+the routine csrch written by Moré and Thuente.
  
  
       where
@@ -1887,19 +1879,19 @@ the routine csrch written by moré and thuente.
 ');
 
 pp_addhdr('
-int lbfgsb_wrapper(PDL_Long n , double *a, double *b, double *c, PDL_Long *d, double *e, SV *lbfgsb_func)
+int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, PDL_Indx *d, double *e, SV *lbfgsb_func)
 {
 
    dSP ;   
 
    int ret ;
-   PDL_Long odims[1];
+   PDL_Indx odims[1];
 
-   PDL_Long adims[] = {1};
-   PDL_Long bdims[] = {n};
-   PDL_Long cdims[] = {n};
-   PDL_Long ddims[] = {44};
-   PDL_Long edims[] = {29};
+   PDL_Indx adims[] = {1};
+   PDL_Indx bdims[] = {n};
+   PDL_Indx cdims[] = {n};
+   PDL_Indx ddims[] = {44};
+   PDL_Indx edims[] = {29};
    
    PDL->setdims (pdl1, adims, 1);
    PDL->setdims (pdl2, bdims, 1);
@@ -2324,9 +2316,9 @@ void npg_f_wrapper(integer *n, double *x, double *f, integer *inform)
 
    int pret;
    integer ret;
-   PDL_Long odims[1];
-   PDL_Long dims[1];
-   PDL_Long mdims[] = {*n};
+   PDL_Indx odims[1];
+   PDL_Indx dims[1];
+   PDL_Indx mdims[] = {*n};
 
    dims[0] = 1;
    
@@ -2373,8 +2365,8 @@ void npg_pgrad_wrapper(integer *n, double *x, integer *inform)
 
    int pret;
    integer ret;
-   PDL_Long odims[1];
-   PDL_Long dims[] = {*n};
+   PDL_Indx odims[1];
+   PDL_Indx dims[] = {*n};
 
 
    PDL->setdims (pdl1, dims, 1);
@@ -2412,8 +2404,8 @@ void npg_grad_wrapper(integer *n, double *x, double *g, integer *inform)
 
    int pret;
    integer ret;
-   PDL_Long odims[1];
-   PDL_Long mdims[] = {*n};
+   PDL_Indx odims[1];
+   PDL_Indx mdims[] = {*n};
 
    PDL->setdims (pdl1, mdims, 1);
    PDL->setdims (pdl2, mdims, 1);
@@ -2628,8 +2620,8 @@ void lm_wrapper(integer *n, double *x, double *f, double *g)
    dSP ;
 
    int pret;
-   PDL_Long odims[1];
-   PDL_Long mdims[] = {*n};
+   PDL_Indx odims[1];
+   PDL_Indx mdims[] = {*n};
    odims[0] = 1;
    
    PDL->setdims (pdl3, odims, 1);
@@ -3135,9 +3127,9 @@ double hooke_wrapper(int n, double *p)
 
    int pret;
    double ret;
-   PDL_Long odims[1];
+   PDL_Indx odims[1];
 
-   PDL_Long dims[] = {n};
+   PDL_Indx dims[] = {n};
    PDL->setdims (pdl1, dims, 1);
    pdl1->datatype = PDL_D;
    pdl1->data = p;
@@ -3293,8 +3285,8 @@ void gencanf_wrapper(integer *n, double *x, double *f, integer *inform)
    dSP ;
 
    int pret;
-   PDL_Long odims[1];
-   PDL_Long mdims[] = {*n};
+   PDL_Indx odims[1];
+   PDL_Indx mdims[] = {*n};
    odims[0] = 1;
    
    PDL->setdims (pdl2, odims, 1);
@@ -3340,8 +3332,8 @@ void gencang_wrapper(integer *n, double *x, double *g, integer *inform)
    dSP ;
 
    int pret;
-   PDL_Long odims[1];
-   PDL_Long mdims[] = {*n};
+   PDL_Indx odims[1];
+   PDL_Indx mdims[] = {*n};
    odims[0] = 1;
    
 
@@ -3388,10 +3380,10 @@ void gencanh_wrapper(integer *nind, integer *ind, integer *n, double *x, double 
    dSP ;
 
    int pret;
-   PDL_Long odims[1];
-   PDL_Long mdims[] = {*n};
-   PDL_Long ddims[] = {1,*n};
-   PDL_Long inddims[] = {*nind};
+   PDL_Indx odims[1];
+   PDL_Indx mdims[] = {*n};
+   PDL_Indx ddims[] = {1,*n};
+   PDL_Indx inddims[] = {*nind};
    
    PDL->setdims (pdl1, mdims, 1);
    PDL->setdims (pdl2, ddims, 2);
@@ -4544,7 +4536,7 @@ pp_def("dhc",
 			double *u, double *v, double *xv, double (*func)());
 		double *u, *v, *xv;
 		double fx;
-		PDL_Long i,j,k;
+		PDL_Indx i,j,k;
 
 		hooke_function    = $PRIV(dhc_func);
 		u = (double *) malloc (sizeof(double) * $SIZE(n));
@@ -4805,9 +4797,9 @@ asa_wrapper (double *x,
 
    int pret;
    double ret;
-   PDL_Long odims[1];
+   PDL_Indx odims[1];
 
-   PDL_Long dims[] = {*parameter_dimension};
+   PDL_Indx dims[] = {*parameter_dimension};
    PDL->setdims (pdl1, dims, 1);
    pdl1->datatype = PDL_D;
    pdl1->data = x;
@@ -5647,7 +5639,7 @@ sub rosen_hess{
 
 =head1 COPYRIGHT
 
-Copyright (C) Grégory Vanuxem 2005.
+Copyright (C) Grégory Vanuxem 2005-2018.
 All rights reserved. This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
 

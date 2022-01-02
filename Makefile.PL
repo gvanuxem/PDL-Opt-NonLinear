@@ -58,7 +58,7 @@ if ($trail) {
 WriteMakefile(
  %hash,
  VERSION_FROM => "",   # This is overridden by VERSION_FROM in %hash 
- VERSION => "0.03",
+ VERSION => "0.04",
  'PREREQ_PM'		=> {
           PDL,
           PDL::LinearAlgebra

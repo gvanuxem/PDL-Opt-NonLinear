@@ -53,15 +53,13 @@ sub MY::postamble {
 	$orig .= <<EOF;
 
 FC = $mycompiler
-FFLAGS = $mycflags
-FOPTIMIZE = -O3
-FLDFLAGS = -fPIC
+FFLAGS = $mycflags -O3 -fPIC
 
 EOF
 
 	$orig .join "\n",map {
 ("
 $_\$(OBJ_EXT): $_.f
-	\$(FC) -c -o \$@ \$(FFLAGS) \$(FOPTIMIZE) \$(FLDFLAGS) \$<
+	\$(FC) -c -o \$@ \$(FFLAGS) \$<
 " )} @ffiles;
 }

@@ -1,5 +1,9 @@
 Revision history for Perl extension PDL::Opt::NonLinear
 
+0.05  Thu Aug 16 00:00:00 2018
+
+  * Improve build process.
+
 0.04  Thu Aug 03 00:00:00 2018
 
   * Adjust indexin operations introduced in PDL v2.014 2015-10-12

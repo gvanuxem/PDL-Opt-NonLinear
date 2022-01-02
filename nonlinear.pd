@@ -33,10 +33,10 @@
 
 do('./Config.pl');
 
-our $VERSION = 0.04;
+our $VERSION = 0.05;
 use PDL::Exporter;
 
-pp_setversion(0.04);
+pp_setversion(0.05);
 
 pp_addhdr('
 #include<asa_usr_asa.h>

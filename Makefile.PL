@@ -57,12 +57,17 @@ if ($trail) {
 
 WriteMakefile(
  %hash,
- VERSION_FROM => "",   # This is overridden by VERSION_FROM in %hash 
- VERSION => "0.04",
- 'PREREQ_PM'		=> {
-          PDL,
-          PDL::LinearAlgebra
-          }
+        'ABSTRACT' => 'Non linear optimization routines for PDL',
+        'AUTHOR' => [ 'Gregory Vanuxem <gvanuxem.perl@gmail.com>' ],
+        'LICENSE' => 'artistic_2',
+ 	'VERSION_FROM' => "",   # This is overridden by VERSION_FROM in %hash 
+	'CONFIGURE_REQUIRES' =>  { "PDL" => 0, "ExtUtils::F77" => 0,},
+	'BUILD_REQUIRES' =>  { "PDL" => 0, "PDL::LinearAlgebra" => 0,},
+	'VERSION' => "0.05",
+	'PREREQ_PM' => {
+	  'PDL' => 0, 
+	  'PDL::LinearAlgebra' => 0,
+	  }
 
 );
 

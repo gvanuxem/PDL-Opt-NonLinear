@@ -344,9 +344,7 @@ double np_wrapper(integer *n, double *p)
    return ret;
 
 }
-
 ');
-
 
 pp_def("fmin",
        HandleBad => 0,
@@ -354,14 +352,9 @@ pp_def("fmin",
 	OtherPars => "SV* min_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-             types(F) %{
-		extern $GENERIC() fmin_(paramf f, $GENERIC() *X, $GENERIC() *A, $GENERIC() *B, $GENERIC() *T);
-		%}
-             types(D) %{
-		extern $GENERIC() dfmin_(paramd f, $GENERIC() *X, $GENERIC() *A,$GENERIC() *B, $GENERIC() *T);
-		%}
+		extern $GENERIC() $TFD(,d)fmin_(param$TFD(f,d) f, $GENERIC() *X, $GENERIC() *A, $GENERIC() *B, $GENERIC() *T);
 		oned_function    = $COMP(min_func);
-		$y() = $TFD(fmin_,dfmin_)(oned_wrapper, $P(x), $P(a),$P(b),$P(tol));
+		$y() = $TFD(,d)fmin_(oned_wrapper, $P(x), $P(a),$P(b),$P(tol));
 
 
 ',
@@ -542,13 +535,8 @@ pp_def("ivset",
 	Pars => 'int [phys]type();int [io,phys]iv(n);[io,phys]v(p)',
 	GenericTypes => ['F','D'],
 	Code =>'
-             types(F) %{
-		extern void ivset_(integer *alg, integer *iv, integer *liv, integer *lv, $GENERIC() *v);
-		%}
-             types(D) %{
-		extern void divset_(integer *alg, integer *iv, integer *liv, integer *lv, $GENERIC() *v);
-		%}
-		$TFD(ivset_,divset_)($P(type), $P(iv), &$SIZE(n), &$SIZE(p),$P(v));
+		extern void $TFD(,d)ivset_(integer *alg, integer *iv, integer *liv, integer *lv, $GENERIC() *v);
+		$TFD(,d)ivset_($P(type), $P(iv), &$SIZE(n), &$SIZE(p),$P(v));
 ',
 	Doc =>'
 
@@ -596,25 +584,17 @@ $iv[20] => control Fortran output unit for printing (0 => no output).
 
 ');
 
-
 pp_def("rmnf",
        HandleBad => 0,
 	Pars => '[phys]fx(); [io,phys]x(m);[io,phys]scale(m);int [io,phys]iv(n);[io,phys]v(p)',
 	OtherPars => "SV* min_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-             types(F) %{
-		extern void rmnf_($GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
+		extern void $TFD(,d)rmnf_($GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
 		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
-             types(D) %{
-		extern void drmnf_($GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
-		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
-		
 		pdl4_function    = $COMP(min_func);
 		do{
-			$TFD(rmnf_,drmnf_)(
+			$TFD(,d)rmnf_(
 				$P(scale),
 				$P(fx), 
 				$P(iv), 
@@ -623,18 +603,10 @@ pp_def("rmnf",
 				&$SIZE(m),
 				$P(v), 
 				$P(x));
-             types(F) %{
-			fpdl4_wrapper(1, $P(fx), 
+			$TFD(f,d)pdl4_wrapper(1, $P(fx), 
 				  	$SIZE(m), $P(x),
 					$SIZE(n), $P(iv), 
 					$SIZE(p), $P(v));
-		%}
-             types(D) %{
-			dpdl4_wrapper(1, $P(fx), 
-				  	$SIZE(m), $P(x),
-					$SIZE(n), $P(iv), 
-					$SIZE(p), $P(v));
-		%}
 		}while($iv(n=>0) <= 2 );
 
 
@@ -676,16 +648,10 @@ pp_def("rmng",
 	OtherPars => "SV* min_func; SV* grad_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-             types(F) %{
-		extern void rmng_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
+		extern void $TFD(,d)rmng_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
 		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
-             types(D) %{
-		extern void drmng_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
-		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
 		do{
-			$TFD(rmng_,drmng_)(
+			$TFD(,d)rmng_(
 				$P(scale),
 				$P(fx),
 				$P(gx),
@@ -698,34 +664,18 @@ pp_def("rmng",
 			if($iv(n=>0) == 1 )
 			{
 				pdl4_function    = $COMP(min_func);
-             types(F) %{
-				fpdl4_wrapper(1, $P(fx), 
+				$TFD(f,d)pdl4_wrapper(1, $P(fx), 
 					$SIZE(m), $P(x),
 					$SIZE(n), $P(iv), 
 					$SIZE(p), $P(v));
-		%}
-             types(D) %{
-				dpdl4_wrapper(1, $P(fx), 
-					$SIZE(m), $P(x),
-					$SIZE(n), $P(iv), 
-					$SIZE(p), $P(v));
-		%}
 			}
 			else if($iv(n=>0) == 2 )
 			{
 				pdl4_function    = $COMP(grad_func);
-             types(F) %{
-				fpdl4_wrapper($SIZE(m), $P(gx), 
+				$TFD(f,d)pdl4_wrapper($SIZE(m), $P(gx), 
 					$SIZE(m), $P(x),
 					$SIZE(n), $P(iv),
 					$SIZE(p), $P(v));
-		%}
-             types(D) %{
-				dpdl4_wrapper($SIZE(m), $P(gx), 
-					$SIZE(m), $P(x),
-					$SIZE(n), $P(iv),
-					$SIZE(p), $P(v));
-		%}
 			} 
 		}while($iv(n=>0) <= 2 );
 
@@ -772,25 +722,16 @@ f(x) with user computed gradient.
 
 ');
 
-
 pp_def("rmnh",
        HandleBad => 0,
 	Pars => '[phys]fx(); [io,phys]gx(m); [io,phys] hx(n);[io,phys]x(m);[io,phys]scale(m);int [io,phys]iv(p);[io,phys]v(q)',
 	OtherPars => "SV* min_func; SV* grad_func; SV* hess_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-             types(F) %{
-		extern void rmnh_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, integer *lh,
+		extern void $TFD(,d)rmnh_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, integer *lh,
 		integer *liv, integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
-             types(D) %{
-		extern void drmnh_($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h,integer *iv, integer *lh,
-		integer *liv, integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
-		
-		
 		do{
-			$TFD(rmnh_,drmnh_)(
+			$TFD(,d)rmnh_(
 				$P(scale),
 				$P(fx),
 				$P(gx),
@@ -805,47 +746,27 @@ pp_def("rmnh",
 			if($iv(p=>0) == 1 )
 			{
 				pdl4_function    = $COMP(min_func);
-             types(F) %{
-				fpdl4_wrapper(1, $P(fx),
+				$TFD(f,d)pdl4_wrapper(1, $P(fx),
 					$SIZE(m), $P(x),
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));
-		%}
-             types(D) %{
 				dpdl4_wrapper(1, $P(fx),
 					$SIZE(m), $P(x),
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));
-		%}
 			}
 			else if($iv(p=>0) == 2 )
 			{
 				pdl4_function    = $COMP(grad_func);
-             types(F) %{
-				fpdl4_wrapper($SIZE(m), $P(gx),
+				$TFD(f,d)pdl4_wrapper($SIZE(m), $P(gx),
 					$SIZE(m), $P(x),
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));			
-		%}
-             types(D) %{
-				dpdl4_wrapper($SIZE(m), $P(gx),
-					$SIZE(m), $P(x),
-					$SIZE(p), $P(iv),
-					$SIZE(q), $P(v));			
-		%}
 				pdl4_function    = $COMP(hess_func);
-             types(F) %{
-				fpdl4_wrapper($SIZE(n), $P(hx),
+				$TFD(f,d)pdl4_wrapper($SIZE(n), $P(hx),
 					$SIZE(m), $P(x),
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));
-		%}
-             types(D) %{
-				dpdl4_wrapper($SIZE(n), $P(hx),
-					$SIZE(m), $P(x),
-					$SIZE(p), $P(iv),
-					$SIZE(q), $P(v));
-		%}
 			} 
 		}while($iv(p=>0) <= 2 );
 
@@ -903,18 +824,11 @@ pp_def("rmnfb",
 	OtherPars => "SV* min_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-             types(F) %{
-		extern void rmnfb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
+		extern void $TFD(,d)rmnfb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
 		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
-             types(D) %{
-		extern void drmnfb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, integer *iv, integer *liv,
-		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
-		
 		pdl4_function    = $COMP(min_func);
 		do{
-			$TFD(rmnfb_,drmnfb_)(
+			$TFD(,d)rmnfb_(
 				$P(bound),
 				$P(scale),
 				$P(fx), 
@@ -924,18 +838,10 @@ pp_def("rmnfb",
 				&$SIZE(m),
 				$P(v), 
 				$P(x));
-             types(F) %{
-			fpdl4_wrapper(1, $P(fx),
+			$TFD(f,d)pdl4_wrapper(1, $P(fx),
 				$SIZE(m), $P(x),
 				$SIZE(n), $P(iv),
 				$SIZE(p), $P(v));
-		%}
-             types(D) %{
-			dpdl4_wrapper(1, $P(fx),
-				$SIZE(m), $P(x),
-				$SIZE(n), $P(iv),
-				$SIZE(p), $P(v));
-		%}
 		}while($iv(n=>0) <= 2 );
 
 
@@ -981,16 +887,10 @@ pp_def("rmngb",
 	OtherPars => "SV* min_func; SV* grad_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-             types(F) %{
-		extern void rmngb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
+		extern void $TFD(,d)rmngb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
 		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
-             types(D) %{
-		extern void drmngb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, integer *liv,
-		integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
 		do{
-			$TFD(rmngb_,drmngb_)(
+			$TFD(,d)rmngb_(
 				$P(bound),
 				$P(scale),
 				$P(fx),
@@ -1004,34 +904,18 @@ pp_def("rmngb",
 			if($iv(n=>0) == 1 )
 			{
 				pdl4_function    = $COMP(min_func);
-             types(F) %{
-				fpdl4_wrapper(1, $P(fx),
+				$TFD(f,d)pdl4_wrapper(1, $P(fx),
 					$SIZE(m), $P(x),
 					$SIZE(n), $P(iv),
 					$SIZE(p), $P(v));
-		%}
-             types(D) %{
-				dpdl4_wrapper(1, $P(fx),
-					$SIZE(m), $P(x),
-					$SIZE(n), $P(iv),
-					$SIZE(p), $P(v));
-		%}
 			}
 			else if($iv(n=>0) == 2 )
 			{
 				pdl4_function    = $COMP(grad_func);
-             types(F) %{	
-				fpdl4_wrapper($SIZE(m), $P(gx),
+				$TFD(f,d)pdl4_wrapper($SIZE(m), $P(gx),
 					$SIZE(m), $P(x),
 					$SIZE(n), $P(iv),
 					$SIZE(p), $P(v));			
-		%}
-             types(D) %{	
-				dpdl4_wrapper($SIZE(m), $P(gx),
-					$SIZE(m), $P(x),
-					$SIZE(n), $P(iv),
-					$SIZE(p), $P(v));			
-		%}
 			} 
 		}while($iv(n=>0) <= 2 );
 
@@ -1079,25 +963,16 @@ f(x) with user computed gradient.
 
 ');
 
-
 pp_def("rmnhb",
        HandleBad => 0,
 	Pars => '[io,phys]fx(); [io,phys]gx(m); [io,phys] hx(n);[io,phys]x(m);[phys]bound(2,m);[io,phys]scale(m);int [io,phys]iv(p);[io,phys]v(q)',
 	OtherPars => "SV* min_func; SV* grad_func; SV* hess_func" ,
 	GenericTypes => ['F','D'],
 	Code =>'
-             types(F) %{
-		extern void rmnhb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, integer *lh,
+		extern void $TFD(,d)rmnhb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, integer *lh,
 		integer *liv,integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
-             types(D) %{
-		extern void drmnhb_($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h,integer *iv, integer *lh,
-		integer *liv, integer *lv, integer *n, $GENERIC() *v, $GENERIC()*x);
-		%}
-		
-		
 		do{
-			$TFD(rmnhb_,drmnhb_)(
+			$TFD(,d)rmnhb_(
 				$P(bound),
 				$P(scale),
 				$P(fx),
@@ -1113,47 +988,23 @@ pp_def("rmnhb",
 			if($iv(p=>0) == 1 )
 			{
 				pdl4_function    = $COMP(min_func);
-             types(F) %{	
-				fpdl4_wrapper(1, $P(fx),
+				$TFD(f,d)pdl4_wrapper(1, $P(fx),
 					$SIZE(m), $P(x),
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));
-		%}
-             types(D) %{	
-				dpdl4_wrapper(1, $P(fx),
-					$SIZE(m), $P(x),
-					$SIZE(p), $P(iv),
-					$SIZE(q), $P(v));
-		%}
 			}
 			else if($iv(p=>0) == 2 )
 			{
 				pdl4_function    = $COMP(grad_func);
-             types(F) %{
-				fpdl4_wrapper($SIZE(m), $P(gx),
+				$TFD(f,d)pdl4_wrapper($SIZE(m), $P(gx),
 					$SIZE(m), $P(x),
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));
-		%}
-             types(D) %{
-				dpdl4_wrapper($SIZE(m), $P(gx),
-					$SIZE(m), $P(x),
-					$SIZE(p), $P(iv),
-					$SIZE(q), $P(v));
-		%}
 				pdl4_function    = $COMP(hess_func);
-             types(F) %{
-				fpdl4_wrapper($SIZE(n), $P(hx),
+				$TFD(f,d)pdl4_wrapper($SIZE(n), $P(hx),
 					$SIZE(m), $P(x),
 					$SIZE(p), $P(iv),
 					$SIZE(q), $P(v));
-		%}
-             types(D) %{
-				dpdl4_wrapper($SIZE(n), $P(hx),
-					$SIZE(m), $P(x),
-					$SIZE(p), $P(iv),
-					$SIZE(q), $P(v));
-		%}
 			} 
 		}while($iv(p=>0) <= 2 );
 
@@ -1207,10 +1058,7 @@ f(x) with user computed hessian and gradient.
 		rosen_hess($x,1)->squaretotri($hx);
 	}	
  	rmnhb($fx, $gx, $hx, $x, $bounds, $scale, $iv, $v, \&min_func, \&grad_func, \&hess_func);
-
 ');
-
-
 }
 
 pp_addhdr('

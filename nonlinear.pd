@@ -1505,8 +1505,8 @@ It uses the limited memory BFGS method.
 	# The SIAM 100-Digit Challenge problem 4
 	# see http://www-m8.ma.tum.de/m3/bornemann/challengebook/
 	# result: -3.30686864747523728007611377089851565716648236
+	use PDL::NiceSlice;
 	use PDL::Opt::NonLinear;
-	use PDL::Stat::Distributions;
 
 	$x = (random(2,500)-0.5)*2;
 	$gx = zeroes(2,500);

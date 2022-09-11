@@ -76,14 +76,14 @@ $gx = zeroes(5);
 $fx = pdl(0);
 
 my $bounds =  zeroes(5,2);
-$bounds(",0").= -5;
-$bounds(",1").= 5;
+$bounds(,0).= -5;
+$bounds(,1).= 5;
 my $tbounds = zeroes(5);
 $tbounds .= 2;	
 $gtol = pdl(0.9);
 my $pgtol = pdl(1e-10);
 my $factr = pdl(100);
-$print = pdl(long, [1,0]);
+$print = pdl(long, [0,0]);
 $maxit = pdl(long,100);
 $info = pdl(long,0);
 $m = pdl(long,10);
@@ -99,15 +99,10 @@ lbfgsb($fx, $gx, $x, $m, $bounds, $tbounds, $maxit, $factr, $pgtol, $gtol,
 	$print, $info,$iv, $v,\&fg_func);
 approx_ok $x,$res,0.0001,'lbfgsb';
 
-
 $x = pdl '[0.49823058 0.98093641 0.63151156 0.66477157 0.60801367]';
 $gx = rosen_grad($x);
 $fx = rosen($x);
-
-$x = pdl '[0.49823058 0.98093641 0.63151156 0.66477157 0.60801367]';
-$gx = rosen_grad($x);
-$fx = rosen($x);
-$print = ones(2);
+$print = zeroes(2);
 $maxit = pdl(long, 200);
 $info = pdl(long,0);
 cgfam($fx, $gx, $x, $maxit, $eps, $xtol, $gtol,$print,$info,1,\&fg_func);

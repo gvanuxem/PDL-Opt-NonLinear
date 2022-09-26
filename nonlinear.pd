@@ -8,7 +8,7 @@ use warnings;
 # Redo rmn example
 # optimize without function parameter => pb
 
-my %config;
+our %config;
 do('./Config.pl');
 
 our $VERSION = '0.08';
@@ -147,7 +147,7 @@ double np_wrapper(integer *n, double *p);
 ');
 
 pp_def("fmin",
-       HandleBad => 0,
+    HandleBad => 0,
     Pars => '[phys]a();[phys]b();[phys]tol();[o,phys]y();[o,phys]x()',
     OtherPars => "SV* min_func" ,
     GenericTypes => ['F','D'],
@@ -1601,8 +1601,8 @@ pp_def("spg",
     GenericTypes => ['D'],
     Code =>'
         extern void PDL_FORTRAN(spg)(PDL_Indx *n, $GENERIC() *x, integer *m, $GENERIC() *eps, $GENERIC() *eps2,
-            integer *maxit, integer *maxfc, integer *output, $GENERIC()  *f, $GENERIC() *pginfn, $GENERIC() *pgtwon,
-    integer *iter, integer *fcnt, integer *gcnt, integer *flag, paramv *evalf, paramv *evalg, paramv *proj);
+        integer *maxit, integer *maxfc, integer *output, $GENERIC()  *f, $GENERIC() *pginfn, $GENERIC() *pgtwon,
+        integer *iter, integer *fcnt, integer *gcnt, integer *flag, paramv *evalf, paramv *evalg, paramv *proj);
         integer iter;
 
         npg_f_function    = $COMP(min_func);
@@ -3571,7 +3571,7 @@ Technical Report TR-95-012, ICSI, March 1995.
 
 Strategy:
 
-    1:   "DE/best/1/exp",
+        1:   "DE/best/1/exp",
         2:    "DE/rand/1/exp",
         3:    "DE/rand-to-best/1/exp",
         4:    "DE/best/2/exp",
@@ -3791,16 +3791,16 @@ It uses the Adaptive Simulated Annealing (ASA) method.
      info
     On entry 0,
     On exit, contain error code:
-        NORMAL_EXIT		    => 0
-        P_TEMP_TOO_SMALL	    => 1
-        C_TEMP_TOO_SMALL	    => 2
-        COST_REPEATING		    => 3
+        NORMAL_EXIT		            => 0
+        P_TEMP_TOO_SMALL	        => 1
+        C_TEMP_TOO_SMALL	        => 2
+        COST_REPEATING		        => 3
         TOO_MANY_INVALID_STATES	    => 4
-        IMMEDIATE_EXIT		    => 5
-        INVALID_USER_INPUT	    => 7
+        IMMEDIATE_EXIT		        => 5
+        INVALID_USER_INPUT	        => 7
         INVALID_COST_FUNCTION	    => 8
         INVALID_COST_FUNCTION_DERIV => 9
-        CALLOC_FAILED		    => -1
+        CALLOC_FAILED		        => -1
 
 
 

@@ -89,12 +89,7 @@ $info = pdl(long,0);
 $m = pdl(long,10);
 my $iv = zeroes(long,44);
 my $v = zeroes(29);
-sub fg_func{
-	my ($f, $g, $x) = @_;
-	$f .= rosen($x);
-	$g .= rosen_grad($x);
-	return 0;
-}
+
 lbfgsb($fx, $gx, $x, $m, $bounds, $tbounds, $maxit, $factr, $pgtol, $gtol,
 	$print, $info,$iv, $v,\&fg_func);
 approx_ok $x,$res,0.0001,'lbfgsb';
@@ -109,5 +104,20 @@ cgfam($fx, $gx, $x, $maxit, $eps, $xtol, $gtol,$print,$info,1,\&fg_func);
 approx_ok $x,$res,0.0001,'cgfam';
 
 
+$x = pdl '[0.49823058 0.98093641 0.63151156 0.66477157 0.60801367]';
+$gx = $x->zeroes;
+$fx = rosen($x);
+
+my $accrcy = pdl(1e-16);
+$xtol = pdl(1e-10);
+my $stepmx =pdl(1);
+my $eta =pdl(0.9);
+
+$info = pdl(long, 0);
+$print = pdl(long, 1);
+$maxit = pdl(long, 50);
+my $cgmaxit = pdl(long, 50);
+$maxfc = pdl(long,250);
+lmqn($fx, $gx, $x, $maxit, $maxfc, $cgmaxit, $xtol, $accrcy, $eta, $stepmx, $print, $info,\&fg_func);
 
 done_testing;

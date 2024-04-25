@@ -24,9 +24,9 @@ WriteMakefile(
   'ABSTRACT' => 'Non linear optimization routines for PDL',
   'AUTHOR' => [ 'Grégory Vanuxem <g.vanuxem@gmail.com>' ],
   'LICENSE' => 'artistic_2',
-  'CONFIGURE_REQUIRES' =>  { "PDL" => '2.063', "ExtUtils::F77" => 0 },
+  'CONFIGURE_REQUIRES' =>  { "PDL" => '2.088', "ExtUtils::F77" => 0 },
   'PREREQ_PM' => {
-    'PDL' => '2.063',
+    'PDL' => '2.088', # =CALC
     'PDL::LinearAlgebra' => 0,
   },
   TEST_REQUIRES => { "Test::More" => '0.88' },

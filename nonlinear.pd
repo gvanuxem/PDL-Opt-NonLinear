@@ -151,15 +151,12 @@ pp_def("fmin",
     Pars => '[phys]a();[phys]b();[phys]tol();[o,phys]y();[o,phys]x()',
     OtherPars => "SV* min_func" ,
     GenericTypes => ['F','D'],
-    Code =>'
+    Code => <<'EOF',
         extern $GENERIC() $TFD(,d)PDL_FORTRAN(fmin)(param$TFD(f,d) f, $GENERIC() *X, $GENERIC() *A, $GENERIC() *B, $GENERIC() *T);
         oned_function    = $COMP(min_func);
         $y() = $TFD(,d)PDL_FORTRAN(fmin)(oned_wrapper, $P(x), $P(a),$P(b),$P(tol));
-
-
-',
+EOF
     Doc =>'
-
 =for ref
 
 Finds an approximation x to the point in
@@ -869,12 +866,12 @@ void tensor_hess_wrapper(integer *nr, integer *n, double *x, double *hx);
 
 pp_def("tensoropt",
        HandleBad => 0,
-    Pars => '[io,phys]fx();[io,phys]gx(n);[io,phys]hx(n,n);[io,phys]x(n);int [phys]method();int [io,phys]maxit();int [phys]digits();int [phys]gtype();int [phys] htype();[phys]fscale();[phys]typx(n);[phys]stepmx();[phys]xtol();[phys]gtol();int [phys]print();int [io,phys]ipr()',
+    Pars => '[io,phys]fx();[io,phys]gx(n);[io,phys]hx(n,n);[io,phys]x(n);int [phys]method();int [io,phys]maxit();int [phys]digits();int [phys]gtype();int [phys] htype();[phys]fscale();[phys]typx(n);[phys]stepmx();[phys]xtol();[phys]gtol();int [phys]print();int [io,phys]ipr();
+      int [t] iwork(n); [t] work(nwork=CALC(8*$SIZE(n))); [t] xtmp(n)',
     OtherPars => "SV* f_func;SV* g_func;SV* h_func" ,
     GenericTypes => ['D'],
     Code =>'
-        integer it, *iwork,i;
-        $GENERIC() *work, *xtmp;
+        integer it;
         extern int PDL_FORTRAN(tensor)(PDL_Indx *nr, PDL_Indx *n, $GENERIC() *x, paramv fcn,
         paramv grd, paramv hsn, $GENERIC() *typx, $GENERIC() *fscale, $GENERIC()
         *gradtl, $GENERIC() *steptl, integer *itnlim, $GENERIC() *stepmx,
@@ -886,10 +883,6 @@ pp_def("tensoropt",
         tensor_f_function = $COMP(f_func);
         tensor_grad_function = $COMP(g_func);
         tensor_hess_function = $COMP(h_func);
-
-        iwork = (integer * ) malloc ( $SIZE(n) * sizeof(integer));
-        work = ($GENERIC() * ) malloc ( ($SIZE(n) * 8) * sizeof($GENERIC()));
-        xtmp = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
 
         PDL_FORTRAN(tensor)(
         &$SIZE(n),
@@ -910,20 +903,16 @@ pp_def("tensoropt",
         $P(htype),
         $P(digits),
         $P(print),
-        xtmp,
+        $P(xtmp),
         $P(fx),
         $P(gx),
         $P(hx),
         &it,
-        work,
-        iwork);
+        $P(work),
+        $P(iwork));
 
-        for (i = 0; i < $SIZE(n); i++)
-            $x(n=>i) = xtmp[i];
-        $maxit()=it;
-        free(work);
-        free(iwork);
-        free(xtmp);
+        loop (n) %{ $x() = $xtmp(); %}
+        $maxit() = it;
 ',
     Doc =>'
 
@@ -1249,28 +1238,26 @@ int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, integer *d, dou
 
 pp_def("lbfgsb",
        HandleBad => 0,
-    Pars => '[io,phys]fx(); [io,phys]gx(n); [io,phys]x(n);int [phys]m();[phys]bound(n,m=2);int [phys]tbound(n);int [io]maxit();[phys]factr();[phys]pgtol();[phys]gtol();int [phys]print(2);int [io,phys]info();int [o,phys]iv(p=44);[o,phys]v(q=29)',
+    Pars => '[io,phys]fx(); [io,phys]gx(n); [io,phys]x(n);int [phys]m();[phys]bound(n,m=2);int [phys]tbound(n);int [io]maxit();[phys]factr();[phys]pgtol();[phys]gtol();int [phys]print(2);int [io,phys]info();int [o,phys]iv(p=44);[o,phys]v(q=29);
+      int [t] iwa(niwa=CALC(3*$SIZE(n)))',
     OtherPars => "SV* fg_func",
     GenericTypes => ['D'],
-    Code =>'
+    Code => <<'EOF',
 
     int stop;
     char csave[60];
     char task[60];
     integer lsave[4];
     $GENERIC() *wa;
-    integer *iwa;
     integer i;
     extern void PDL_FORTRAN(setulb)(PDL_Indx *n, integer *m, $GENERIC() *x, $GENERIC() *l, $GENERIC() *u,
         integer *nbd, $GENERIC() *f, $GENERIC() *g, $GENERIC() *factr, $GENERIC() *pgtol, $GENERIC() *gtol,
         $GENERIC() *wa,integer *iwa, char *task, integer *iprint, char *csave, integer *lsave,
         integer *isave, $GENERIC() *dsave);
 
-
     strcpy(task, "START");
     //TODO
-    memset(task+5, \' \', sizeof(task)-5);
-    iwa = (integer * ) malloc ( 3 * $SIZE(n)   * sizeof(integer));
+    memset(task+5, ' ', sizeof(task)-5);
     wa = ($GENERIC() * ) malloc ((2*$m()*$SIZE(n)+4*$SIZE(n)+12*$m()*$m()+12*$m())* sizeof($GENERIC()));
     i = 0;
 
@@ -1289,7 +1276,7 @@ pp_def("lbfgsb",
             $P(pgtol),
             $P(gtol),
             wa,
-            iwa,
+            $P(iwa),
             &task[0],
             $P(print),
             &csave[0],
@@ -1300,16 +1287,16 @@ pp_def("lbfgsb",
             switch(task[0])
             {
         
-                 case \'C\':	/*CONV*/
+                 case 'C':	/*CONV*/
                         goto end;
             
-                 case \'F\':	/*FG*/
+                 case 'F':	/*FG*/
                         stop = lbfgsb_wrapper($SIZE(n), $P(fx), $P(gx), $P(x), $P(iv), $P(v), $COMP(fg_func));
                         if (stop == -1)
                             strcpy(task, "STOP  CPU, REQUESTED BY USER.");
                         break;
             
-                 case \'N\':	/*NEW_X*/
+                 case 'N':	/*NEW_X*/
                         if (stop == 1)
                             strcpy(task, "STOP REQUESTED BY USER");
                         if( i >= ($maxit()-1) )
@@ -1317,10 +1304,10 @@ pp_def("lbfgsb",
                         i++;
                         break;
 
-                 case \'S\':	/*STOP*/
+                 case 'S':	/*STOP*/
                         goto end;
 
-                 case \'A\':	/*ABNO*/
+                 case 'A':	/*ABNO*/
                         $info() = -1;
                         goto end;
                  default:       /*ERROR*/
@@ -1330,9 +1317,8 @@ pp_def("lbfgsb",
     }		
 end:
      $maxit() = i;
-     free(iwa);
      free(wa);	
-',
+EOF
     Doc =>'
 
 =for ref
@@ -1767,21 +1753,17 @@ void lm_wrapper(integer *n, double *x, double *f, double *g);
 
 pp_def("lmqn",
        HandleBad => 0,
-    Pars => '[io,phys]fx();[io,phys]gx(n);[io,phys]x(n);int [io,phys]maxit();int [io,phys]maxfc();int [phys]cgmaxit();[phys]xtol();[phys]accrcy();[phys]eta();[phys]stepmx();int [phys]print();int [io,phys]info()',
+    Pars => '[io,phys]fx();[io,phys]gx(n);[io,phys]x(n);int [io,phys]maxit();int [io,phys]maxfc();int [phys]cgmaxit();[phys]xtol();[phys]accrcy();[phys]eta();[phys]stepmx();int [phys]print();int [io,phys]info();
+      [t] work(nwork=CALC(14*$SIZE(n)))',
     OtherPars => "SV* fg_func" ,
     GenericTypes => ['D'],
     Code =>'
-        integer lw;
-        $GENERIC() *w;
         extern void PDL_FORTRAN(lmqn)(integer *ifail, PDL_Indx *n, $GENERIC() *x,
         $GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun,
         integer *msglvl, integer *maxit, integer *maxfun, integer *mxitgc, $GENERIC() *eta,
         $GENERIC() *stepmx, $GENERIC() *accrcy, $GENERIC() *xtol);
 
-
         lm_function = $COMP(fg_func);
-        lw = 14 *  $SIZE(n);
-        w  = ($GENERIC() *) malloc (lw * sizeof($GENERIC()));
 
             PDL_FORTRAN(lmqn)(
                 $P(info),
@@ -1789,8 +1771,8 @@ pp_def("lmqn",
                 $P(x),
                 $P(fx),
                 $P(gx),
-                w,
-                &lw,
+                $P(work),
+                &(integer){$SIZE(nwork)},
                 lm_wrapper,
                 $P(print),
                 $P(maxit),
@@ -1801,8 +1783,6 @@ pp_def("lmqn",
                 $P(accrcy),
                 $P(xtol)
                 );
-        free(w);
-
 ',
     Doc =>'
 
@@ -1894,35 +1874,30 @@ especially useful when the number of variables (n) is large.
 
 pp_def("lmqnbc",
        HandleBad => 0,
-    Pars => '[io,phys]fx();[io,phys]gx(n);[io,phys]x(n);[phys]bound(n,m=2);int [io,phys]maxit();int [io,phys]maxfc();int [phys]cgmaxit();[phys]xtol();[phys]accrcy();[phys]eta();[phys]stepmx();int [phys]print();int [io,phys]info()',
+    Pars => '[io,phys]fx();[io,phys]gx(n);[io,phys]x(n);[phys]bound(n,m=2);int [io,phys]maxit();int [io,phys]maxfc();int [phys]cgmaxit();[phys]xtol();[phys]accrcy();[phys]eta();[phys]stepmx();int [phys]print();int [io,phys]info();
+      [t] work(nwork=CALC(14*$SIZE(n))); int [t] ipivot(n)',
     OtherPars => "SV* fg_func" ,
     GenericTypes => ['D'],
     Code =>'
-        integer lw, *ipivot;
-        $GENERIC() *w;
         extern void PDL_FORTRAN(lmqnbc)(integer *ifail, PDL_Indx *n, $GENERIC() *x,
         $GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun,
         $GENERIC() *low,$GENERIC() *up, integer *ipivot,
         integer *msglvl, integer *maxit, integer *maxfun, integer *cgmaxit,$GENERIC() *eta,
         $GENERIC() *stepmx, $GENERIC() *accrcy, $GENERIC() *xtol);
 
-
         lm_function    = $COMP(fg_func);
-        lw = 14 *  $SIZE(n);
-        w  = ($GENERIC() *) malloc (lw * sizeof($GENERIC()));
-        ipivot  = (integer *) malloc ($SIZE(n) * sizeof(integer));
             PDL_FORTRAN(lmqnbc)(
                 $P(info),
                 &$SIZE(n),
                 $P(x),
                 $P(fx),
                 $P(gx),
-                w,
-                &lw,
+                $P(work),
+                &(integer){$SIZE(nwork)},
                 lm_wrapper,
                 &$bound(n=>0,m=>0),
                 &$bound(n=>0,m=>1),
-                ipivot,
+                $P(ipivot),
                 $P(print),
                 $P(maxit),
                 $P(maxfc),
@@ -1932,10 +1907,6 @@ pp_def("lmqnbc",
                 $P(accrcy),
                 $P(xtol)
                 );
-        free(w);
-        free(ipivot);
-        
-
 ',
     Doc =>'
 
@@ -2035,22 +2006,18 @@ especially useful when the number of variables (n) is large.
 
 pp_def("cgfam",
        HandleBad => 0,
-    Pars => '[io,phys]fx(); [io,phys]gx(n); [io,phys]x(n);int [io,phys]maxit();[phys]eps();[io,phys]xtol();[io,phys]gtol();int [phys]print(2);int [io,phys]info(); int [phys]method()',
+    Pars => '[io,phys]fx(); [io,phys]gx(n); [io,phys]x(n);int [io,phys]maxit();[phys]eps();[io,phys]xtol();[io,phys]gtol();int [phys]print(2);int [io,phys]info(); int [phys]method();
+      [t] w(n); [t] gold(n); [t] d(n)',
     OtherPars => "SV* fg_func" ,
     GenericTypes => ['D'],
     Code =>'
-
-    $GENERIC() *w, *gold, *d;
-    int stop;
-    integer i, irest, finish;
     int PDL_FORTRAN(cgfam)(PDL_Indx *n, $GENERIC() *x, $GENERIC() *f,
-    $GENERIC() *g, $GENERIC() *d__, $GENERIC() *gold, integer *iprint,
+    $GENERIC() *g, $GENERIC() *d, $GENERIC() *gold, integer *iprint,
     $GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag, integer *irest,
     integer *method, logical *finish);
 
-    w = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
-    gold = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
-    d = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
+    int stop;
+    integer i, irest, finish;
     irest = 1;
     finish = 0;
     stop = 0;
@@ -2062,13 +2029,13 @@ pp_def("cgfam",
             $P(x),
             $P(fx),
             $P(gx),
-            d,
-            gold,
+            $P(d),
+            $P(gold),
             $P(print),
             $P(eps),
             $P(xtol),
             $P(gtol),
-            w,
+            $P(w),
             $P(info),
             &irest,
             $P(method),
@@ -2099,12 +2066,8 @@ end:
             $info() = 1;
         else
             $info() = 2;
-    free(w);
-    free(d);
-    free(gold);
 ',
     Doc =>'
-
 =for ref
 
 This subroutine solves the unconstrained minimization problem
@@ -2115,7 +2078,6 @@ using conjugate gradient methods, as described in the paper:
 gilbert, j.c. and nocedal, j. (1992). "global convergence properties
 of conjugate gradient methods", siam journal on optimization, vol. 2,
 pp. 21-42.
-
 
       where
 
@@ -2380,25 +2342,14 @@ pp_def("gencan",
         [o,phys]gpeucn2();[o,phys]gpsupn();int [o,phys]iter();int [o,phys]fcnt();int [o,phys]gcnt();int [o,phys]cgcnt();
         int [o,phys]spgiter();int [o,phys] spgfcnt();int [o,phys]tniter();int [o,phys]tnfcnt();int [o,phys]tnstpcnt();
         int [o,phys]tnintcnt();int [o,phys] tnexgcnt();int [o,phys]tnexbcnt();int [o,phys]tnintfe();int [o,phys]tnexgfe();int [o,phys]tnexbfe();
-        int [phys]print(p);int [phys]ncomp();int [io,phys]info()',
+        int [phys]print(p);int [phys]ncomp();int [io,phys]info();
+          int [t] ind(n); [t] s(n); [t] y(n); [t] d(n); [t] w(nw=CALC(5*$SIZE(n)))',
     OtherPars => "SV* f_func; SV* g_func; SV* h_func",
     GenericTypes => ['D'],
     Code =>'
-        integer *ind;
-
-        $GENERIC() *s, *y, *d__, *w;
         gencanf_function    = $COMP(f_func);		
         gencang_function    = $COMP(g_func);
         gencanh_function    = $COMP(h_func);
-        
-        
-        ind = (integer * ) malloc ( $SIZE(n) * sizeof(integer));
-        s = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
-        y = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
-        d__ = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
-        w = ($GENERIC() * ) malloc (5 * $SIZE(n) * sizeof($GENERIC()));
-
-
         PDL_FORTRAN(gencan)(&$SIZE(n), $P(x), &$bound(n=>0,m=>0), &$bound(n=>0,m=>1),
         $P(epsgpen), $P(epsgpsn), $P(ftol), $P(fmaxit), $P(gmaxit), $P(fmin),
         $P(maxit), $P(maxfc), $P(delta), $P(cgmaxit), $P(cgstop), $P(cggtol), $P(cgitol),
@@ -2406,20 +2357,13 @@ pp_def("gencan",
         &$print(p=>0), &$print(p=>1), $P(fx), $P(gx),
         $P(gpeucn2), $P(gpsupn), $P(iter), $P(fcnt), $P(gcnt), $P(cgcnt), $P(spgiter), $P(spgfcnt),
         $P(tniter), $P(tnfcnt), $P(tnstpcnt), $P(tnintcnt), $P(tnexgcnt), $P(tnexbcnt),
-        $P(tnintfe), $P(tnexgfe), $P(tnexbfe), $P(info), s, y, d__, ind, w, $P(eta),
+        $P(tnintfe), $P(tnexgfe), $P(tnexbfe), $P(info), $P(s), $P(y), $P(d), $P(ind), $P(w), $P(eta),
         $P(delmin), $P(lammax), $P(lammin), $P(theta), $P(gamma), $P(beta),
         $P(sigma1), $P(sigma2),$P(nint), $P(next),
         $P(interpmaxit), $P(ncomp), $P(sterel), $P(steabs), $P(epsrel), $P(epsabs), $P(infty),
         gencanf_wrapper, gencang_wrapper, gencanh_wrapper);
-
-    free(s);
-    free(y);
-    free(d__);
-    free(w);
-    free(ind);	
 ',
     Doc =>'
-
 =for ref
 
 Solves the box-constrained minimization problem
@@ -2937,35 +2881,24 @@ pp_def("sgencan",
         int [phys]interpmaxit();int [phys]cgstop();int [phys]cgmaxit();int [phys]qmpmaxit();
         [phys]ftol();[phys]epsgpen();[phys]epsgpsn();[phys]cggtol();[phys]cgitol();[phys]cgftol();
         [phys]qmptol();[phys]delta();[phys]eta();[phys]delmin();
-        int [phys]print(p);int [io,phys]info()',
+        int [phys]print(p);int [io,phys]info();
+          int [t] ind(n); [t] s(n); [t] y(n); [t] d(n); [t] w(nw=CALC(5*$SIZE(n)))',
     OtherPars => "SV* f_func; SV* g_func; SV* h_func",
     GenericTypes => ['D'],
     Code =>'
         integer iter, fcnt, gcnt, cgcnt, spgiter;
         integer spgfcnt, tniter, tnfcnt, tnstpcnt, tnintcnt, tnexgcnt, tnexbcnt, tnintfe, tnexgfe;
         integer tnexbfe, ncomp;
-        integer *ind;
 
         $GENERIC() fmin;
         $GENERIC() gpeucn2, gpsupn, lammax, lammin, theta, gamma, beta;
         $GENERIC() sigma1, sigma2, nint, next, sterel, steabs, epsrel, epsabs, infty;
-        $GENERIC() *s, *y, *d__, *w;
-        gencanf_function    = $COMP(f_func);		
+        gencanf_function    = $COMP(f_func);
         gencang_function    = $COMP(g_func);
         gencanh_function    = $COMP(h_func);
-        
-        
-        ind = (integer * ) malloc ( $SIZE(n) * sizeof(integer));
+
         ncomp = 10;
-
         fmin = -1e+308;
-
-
-        s = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
-        y = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
-        d__ = ($GENERIC() * ) malloc ( $SIZE(n) * sizeof($GENERIC()));
-        w = ($GENERIC() * ) malloc (5 * $SIZE(n) * sizeof($GENERIC()));
-
 
         lammax = 1e+40;
         lammin = 1e-40;
@@ -2989,22 +2922,16 @@ pp_def("sgencan",
         &$print(p=>0), &$print(p=>1), $P(fx), $P(gx),
         &gpeucn2, &gpsupn, &iter, &fcnt, &gcnt, &cgcnt, &spgiter, &spgfcnt,
         &tniter, &tnfcnt, &tnstpcnt, &tnintcnt, &tnexgcnt, &tnexbcnt,
-        &tnintfe, &tnexgfe, &tnexbfe, $P(info), s, y, d__, ind, w, $P(eta),
+        &tnintfe, &tnexgfe, &tnexbfe, $P(info), $P(s), $P(y), $P(d), $P(ind), $P(w), $P(eta),
         $P(delmin), &lammax, &lammin, &theta, &gamma, &beta,
         &sigma1, &sigma2, &nint, &next,
         $P(interpmaxit), &ncomp, &sterel, &steabs, &epsrel, &epsabs, &infty,
         gencanf_wrapper, gencang_wrapper, gencanh_wrapper);
 
-    free(s);
-    free(y);
-    free(d__);
-    free(w);
-    free(ind);	
     $maxit() = iter;
     $maxfc() = fcnt;
 ',
     Doc =>'
-
 =for ref
 
 Solves the box-constrained minimization problem
@@ -3406,61 +3333,48 @@ evalhd could be:
 
 pp_def("dhc",
     HandleBad => 0,
-    Pars => '[io,phys]xrandom(n,m);step(); xtol(); int print();[o]fx();[o]x(n)',
+    Pars => '[io,phys]xrandom(n,m);step(); xtol(); int print();[o]fx();[o]x(n);
+      [t] u(n); [t] v(n); [t] xv(n)',
     OtherPars => "SV* dhc_func" ,
     GenericTypes => ['D'],
     Code =>'
         extern double dhc(PDL_Indx nvars, double *xrandom, double init, double tol,
             double *u, double *v, double *xv, double (*func)());
-        $GENERIC() *u, *v, *xv;
         $GENERIC() fx;
-        PDL_Indx i,j,k;
-
         hooke_function    = $COMP(dhc_func);
-        u = ($GENERIC() *) malloc (sizeof($GENERIC()) * $SIZE(n));
-        v = ($GENERIC() *) malloc (sizeof($GENERIC()) * $SIZE(n));
-        xv = ($GENERIC() *) malloc (sizeof($GENERIC()) * $SIZE(n));
         
         $fx() = fx = DBL_MAX;
         
-        for(i = 0; i < $SIZE(m); i++)
-        {
+        loop (m) %{
             fx = dhc($SIZE(n),
-                &$xrandom(n=>0,m=>i),
+                $P(xrandom),
                 $step(),
                 $xtol(),
-                u,
-                v,
-                xv,
+                $P(u),
+                $P(v),
+                $P(xv),
                 hooke_wrapper);
             
             if ($print())
             {
-                printf("\nAt starting location %"IND_FLAG":\n",i+1);
+                printf("\nAt starting location %"IND_FLAG":\n",m+1);
                 printf("Minimal point (first components):\n");
-                for(k = 0; k < $SIZE(n); k++)
-                {
-                    printf("%5.5g  ", $xrandom(n=>k,m=>i));
-                    if (k > 4)
-                        break;
-                }
+                loop (n) %{
+                    printf("%5.5g  ", $xrandom());
+                    if (n > 4) break;
+                %}
                 printf("\nFunctional value: %5.5g\n",fx);
             }
             if (fx < $fx())
             {
                 $fx() = fx;
-                for (j = 0; j < $SIZE(n); j++)
-                {
-                    $x(n=>j) =  $xrandom(n=>j,m=>i);
-                }
+                loop (n) %{
+                    $x() =  $xrandom();
+                %}
             }
-        }
-        free(u);
-        free(v);
-        free(xv);
+        %}
 ',
     Doc =>'
-
 =for ref
 
 Find a point X where the function dhc_func(X) has a global
@@ -3473,7 +3387,6 @@ using a method, dynamic hill climbing, described in
 D. Yuret, "From Genetic Algorithms To Efficient Optimization",
 A.I. Technical Report No. 1569 (1994).
 (http://home.ku.edu.tr/~dyuret/pub/aitr1569.html).
-
 
       where
 
@@ -3531,13 +3444,13 @@ pp_def("de_opt",
         int np();f();cr();inibound_l();inibound_u();int print();[o]fx();[o]cvar()',
     OtherPars => "SV* de_func" ,
     GenericTypes => ['D'],
-    Code =>'
+    CHeader => '
         extern double de_optimize(PDL_Indx D, double *best, int genmax, int seed, int  NP,
         int  strategy, double F, double CR, double *cvar,
         double inibound_h, double inibound_l, int   refresh, double (*evaluate)());
-
+    ',
+    Code =>'
         hooke_function    = $COMP(de_func);
-        
         $fx() = de_optimize($SIZE(n),
                 $P(x),
                 $genmax(),
@@ -3551,10 +3464,8 @@ pp_def("de_opt",
                 $inibound_u(),
                 $print(),
                 hooke_wrapper);
-            
 ',
     Doc =>'
-
 =for ref
 
 Find a point X where the function de_func(X) has a global
@@ -3679,12 +3590,13 @@ pp_def("asa_opt",
     quench_cost(); quench_param(n);int print();[o]fx();[o]tangents(n);[o]curvature(n,n);int [o]info()',
     OtherPars => "SV* asa_func" ,
     GenericTypes => ['D'],
+    CHeader => '
+      extern int asa_main (PDL_Indx n, double *x,double *fx, double *upper, double *lower,
+              int *parameter_type, PDL_Long seed, PDL_Long *limit, double *cost_param, double *temp,
+              PDL_Long *generic,double *res, double *coarse, double *tangent, double *curvature,
+              double *quench_cost, double *quench_scale, PDL_Long print, double (*func)());
+    ',
     Code =>'
-
-    extern int asa_main (PDL_Indx n, double *x,double *fx, double *upper, double *lower,
-            int *parameter_type, PDL_Long seed, PDL_Long *limit, double *cost_param, double *temp,
-            PDL_Long *generic,double *res, double *coarse, double *tangent, double *curvature,
-            double *quench_cost, double *quench_scale, PDL_Long print, double (*func)());
     asa_function  = $COMP(asa_func);
     $info() = asa_main($SIZE(n), $P(x), $P(fx), $P(inibound_l),
             $P(inibound_u), $P(parameter_type),$seed(),
@@ -3692,19 +3604,15 @@ pp_def("asa_opt",
             $P(resolution), $P(coarse_resolution), $P(tangents),
             $P(curvature),$P(quench_cost), $P(quench_param),
             $print(),asa_wrapper);
-
 ',
     Doc =>'
-
 =for ref
-
 
 This routine solves the optimization problem
 
    minimize     f(x)
       x
    subject to   low <= x <= up
-
 
 It uses the Adaptive Simulated Annealing (ASA) method.
 (see http://www.ingber.com/#ASA-CODE)

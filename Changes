@@ -1,3 +1,4 @@
+0.09 2024-04-25
 - fix compiler warnings on pointer types (#7) - thanks @YuryPakhomov for report
 
 0.08 2022-02-21

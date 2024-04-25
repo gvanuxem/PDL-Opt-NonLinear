@@ -151,7 +151,7 @@ pp_def("fmin",
     Pars => '[phys]a();[phys]b();[phys]tol();[o,phys]y();[o,phys]x()',
     OtherPars => "SV* min_func" ,
     GenericTypes => ['F','D'],
-    Code => <<'EOF',
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern $GENERIC() $TFD(,d)PDL_FORTRAN(fmin)(param$TFD(f,d) f, $GENERIC() *X, $GENERIC() *A, $GENERIC() *B, $GENERIC() *T);
         oned_function    = $COMP(min_func);
         $y() = $TFD(,d)PDL_FORTRAN(fmin)(oned_wrapper, $P(x), $P(a),$P(b),$P(tol));
@@ -194,7 +194,7 @@ pp_def("smnsx",
     Pars => '[io,phys]x(n);[io,phys]step();[io,phys]tol();[o,phys]y()',
     OtherPars => "SV* simplex_func" ,
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         integer old, new,err;
         extern $GENERIC() PDL_FORTRAN(dsmnsx)(paramd f, PDL_Indx *p, $GENERIC() *step, $GENERIC() *tol,$GENERIC() *X);
         //TODO istkgt istkin: stack
@@ -207,7 +207,7 @@ pp_def("smnsx",
         if (err > 0 )
             PDL_FORTRAN(eprint)();
         PDL_FORTRAN(erroff)();
-',
+EOF
     Doc =>'
 
 =for ref
@@ -253,7 +253,7 @@ pp_def("mnsx",
     Pars => '[io,phys]x(n);[io,phys]vertices(n,pp);int [phys]maxit(); [io,phys]tol();[o,phys]y()',
     OtherPars => "SV* simplex_func" ,
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         integer old, new,err;
         extern $GENERIC() PDL_FORTRAN(dmnsx)(paramd f, integer *itmx, PDL_Indx *p, PDL_Indx *pp,
             $GENERIC() *s, $GENERIC() *tol,$GENERIC() *X);
@@ -273,8 +273,7 @@ pp_def("mnsx",
         if (err > 0 )
             PDL_FORTRAN(eprint)();
         PDL_FORTRAN(erroff)();
-
-',
+EOF
     Doc =>'
 
 =for ref
@@ -330,10 +329,10 @@ pp_def("ivset",
        HandleBad => 0,
     Pars => 'int [phys]type();int [io,phys]iv(n);[io,phys]v(p)',
     GenericTypes => ['F','D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern void $TFD(,d)PDL_FORTRAN(ivset)(integer *alg, integer *iv, PDL_Indx *liv, PDL_Indx *lv, $GENERIC() *v);
         $TFD(,d)PDL_FORTRAN(ivset)($P(type), $P(iv), &$SIZE(n), &$SIZE(p),$P(v));
-',
+EOF
     Doc =>'
 
 =for ref
@@ -385,7 +384,7 @@ pp_def("rmnf",
     Pars => '[phys]fx(); [io,phys]x(m);[io,phys]scale(m);int [io,phys]iv(n);[io,phys]v(p)',
     OtherPars => "SV* min_func" ,
     GenericTypes => ['F','D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern void $TFD(,d)PDL_FORTRAN(rmnf)($GENERIC() *d, $GENERIC() *fx, integer *iv, PDL_Indx *liv,
         PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
         pdl4_function    = $COMP(min_func);
@@ -404,9 +403,7 @@ pp_def("rmnf",
                     $SIZE(n), $P(iv),
                     $SIZE(p), $P(v));
         }while($iv(n=>0) <= 2 );
-
-
-',
+EOF
     Doc =>'
 
 =for ref
@@ -443,7 +440,7 @@ pp_def("rmng",
     Pars => '[phys]fx(); [io,phys]gx(m); [io,phys]x(m);[io,phys]scale(m);int [io,phys]iv(n);[io,phys]v(p)',
     OtherPars => "SV* min_func; SV* grad_func" ,
     GenericTypes => ['F','D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern void $TFD(,d)PDL_FORTRAN(rmng)($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, PDL_Indx *liv,
         PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
         do{
@@ -474,9 +471,7 @@ pp_def("rmng",
                     $SIZE(p), $P(v));
             }
         }while($iv(n=>0) <= 2 );
-
-
-',
+EOF
     Doc =>'
 
 =for ref
@@ -523,7 +518,7 @@ pp_def("rmnh",
     Pars => '[phys]fx(); [io,phys]gx(m); [io,phys] hx(n);[io,phys]x(m);[io,phys]scale(m);int [io,phys]iv(p);[io,phys]v(q)',
     OtherPars => "SV* min_func; SV* grad_func; SV* hess_func" ,
     GenericTypes => ['F','D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern void $TFD(,d)PDL_FORTRAN(rmnh)($GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, PDL_Indx *lh,
         PDL_Indx *liv, PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
         do{
@@ -565,9 +560,7 @@ pp_def("rmnh",
                     $SIZE(q), $P(v));
             }
         }while($iv(p=>0) <= 2 );
-
-
-',
+EOF
     Doc =>'
 
 =for ref
@@ -619,7 +612,7 @@ pp_def("rmnfb",
     Pars => '[io,phys]fx(); [io,phys]x(m);[phys]bound(2,m);[io,phys]scale(m);int [io,phys]iv(n);[io,phys]v(p)',
     OtherPars => "SV* min_func" ,
     GenericTypes => ['F','D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern void $TFD(,d)PDL_FORTRAN(rmnfb)($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, integer *iv, PDL_Indx *liv,
         PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
         pdl4_function    = $COMP(min_func);
@@ -639,9 +632,7 @@ pp_def("rmnfb",
                 $SIZE(n), $P(iv),
                 $SIZE(p), $P(v));
         }while($iv(n=>0) <= 2 );
-
-
-',
+EOF
     Doc =>'
 
 =for ref
@@ -682,7 +673,7 @@ pp_def("rmngb",
     Pars => '[io,phys]fx(); [io,phys]gx(m); [io,phys]x(m);[phys]bound(2,m);[io,phys]scale(m);int [io,phys]iv(n);[io,phys]v(p)',
     OtherPars => "SV* min_func; SV* grad_func" ,
     GenericTypes => ['F','D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern void $TFD(,d)PDL_FORTRAN(rmngb)($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, integer *iv, PDL_Indx *liv,
         PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
         do{
@@ -714,9 +705,7 @@ pp_def("rmngb",
                     $SIZE(p), $P(v));			
             }
         }while($iv(n=>0) <= 2 );
-
-
-',
+EOF
     Doc =>'
 
 =for ref
@@ -764,7 +753,7 @@ pp_def("rmnhb",
     Pars => '[io,phys]fx(); [io,phys]gx(m); [io,phys] hx(n);[io,phys]x(m);[phys]bound(2,m);[io,phys]scale(m);int [io,phys]iv(p);[io,phys]v(q)',
     OtherPars => "SV* min_func; SV* grad_func; SV* hess_func" ,
     GenericTypes => ['F','D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern void $TFD(,d)PDL_FORTRAN(rmnhb)($GENERIC() *bound, $GENERIC() *d, $GENERIC() *fx, $GENERIC() *g, $GENERIC() *h, integer *iv, PDL_Indx *lh,
         PDL_Indx *liv,PDL_Indx *lv, PDL_Indx *n, $GENERIC() *v, $GENERIC()*x);
         do{
@@ -803,9 +792,7 @@ pp_def("rmnhb",
                     $SIZE(q), $P(v));
             }
         }while($iv(p=>0) <= 2 );
-
-
-',
+EOF
     Doc =>'
 
 =for ref
@@ -870,7 +857,7 @@ pp_def("tensoropt",
       int [t] iwork(n); [t] work(nwork=CALC(8*$SIZE(n))); [t] xtmp(n)',
     OtherPars => "SV* f_func;SV* g_func;SV* h_func" ,
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         integer it;
         extern int PDL_FORTRAN(tensor)(PDL_Indx *nr, PDL_Indx *n, $GENERIC() *x, paramv fcn,
         paramv grd, paramv hsn, $GENERIC() *typx, $GENERIC() *fscale, $GENERIC()
@@ -913,7 +900,7 @@ pp_def("tensoropt",
 
         loop (n) %{ $x() = $xtmp(); %}
         $maxit() = it;
-',
+EOF
     Doc =>'
 
 =for ref
@@ -1007,8 +994,7 @@ pp_def("lbfgs",
     Pars => '[io,phys]fx(); [io,phys]gx(n); [io,phys]x(n);[io,phys]diag(n);int [phys]diagco();int [phys]m();int [io,phys]maxit();int [io,phys]maxfc();[phys]eps();[phys]xtol();[phys]gtol();int [phys]print(2);int [io,phys]info()',
     OtherPars => "SV* fg_func;SV* diag_func" ,
     GenericTypes => ['D'],
-    Code =>'
-
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
     $GENERIC() *w;
     integer i,stop;
     extern int PDL_FORTRAN(lbfgs)(PDL_Indx *n, integer *m, $GENERIC() *x, $GENERIC()
@@ -1061,9 +1047,8 @@ pp_def("lbfgs",
 end:
     $maxfc() = i;
     free(w);	
-',
-    Doc =>'
-
+EOF
+    Doc => <<'EOF',
 =for ref
 
 This subroutine solves the unconstrained minimization problem
@@ -1085,7 +1070,6 @@ mathematical programming b 45 (1989) 503-528.
 The steplength is determined at each iteration by means of the
 line search routine mcvsrch, which is a slight modification of
 the routine csrch written by Moré and Thuente.
-
 
       where
 
@@ -1163,7 +1147,7 @@ the routine csrch written by Moré and Thuente.
              evaluations are inexpensive with respect to the cost of the
          iteration (which is sometimes the case when solving very large
          problems) it may be advantageous to set gtol to a small value.
-         A typical small value is 0.1. It\'s set to 0.9 if gtol < 1.d-04.
+         A typical small value is 0.1. It's set to 0.9 if gtol < 1.d-04.
          restriction: gtol should be greater than 1.d-04.
 
      info    is an integer variable that must be set to 0 on initial entry
@@ -1229,8 +1213,8 @@ the routine csrch written by Moré and Thuente.
     }
     lbfgs($fx, $gx, $x, $diag, $diagco, $m, $maxit, $maxfc, $eps, $xtol, $gtol,
         $print,$info,\&fg_func,\&fdiag);
-
-');
+EOF
+);
 
 pp_addhdr('
 int lbfgsb_wrapper(PDL_Indx n , double *a, double *b, double *c, integer *d, double *e, SV *lbfgsb_func);
@@ -1242,8 +1226,7 @@ pp_def("lbfgsb",
       int [t] iwa(niwa=CALC(3*$SIZE(n)))',
     OtherPars => "SV* fg_func",
     GenericTypes => ['D'],
-    Code => <<'EOF',
-
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
     int stop;
     char csave[60];
     char task[60];
@@ -1585,10 +1568,10 @@ pp_def("spg",
     Pars => '[io,phys]fx();[io,phys]x(n);int [io,phys]m();int [io,phys]maxit();int [phys]maxfc();[phys]eps1();[phys]eps2();int [phys]print();int [io,phys]fcnt();int [io,phys]gcnt();[io,phys]pginf();[io,phys]pgtwon();int [io,phys]info()',
     OtherPars => "SV* min_func; SV* grad_func; SV* px_func" ,
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern void PDL_FORTRAN(spg)(PDL_Indx *n, $GENERIC() *x, integer *m, $GENERIC() *eps, $GENERIC() *eps2,
         integer *maxit, integer *maxfc, integer *output, $GENERIC()  *f, $GENERIC() *pginfn, $GENERIC() *pgtwon,
-        integer *iter, integer *fcnt, integer *gcnt, integer *flag, paramv *evalf, paramv *evalg, paramv *proj);
+        integer *iter, integer *fcnt, integer *gcnt, integer *flag, paramv evalf, paramv evalg, paramv proj);
         integer iter;
 
         npg_f_function    = $COMP(min_func);
@@ -1616,9 +1599,7 @@ pp_def("spg",
                 npg_pgrad_wrapper
                 );
         $maxit() = iter;
-
-
-',
+EOF
     Doc =>'
 
 =for ref
@@ -1757,9 +1738,9 @@ pp_def("lmqn",
       [t] work(nwork=CALC(14*$SIZE(n)))',
     OtherPars => "SV* fg_func" ,
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern void PDL_FORTRAN(lmqn)(integer *ifail, PDL_Indx *n, $GENERIC() *x,
-        $GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun,
+        $GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv sfun,
         integer *msglvl, integer *maxit, integer *maxfun, integer *mxitgc, $GENERIC() *eta,
         $GENERIC() *stepmx, $GENERIC() *accrcy, $GENERIC() *xtol);
 
@@ -1783,7 +1764,7 @@ pp_def("lmqn",
                 $P(accrcy),
                 $P(xtol)
                 );
-',
+EOF
     Doc =>'
 
 =for ref
@@ -1878,9 +1859,9 @@ pp_def("lmqnbc",
       [t] work(nwork=CALC(14*$SIZE(n))); int [t] ipivot(n)',
     OtherPars => "SV* fg_func" ,
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern void PDL_FORTRAN(lmqnbc)(integer *ifail, PDL_Indx *n, $GENERIC() *x,
-        $GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv *sfun,
+        $GENERIC() *f, $GENERIC() *g, $GENERIC() *w, integer *lw, paramv sfun,
         $GENERIC() *low,$GENERIC() *up, integer *ipivot,
         integer *msglvl, integer *maxit, integer *maxfun, integer *cgmaxit,$GENERIC() *eta,
         $GENERIC() *stepmx, $GENERIC() *accrcy, $GENERIC() *xtol);
@@ -1907,7 +1888,7 @@ pp_def("lmqnbc",
                 $P(accrcy),
                 $P(xtol)
                 );
-',
+EOF
     Doc =>'
 
 =for ref
@@ -2010,7 +1991,7 @@ pp_def("cgfam",
       [t] w(n); [t] gold(n); [t] d(n)',
     OtherPars => "SV* fg_func" ,
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
     int PDL_FORTRAN(cgfam)(PDL_Indx *n, $GENERIC() *x, $GENERIC() *f,
     $GENERIC() *g, $GENERIC() *d, $GENERIC() *gold, integer *iprint,
     $GENERIC() *eps, $GENERIC() *xtol, $GENERIC() *gtol,$GENERIC() *w, integer *iflag, integer *irest,
@@ -2066,7 +2047,7 @@ end:
             $info() = 1;
         else
             $info() = 2;
-',
+EOF
     Doc =>'
 =for ref
 
@@ -2182,14 +2163,14 @@ pp_def("hooke",
     Pars => '[io,phys]x(n);int [io,phys]maxit();[phys]rho();[phys]tol()',
     OtherPars => "SV* hooke_func" ,
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern int hooke(PDL_Indx nvars, paramd func, $GENERIC() *startpt,
             $GENERIC() *endpt, $GENERIC() rho, $GENERIC() tol, int maxit);
 
         hooke_function    = $COMP(hooke_func);
         
         $maxit() = hooke($SIZE(n), hooke_wrapper, $P(x), $P(x), $rho(), $tol(),$maxit());
-',
+EOF
     Doc =>'
 
 =for ref
@@ -2346,7 +2327,7 @@ pp_def("gencan",
           int [t] ind(n); [t] s(n); [t] y(n); [t] d(n); [t] w(nw=CALC(5*$SIZE(n)))',
     OtherPars => "SV* f_func; SV* g_func; SV* h_func",
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         gencanf_function    = $COMP(f_func);		
         gencang_function    = $COMP(g_func);
         gencanh_function    = $COMP(h_func);
@@ -2362,7 +2343,7 @@ pp_def("gencan",
         $P(sigma1), $P(sigma2),$P(nint), $P(next),
         $P(interpmaxit), $P(ncomp), $P(sterel), $P(steabs), $P(epsrel), $P(epsabs), $P(infty),
         gencanf_wrapper, gencang_wrapper, gencanh_wrapper);
-',
+EOF
     Doc =>'
 =for ref
 
@@ -2885,7 +2866,7 @@ pp_def("sgencan",
           int [t] ind(n); [t] s(n); [t] y(n); [t] d(n); [t] w(nw=CALC(5*$SIZE(n)))',
     OtherPars => "SV* f_func; SV* g_func; SV* h_func",
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         integer iter, fcnt, gcnt, cgcnt, spgiter;
         integer spgfcnt, tniter, tnfcnt, tnstpcnt, tnintcnt, tnexgcnt, tnexbcnt, tnintfe, tnexgfe;
         integer tnexbfe, ncomp;
@@ -2930,7 +2911,7 @@ pp_def("sgencan",
 
     $maxit() = iter;
     $maxfc() = fcnt;
-',
+EOF
     Doc =>'
 =for ref
 
@@ -3337,7 +3318,7 @@ pp_def("dhc",
       [t] u(n); [t] v(n); [t] xv(n)',
     OtherPars => "SV* dhc_func" ,
     GenericTypes => ['D'],
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         extern double dhc(PDL_Indx nvars, double *xrandom, double init, double tol,
             double *u, double *v, double *xv, double (*func)());
         $GENERIC() fx;
@@ -3373,7 +3354,7 @@ pp_def("dhc",
                 %}
             }
         %}
-',
+EOF
     Doc =>'
 =for ref
 
@@ -3449,7 +3430,7 @@ pp_def("de_opt",
         int  strategy, double F, double CR, double *cvar,
         double inibound_h, double inibound_l, int   refresh, double (*evaluate)());
     ',
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
         hooke_function    = $COMP(de_func);
         $fx() = de_optimize($SIZE(n),
                 $P(x),
@@ -3464,7 +3445,7 @@ pp_def("de_opt",
                 $inibound_u(),
                 $print(),
                 hooke_wrapper);
-',
+EOF
     Doc =>'
 =for ref
 
@@ -3596,7 +3577,7 @@ pp_def("asa_opt",
               PDL_Long *generic,double *res, double *coarse, double *tangent, double *curvature,
               double *quench_cost, double *quench_scale, PDL_Long print, double (*func)());
     ',
-    Code =>'
+    Code => pp_line_numbers(__LINE__, <<'EOF'),
     asa_function  = $COMP(asa_func);
     $info() = asa_main($SIZE(n), $P(x), $P(fx), $P(inibound_l),
             $P(inibound_u), $P(parameter_type),$seed(),
@@ -3604,7 +3585,7 @@ pp_def("asa_opt",
             $P(resolution), $P(coarse_resolution), $P(tangents),
             $P(curvature),$P(quench_cost), $P(quench_param),
             $print(),asa_wrapper);
-',
+EOF
     Doc =>'
 =for ref
 
